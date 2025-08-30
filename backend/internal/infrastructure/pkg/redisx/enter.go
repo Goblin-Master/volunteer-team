@@ -16,7 +16,7 @@ func InitRedis() redis.Cmdable {
 		Addr:               configs.Conf.Redis.DSN(),
 		Dialer:             nil,
 		OnConnect:          nil,
-		Username:           "",
+		Username:           configs.Conf.Redis.UserName,
 		Password:           configs.Conf.Redis.Password,
 		DB:                 configs.Conf.Redis.DB,
 		MaxRetries:         0,

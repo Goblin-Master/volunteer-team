@@ -27,19 +27,20 @@ func (app *App) Link() string {
 type DB struct {
 	Host     string `mapstructure:"host"`
 	Port     int    `mapstructure:"port"`
-	User     string `mapstructure:"user"`
+	UserName string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
 	DBName   string `mapstructure:"dbname"`
 }
 
 func (db *DB) DSN() string {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=%s", db.User, db.Password, db.Host, db.Port, db.DBName, "5s")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=%s", db.UserName, db.Password, db.Host, db.Port, db.DBName, "5s")
 	return dsn
 }
 
 type Redis struct {
 	Host     string `mapstructure:"host"`
 	Port     int    `mapstructure:"port"`
+	UserName string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
 	DB       int    `mapstructure:"db"`
 	Enable   bool   `mapstructure:"enable"`
