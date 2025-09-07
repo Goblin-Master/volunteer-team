@@ -11,6 +11,7 @@ type Config struct {
 	DB    DB    `mapstructure:"db"`
 	Redis Redis `mapstructure:"redis"`
 	Auth  Auth  `mapstructure:"auth"`
+	Email Email `mapstructure:"email"`
 }
 
 type App struct {
@@ -55,4 +56,15 @@ func (redis *Redis) DSN() string {
 type Auth struct {
 	AccessSecret string `json:"accessSecret"`
 	AccessExpire int64  `json:"accessExpire"`
+}
+
+type Email struct {
+	Domain       string `mapstructure:"domain"`
+	Port         int    `mapstructure:"port"`
+	SendEmail    string `mapstructure:"sendEmail"`
+	AuthCode     string `mapstructure:"authCode"`
+	SendNickname string `mapstructure:"sendNickname"`
+	Subject      string `mapstructure:"subject"`
+	SSL          bool   `mapstructure:"ssl"`
+	TLS          bool   `mapstructure:"tls"`
 }
