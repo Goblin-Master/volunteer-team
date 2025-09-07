@@ -46,5 +46,6 @@ func registerRoutes(routeManager *manager.RouteManager) {
 	routeManager.RegisterUserRoutes(func(rg *gin.RouterGroup) {
 		userHandler := handler.NewUserHandler()
 		rg.POST("/login", middleware.BindJsonMiddleware[types.LoginReq], userHandler.LoginHandler)
+		rg.POST("/code/login", middleware.BindJsonMiddleware[types.GetCodeReq], userHandler.GetLoginCode)
 	})
 }

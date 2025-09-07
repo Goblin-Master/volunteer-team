@@ -3,21 +3,26 @@ package logic
 import (
 	"errors"
 	"volunteer-team/backend/internal/infrastructure/global"
+	"volunteer-team/backend/internal/infrastructure/pkg/emailx"
 	"volunteer-team/backend/internal/infrastructure/pkg/jwtx"
 	"volunteer-team/backend/internal/infrastructure/types"
+	"volunteer-team/backend/internal/infrastructure/utils/code"
 	"volunteer-team/backend/internal/repo"
 )
 
 type IUserLogic interface {
 	LoginLogic(req types.LoginReq) (types.LoginResp, error)
+	GetLoginCode(req types.GetCodeReq) (types.GetCodeResp, error)
 }
 type UserLogic struct {
 	userRepo *repo.UserRepo
+	email    *emailx.EmailX
 }
 
 func NewUserLogic() *UserLogic {
 	return &UserLogic{
 		userRepo: repo.NewUserRepo(),
+		email:    emailx.NewEmailX(),
 	}
 }
 
@@ -28,6 +33,8 @@ var (
 	ACCOUNT_OR_PASSWORD_ERROR = errors.New("账号或密码错误")
 	EMAIL_ERROR               = errors.New("邮箱错误")
 	DEFAULT_ERROR             = errors.New("默认错误")
+	CODE_GET_ERROR            = errors.New("code获取失败")
+	CODE_VERIFY_ERROR         = errors.New("验证码错误")
 )
 
 func (ul *UserLogic) LoginLogic(req types.LoginReq) (types.LoginResp, error) {
@@ -51,6 +58,9 @@ func (ul *UserLogic) LoginLogic(req types.LoginReq) (types.LoginResp, error) {
 		resp.Token = token
 		return resp, nil
 	case global.LOGIN_WITH_EMAIL:
+		if ok := ul.email.VerifyCode(req.Email, req.Code); !ok {
+			return resp, CODE_VERIFY_ERROR
+		}
 		data, err := ul.userRepo.LoginWithEmail(req.Email)
 		if err != nil {
 			return resp, EMAIL_ERROR
@@ -71,4 +81,16 @@ func (ul *UserLogic) LoginLogic(req types.LoginReq) (types.LoginResp, error) {
 		global.Log.Warnf("错误的登录方式:%s", req.LoginType)
 		return resp, LOGIN_WITH_FAILED_WAY
 	}
+}
+
+func (ul *UserLogic) GetLoginCode(req types.GetCodeReq) (types.GetCodeResp, error) {
+	var resp types.GetCodeResp
+	c := code.GenCode()
+	err := ul.email.SendLoginCode(req.Email, c)
+	if err != nil {
+		global.Log.Error(err)
+		return resp, CODE_GET_ERROR
+	}
+	resp.Code = c
+	return resp, nil
 }

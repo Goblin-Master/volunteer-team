@@ -101,7 +101,7 @@
 import { ref, reactive, computed } from 'vue';
 import { User, Lock, Message } from '@element-plus/icons-vue'; // [修改点 2] 移除 Iphone
 import { ElMessage } from 'element-plus';
-import { Login } from '@/api/login.ts';
+import { Login, GetCode } from '@/api/login.ts';
 import type { LoginResp } from '@/types/login.ts';
 import type BaseResp from '@/types/base.ts';
 import type { FormInstance } from 'element-plus';
@@ -144,19 +144,36 @@ const codeButtonText = computed(() => {
 const isEmailValid = computed(() =>
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailForm.email)
 );
-const sendVerificationCode = () => {
+const sendVerificationCode = async () => {
     if (!isEmailValid.value) {
         ElMessage.error('请输入有效的邮箱地址！');
         return;
     }
-    isSendingCode.value = true;
-    ElMessage.success('验证码已发送至您的邮箱（模拟）');
+    isSendingCode.value = true; // 1. 开始加载
+
+    try {
+        const res = await GetCode(emailForm.email);
+        if (res.code === 0) {
+            ElMessage.success('验证码已发送至您的邮箱!');
+            startCountdown(); // 2. 成功才倒计时
+        } else {
+            ElMessage.error(res.message || '获取验证码失败!');
+            isSendingCode.value = false; // 3. 失败立即恢复按钮
+        }
+    } catch (error) {
+        console.error('GetCode request failed:', error);
+        ElMessage.error('网络错误或服务器无响应');
+        isSendingCode.value = false;
+    }
+};
+
+const startCountdown = () => {
+    countdown.value = 60;
     const timer = setInterval(() => {
         countdown.value--;
         if (countdown.value <= 0) {
             clearInterval(timer);
             isSendingCode.value = false;
-            countdown.value = 60;
         }
     }, 1000);
 };

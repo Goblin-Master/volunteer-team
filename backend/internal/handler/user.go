@@ -9,14 +9,25 @@ import (
 	"volunteer-team/backend/internal/logic"
 )
 
-type UserHandler struct{}
+type UserHandler struct {
+	userLogic *logic.UserLogic
+}
 
 func NewUserHandler() *UserHandler {
-	return &UserHandler{}
+	return &UserHandler{
+		userLogic: logic.NewUserLogic(),
+	}
 }
-func (u *UserHandler) LoginHandler(c *gin.Context) {
+func (uh *UserHandler) LoginHandler(c *gin.Context) {
 	cr := middleware.GetBind[types.LoginReq](c)
 	global.Log.Info(cr)
-	resp, err := logic.NewUserLogic().LoginLogic(cr)
+	resp, err := uh.userLogic.LoginLogic(cr)
+	response.Response(c, resp, err)
+}
+
+func (uh *UserHandler) GetLoginCode(c *gin.Context) {
+	cr := middleware.GetBind[types.GetCodeReq](c)
+	global.Log.Info(cr)
+	resp, err := uh.userLogic.GetLoginCode(cr)
 	response.Response(c, resp, err)
 }
