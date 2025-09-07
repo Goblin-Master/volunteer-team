@@ -3,7 +3,10 @@ package router
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"volunteer-team/backend/internal/handler"
 	"volunteer-team/backend/internal/infrastructure/configs"
+	"volunteer-team/backend/internal/infrastructure/middleware"
+	"volunteer-team/backend/internal/infrastructure/types"
 	"volunteer-team/backend/internal/infrastructure/utils/response"
 	"volunteer-team/backend/internal/manager"
 )
@@ -38,5 +41,10 @@ func registerRoutes(routeManager *manager.RouteManager) {
 		rg.GET("/ping", func(c *gin.Context) {
 			response.Response(c, "pong", nil)
 		})
+	})
+
+	routeManager.RegisterUserRoutes(func(rg *gin.RouterGroup) {
+		userHandler := handler.NewUserHandler()
+		rg.POST("/login", middleware.BindJsonMiddleware[types.LoginReq], userHandler.LoginHandler)
 	})
 }

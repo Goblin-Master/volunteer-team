@@ -27,13 +27,13 @@ func (app *App) Link() string {
 type DB struct {
 	Host     string `mapstructure:"host"`
 	Port     int    `mapstructure:"port"`
-	UserName string `mapstructure:"username"`
+	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
 	DBName   string `mapstructure:"dbname"`
 }
 
 func (db *DB) DSN() string {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=%s", db.UserName, db.Password, db.Host, db.Port, db.DBName, "5s")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=%s", db.Username, db.Password, db.Host, db.Port, db.DBName, "5s")
 	return dsn
 }
 

@@ -15,7 +15,7 @@ func Cors() gin.HandlerFunc {
 		//是否允许你带cookie之类的东西
 		AllowCredentials: true,
 		AllowOriginFunc: func(origin string) bool {
-			if strings.HasPrefix(origin, "http://127.0.0.1") {
+			if strings.HasPrefix(origin, "http://127.0.0.1") || strings.HasPrefix(origin, "http://localhost") {
 				return true
 			}
 			return strings.HasPrefix(origin, "http://www.example.com")

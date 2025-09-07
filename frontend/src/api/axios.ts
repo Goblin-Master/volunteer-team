@@ -30,14 +30,7 @@ service.interceptors.response.use(
         // 对响应数据做点什么
         // 例如，只返回 response.data 部分
         const res = response.data;
-        // console.log('Response:', res); // for debug
-        if (res.code !== 0) { // 根据后端接口的状态码判断
-            // 这里可以做一些全局的错误处理
-            console.error('API Error:', res.message);
-            return Promise.reject(new Error(res.message || 'Error'));
-        } else {
-            return res;
-        }
+        return res
     },
     (error) => {
         // 对响应错误做点什么

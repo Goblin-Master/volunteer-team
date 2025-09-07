@@ -4,6 +4,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"volunteer-team/backend/internal/infrastructure/pkg/mysqlx"
 	"volunteer-team/backend/internal/infrastructure/pkg/zapx"
 )
 
@@ -14,7 +15,7 @@ var (
 )
 
 func Init() {
-	//DB = mysqlx.InitMysql()
-	//RDB = redisx.InitRedis()
 	Log = zapx.InitZap()
+	DB = mysqlx.InitMysql()
+	//RDB = redisx.InitRedis()
 }

@@ -175,25 +175,24 @@ const handleLogin = (formEl?: FormInstance) => {
                     data = {
                         account: accountForm.account,
                         password: accountForm.password,
-                        loginType: 'account' // 建议增加登录类型字段
+                        login_type: 'account' // 建议增加登录类型字段
                     }
                 } else { // activeTab.value === 'email'
                     data = {
                         email: emailForm.email,
                         code: emailForm.code,
-                        loginType: 'email' // 建议增加登录类型字段
+                        login_type: 'email' // 建议增加登录类型字段
                     }
                 }
 
-                // 此处假设您的 Login API 可以处理这两种不同结构的数据
-                const res: BaseResp<LoginResp> = await Login({ data });
+                const res: BaseResp<LoginResp> = await Login(data);
 
                 if (res.code === 0) {
                     ElMessage.success('登录成功!');
                     localStorage.setItem('token', res.data.token);
                     // TODO: Redirect to dashboard
                 } else {
-                    ElMessage.error(res.msg || '登录失败');
+                    ElMessage.error(res.message || '登录失败');
                 }
             } catch (error) {
                 console.error('Login request failed:', error);
