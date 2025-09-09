@@ -12,11 +12,12 @@ import (
 )
 
 type IUserLogic interface {
-	LoginLogic(req types.LoginReq) (types.LoginResp, error)
-	RegisterLogic(req types.RegisterReq) (types.RegisterResp, error)
+	Login(req types.LoginReq) (types.LoginResp, error)
+	Register(req types.RegisterReq) (types.RegisterResp, error)
 	GetLoginCode(req types.GetCodeReq) (types.GetCodeResp, error)
 	GetRegisterCode(req types.GetCodeReq) (types.GetCodeResp, error)
 	GetResetCode(req types.GetCodeReq) (types.GetCodeResp, error)
+	ResetPassword(req types.ResetPasswordReq) (types.ResetPasswordResp, error)
 }
 type UserLogic struct {
 	userRepo *repo.UserRepo
@@ -41,9 +42,10 @@ var (
 	CODE_VERIFY_ERROR         = errors.New("验证码错误")
 	EMAIL_IS_USED             = errors.New("邮箱已经被使用")
 	ACCOUNT_IS_USED           = errors.New("账号已经被使用")
+	USER_NOT_EXIST            = errors.New("用户不存在")
 )
 
-func (ul *UserLogic) LoginLogic(req types.LoginReq) (types.LoginResp, error) {
+func (ul *UserLogic) Login(req types.LoginReq) (types.LoginResp, error) {
 	var resp types.LoginResp
 	switch req.LoginType {
 	case global.LOGIN_WITH_ACCOUNT:
@@ -89,7 +91,7 @@ func (ul *UserLogic) LoginLogic(req types.LoginReq) (types.LoginResp, error) {
 	}
 }
 
-func (ul *UserLogic) RegisterLogic(req types.RegisterReq) (types.RegisterResp, error) {
+func (ul *UserLogic) Register(req types.RegisterReq) (types.RegisterResp, error) {
 	var resp types.RegisterResp
 	if ok := ul.email.VerifyCode(req.Email, req.Code); !ok {
 		return resp, CODE_VERIFY_ERROR
@@ -106,6 +108,23 @@ func (ul *UserLogic) RegisterLogic(req types.RegisterReq) (types.RegisterResp, e
 		}
 	}
 	resp.Message = "用户注册成功！"
+	return resp, nil
+}
+
+func (ul *UserLogic) ResetPassword(req types.ResetPasswordReq) (types.ResetPasswordResp, error) {
+	var resp types.ResetPasswordResp
+	if ok := ul.email.VerifyCode(req.Email, req.Code); !ok {
+		return resp, CODE_VERIFY_ERROR
+	}
+	err := ul.userRepo.ResetPassword(req.Email, req.NewPassword)
+	if err != nil {
+		if errors.Is(err, repo.USER_NOT_EXIST) {
+			return resp, USER_NOT_EXIST
+		}
+		global.Log.Error(err)
+		return resp, DEFAULT_ERROR
+	}
+	resp.Message = "重置密码成功！"
 	return resp, nil
 }
 

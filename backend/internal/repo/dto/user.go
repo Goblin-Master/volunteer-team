@@ -16,7 +16,7 @@ func NewUserDto() *UserDto {
 
 var (
 	USER_NOT_EXIST = errors.New("用户不存在")
-	DEFAULT_ERROR  = errors.New("默认失败")
+	DEFAULT_ERROR  = errors.New("默认错误")
 )
 
 func (ud *UserDto) VerifyUserByAccount(account, password string) (model.User, error) {
@@ -48,4 +48,20 @@ func (ud *UserDto) AddUser(user model.User) error {
 	user.Ctime = time.Now().UnixMilli()
 	user.Utime = time.Now().UnixMilli()
 	return global.DB.Create(&user).Error
+}
+
+func (ud *UserDto) UpdatePasswordByEmail(email, newPassword string) error {
+	// 直接 WHERE + Update，只改 password 字段
+	result := global.DB.Model(&model.User{}).
+		Where("email = ?", email).
+		Update("password", newPassword)
+
+	if result.Error != nil {
+		global.Log.Error(result.Error)
+		return DEFAULT_ERROR
+	}
+	if result.RowsAffected == 0 {
+		return USER_NOT_EXIST // 没有匹配行
+	}
+	return nil
 }

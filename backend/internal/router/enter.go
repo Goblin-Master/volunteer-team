@@ -54,5 +54,6 @@ func registerRoutes(routeManager *manager.RouteManager) {
 		rg.POST("/code/login", middleware.BindJsonMiddleware[types.GetCodeReq], userHandler.GetLoginCode)
 		rg.POST("/code/register", middleware.BindJsonMiddleware[types.GetCodeReq], userHandler.GetRegisterCode)
 		rg.POST("/code/reset", middleware.BindJsonMiddleware[types.GetCodeReq], userHandler.GetResetCode)
+		rg.POST("/resetPassword", middleware.BindJsonMiddleware[types.ResetPasswordReq], userHandler.ResetPassword)
 	})
 }

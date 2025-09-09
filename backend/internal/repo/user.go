@@ -11,12 +11,15 @@ import (
 var (
 	EMAIL_IS_USED   = errors.New("邮箱已经被使用")
 	ACCOUNT_IS_USED = errors.New("账号已经被使用")
+	USER_NOT_EXIST  = errors.New("用户不存在")
+	DEFAULT_ERROR   = errors.New("默认错误")
 )
 
 type IUserRepo interface {
 	LoginWithAccount(account string, password string) (model.User, error)
 	LoginWithEmail(email string) (model.User, error)
 	Register(user_id int64, username, email, account, password string) error //这个结构默认都注册普通用户
+	ResetPassword(email, newPassword string) error
 }
 type UserRepo struct {
 	userDto *dto.UserDto
@@ -56,6 +59,17 @@ func (ur *UserRepo) Register(user_id int64, username, email, account, password s
 			global.Log.Error(err)
 			return err
 		}
+	}
+	return nil
+}
+func (ur *UserRepo) ResetPassword(email, newPassword string) error {
+	err := ur.userDto.UpdatePasswordByEmail(email, newPassword)
+	if err != nil {
+		if errors.Is(err, dto.USER_NOT_EXIST) {
+			return USER_NOT_EXIST
+		}
+		global.Log.Error(err)
+		return DEFAULT_ERROR
 	}
 	return nil
 }

@@ -22,17 +22,22 @@ func NewUserHandler() *UserHandler {
 func (uh *UserHandler) Login(c *gin.Context) {
 	cr := middleware.GetBind[types.LoginReq](c)
 	global.Log.Info(cr)
-	resp, err := uh.userLogic.LoginLogic(cr)
+	resp, err := uh.userLogic.Login(cr)
 	response.Response(c, resp, err)
 }
 
 func (uh *UserHandler) Register(c *gin.Context) {
 	cr := middleware.GetBind[types.RegisterReq](c)
 	global.Log.Info(cr)
-	resp, err := uh.userLogic.RegisterLogic(cr)
+	resp, err := uh.userLogic.Register(cr)
 	response.Response(c, resp, err)
 }
-
+func (uh *UserHandler) ResetPassword(c *gin.Context) {
+	cr := middleware.GetBind[types.ResetPasswordReq](c)
+	global.Log.Info(cr)
+	resp, err := uh.userLogic.ResetPassword(cr)
+	response.Response(c, resp, err)
+}
 func (uh *UserHandler) GetLoginCode(c *gin.Context) {
 	cr := middleware.GetBind[types.GetCodeReq](c)
 	global.Log.Info(cr)

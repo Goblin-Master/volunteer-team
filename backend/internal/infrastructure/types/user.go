@@ -32,3 +32,13 @@ type RegisterReq struct {
 type RegisterResp struct {
 	Message string `json:"message"`
 }
+
+type ResetPasswordReq struct {
+	Email       string `json:"email"`
+	Code        string `json:"code"`
+	NewPassword string `json:"new_password"`
+}
+
+type ResetPasswordResp struct {
+	Message string `json:"message"`
+}

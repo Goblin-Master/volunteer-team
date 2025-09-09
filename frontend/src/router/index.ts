@@ -1,6 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Login from "@/views/Login.vue"
-import Register from "@/views/Register.vue"
+import { createRouter, createWebHistory } from 'vue-router';
+import Login from "@/views/Login.vue";
+import Register from "@/views/Register.vue";
+import ResetPassword from "@/views/ResetPassword.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -13,6 +14,11 @@ const router = createRouter({
       path: '/register',
       name: 'Register',
       component: Register,
+    },
+    {
+      path: '/resetPassword',
+      name: 'ResetPassword',
+      component: ResetPassword,
     },
     {
       path: '/',
