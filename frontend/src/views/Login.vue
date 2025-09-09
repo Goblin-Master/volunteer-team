@@ -101,7 +101,7 @@
 import { ref, reactive, computed } from 'vue';
 import { User, Lock, Message } from '@element-plus/icons-vue'; // [修改点 2] 移除 Iphone
 import { ElMessage } from 'element-plus';
-import { Login, GetCode } from '@/api/login.ts';
+import { Login, GetLoginCode } from '@/api/login.ts';
 import type { LoginResp } from '@/types/login.ts';
 import type BaseResp from '@/types/base.ts';
 import type { FormInstance } from 'element-plus';
@@ -152,7 +152,7 @@ const sendVerificationCode = async () => {
     isSendingCode.value = true; // 1. 开始加载
 
     try {
-        const res = await GetCode(emailForm.email);
+        const res = await GetLoginCode(emailForm.email);
         if (res.code === 0) {
             ElMessage.success('验证码已发送至您的邮箱!');
             startCountdown(); // 2. 成功才倒计时

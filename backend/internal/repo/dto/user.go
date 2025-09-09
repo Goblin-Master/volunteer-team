@@ -3,6 +3,7 @@ package dto
 import (
 	"errors"
 	"gorm.io/gorm"
+	"time"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/model"
 )
@@ -41,4 +42,10 @@ func (ud *UserDto) VerifyUserByEmail(email string) (model.User, error) {
 		return user, DEFAULT_ERROR
 	}
 	return user, nil
+}
+
+func (ud *UserDto) AddUser(user model.User) error {
+	user.Ctime = time.Now().UnixMilli()
+	user.Utime = time.Now().UnixMilli()
+	return global.DB.Create(&user).Error
 }

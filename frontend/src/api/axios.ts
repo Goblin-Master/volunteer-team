@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 1. 创建 Axios 实例
 const service = axios.create({
-    baseURL: 'http://127.0.0.1:8080', // .env 文件中定义的基础URL
+    baseURL: 'http://127.0.0.1:9000', // .env 文件中定义的基础URL
     timeout: 10000, // 请求超时时间
 });
 

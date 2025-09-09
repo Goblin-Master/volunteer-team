@@ -16,8 +16,12 @@ func RunServer() {
 	r, err := listen()
 	if err != nil {
 		panic(err.Error())
+		return
 	}
-	r.Run(fmt.Sprintf("%s:%d", configs.Conf.App.Host, configs.Conf.App.Port)) // 启动 Gin 服务器
+	err = r.Run(fmt.Sprintf("%s:%d", configs.Conf.App.Host, configs.Conf.App.Port)) // 启动 Gin 服务器
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 // listen 配置 Gin 服务器
@@ -45,7 +49,10 @@ func registerRoutes(routeManager *manager.RouteManager) {
 
 	routeManager.RegisterUserRoutes(func(rg *gin.RouterGroup) {
 		userHandler := handler.NewUserHandler()
-		rg.POST("/login", middleware.BindJsonMiddleware[types.LoginReq], userHandler.LoginHandler)
+		rg.POST("/login", middleware.BindJsonMiddleware[types.LoginReq], userHandler.Login)
+		rg.POST("/register", middleware.BindJsonMiddleware[types.RegisterReq], userHandler.Register)
 		rg.POST("/code/login", middleware.BindJsonMiddleware[types.GetCodeReq], userHandler.GetLoginCode)
+		rg.POST("/code/register", middleware.BindJsonMiddleware[types.GetCodeReq], userHandler.GetRegisterCode)
+		rg.POST("/code/reset", middleware.BindJsonMiddleware[types.GetCodeReq], userHandler.GetResetCode)
 	})
 }

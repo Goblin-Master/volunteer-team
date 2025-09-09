@@ -6,4 +6,5 @@ const (
 	TOKEN_ROLE         = "Role"
 	LOGIN_WITH_ACCOUNT = "account"
 	LOGIN_WITH_EMAIL   = "email"
+	DEFAULT_NODE_ID    = 1
 )

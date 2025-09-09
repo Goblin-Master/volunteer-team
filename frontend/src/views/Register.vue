@@ -7,47 +7,62 @@
                     <span>创建您的账户，开始使用我们的服务</span>
                 </div>
             </template>
+
             <el-form ref="registerFormRef" :model="registerForm" :rules="registerRules" label-position="top"
                 size="large" @submit.prevent="handleRegister">
+
+                <!-- 邮箱 -->
                 <el-form-item label="邮箱" prop="email">
                     <el-input v-model="registerForm.email" type="email" placeholder="请输入您的邮箱地址" clearable />
                 </el-form-item>
 
-                <el-form-item label="邮箱验证码" prop="verificationCode">
+                <!-- 邮箱验证码 -->
+                <el-form-item label="邮箱验证码" prop="code">
                     <div class="verification-code-wrapper">
-                        <el-input v-model="registerForm.verificationCode" placeholder="请输入邮箱验证码" clearable />
+                        <el-input v-model="registerForm.code" placeholder="请输入邮箱验证码" clearable />
                         <el-button class="send-code-btn" type="primary" :disabled="isSendingCode || !isEmailValid"
                             @click="sendVerificationCode">
                             {{ codeButtonText }}
                         </el-button>
                     </div>
                 </el-form-item>
-
-                <el-form-item label="用户名" prop="username">
-                    <el-input v-model="registerForm.username" placeholder="请输入用户名" clearable />
+                <!-- 用户昵称（新增） -->
+                <el-form-item label="用户昵称" prop="username">
+                    <el-input v-model="registerForm.username" placeholder="请输入用户昵称" clearable />
+                </el-form-item>
+                <!-- 用户名（统一为 account） -->
+                <el-form-item label="账号" prop="account">
+                    <el-input v-model="registerForm.account" placeholder="请输入账号" clearable />
                 </el-form-item>
 
+                <!-- 密码 -->
                 <el-form-item label="密码" prop="password">
                     <el-input v-model="registerForm.password" type="password" placeholder="请输入密码" show-password
                         clearable />
                 </el-form-item>
 
-                <el-form-item label="确认密码" prop="confirmPassword">
-                    <el-input v-model="registerForm.confirmPassword" type="password" placeholder="请再次输入密码" show-password
-                        clearable />
+                <!-- 确认密码 -->
+                <el-form-item label="确认密码" prop="confirm_password">
+                    <el-input v-model="registerForm.confirm_password" type="password" placeholder="请再次输入密码"
+                        show-password clearable />
                 </el-form-item>
 
+                <!-- 内部人员 -->
                 <el-form-item label="内部人员">
-                    <el-switch v-model="registerForm.isInternal" @change="handleInternalSwitchChange" />
+                    <el-switch v-model="registerForm.is_internal" @change="handleInternalSwitchChange" />
                 </el-form-item>
 
-                <el-form-item prop="agreeTerms">
-                    <el-checkbox v-model="registerForm.agreeTerms">
-                        我已阅读并同意 <el-link type="primary" :underline="false">用户协议</el-link> 和 <el-link type="primary"
-                            :underline="false">隐私政策</el-link>
+                <!-- 协议勾选 -->
+                <el-form-item prop="agree_terms">
+                    <el-checkbox v-model="registerForm.agree_terms">
+                        我已阅读并同意
+                        <el-link type="primary" :underline="false">用户协议</el-link>
+                        和
+                        <el-link type="primary" :underline="false">隐私政策</el-link>
                     </el-checkbox>
                 </el-form-item>
 
+                <!-- 提交 -->
                 <el-form-item>
                     <el-button type="primary" class="register-btn" native-type="submit" :loading="loading">
                         注 册
@@ -56,104 +71,115 @@
             </el-form>
 
             <div class="login-link">
-                已有账号？ <el-link type="primary" @click="goToLogin">立即登录</el-link>
+                已有账号？
+                <el-link type="primary" @click="goToLogin">立即登录</el-link>
             </div>
         </el-card>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import type { FormInstance, FormRules } from 'element-plus';
-import { ElMessage } from 'element-plus';
+import { ref, reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import type { FormInstance } from 'element-plus'
+import { ElMessage } from 'element-plus'
+import { Register, GetRegisterCode } from '@/api/register'
+import type { RegisterForm, RegisterFormRules } from '@/types/register'
 
-// 表单响应式数据
-const registerForm = reactive({
-    // [修改点 3] phone -> email
+/* ---------- 表单数据 ---------- */
+const registerForm = reactive<RegisterForm>({
     email: '',
-    verificationCode: '',
+    code: '',
     username: '',
+    account: '',               // ✅ 统一为 account
     password: '',
-    confirmPassword: '',
-    isInternal: false,
-    agreeTerms: false,
-});
+    confirm_password: '',
+    is_internal: false,
+    agree_terms: false,
+})
 
-const registerFormRef = ref<FormInstance>();
-const loading = ref(false);
-const router = useRouter();
+const registerFormRef = ref<FormInstance>()
+const router = useRouter()
+const loading = ref(false)
 
-// --- 验证码逻辑 ---
-const isSendingCode = ref(false);
-const countdown = ref(60);
-const codeButtonText = computed(() => {
-    return isSendingCode.value ? `${countdown.value}秒后重试` : '发送验证码';
-});
+/* ---------- 验证码逻辑 ---------- */
+const isSendingCode = ref(false)
+const countdown = ref(60)
+const codeButtonText = computed(() =>
+    isSendingCode.value ? `${countdown.value}秒后重试` : '发送验证码'
+)
 
-// [修改点 4] 校验手机号改为校验邮箱
 const isEmailValid = computed(() =>
-    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(registerForm.email)
-);
+    /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(registerForm.email)
+)
 
-const sendVerificationCode = () => {
+const sendVerificationCode = async () => {
     if (!isEmailValid.value) {
-        ElMessage.error('请输入有效的邮箱地址！');
-        return;
+        ElMessage.error('请输入有效的邮箱地址！')
+        return
     }
-    isSendingCode.value = true;
-    ElMessage.success('验证码已发送至您的邮箱（模拟）'); // 模拟发送
+    isSendingCode.value = true
+    try {
+        const res = await GetRegisterCode(registerForm.email)
+        if (res.code === 0) {
+            ElMessage.success('验证码已发送至您的邮箱！')
+            startCountdown()
+        } else {
+            ElMessage.error(res.message || '获取验证码失败！')
+            isSendingCode.value = false
+        }
+    } catch (e) {
+        ElMessage.error('网络错误或服务器无响应')
+        isSendingCode.value = false
+    }
+}
+
+const startCountdown = () => {
+    countdown.value = 60
     const timer = setInterval(() => {
-        countdown.value--;
+        countdown.value--
         if (countdown.value <= 0) {
-            clearInterval(timer);
-            isSendingCode.value = false;
-            countdown.value = 60;
+            clearInterval(timer)
+            isSendingCode.value = false
         }
-    }, 1000);
-};
+    }, 1000)
+}
 
-// --- 表单校验规则 ---
-const validatePass = (rule: any, value: any, callback: any) => {
-    if (value === '') {
-        callback(new Error('请输入密码'));
-    } else {
-        if (registerForm.confirmPassword !== '') {
-            if (!registerFormRef.value) return;
-            registerFormRef.value.validateField('confirmPassword');
+/* ---------- 校验规则 ---------- */
+const validatePass = (rule: any, value: string, callback: any) => {
+    if (!value) callback(new Error('请输入密码'))
+    else {
+        if (registerForm.confirm_password) {
+            registerFormRef.value?.validateField('confirmPassword')
         }
-        callback();
+        callback()
     }
-};
+}
 
-const validatePass2 = (rule: any, value: any, callback: any) => {
-    if (value === '') {
-        callback(new Error('请再次输入密码'));
-    } else if (value !== registerForm.password) {
-        callback(new Error("两次输入的密码不一致！"));
-    } else {
-        callback();
-    }
-};
+const validatePass2 = (rule: any, value: string, callback: any) => {
+    if (!value) callback(new Error('请再次输入密码'))
+    else if (value !== registerForm.password) {
+        callback(new Error('两次输入的密码不一致！'))
+    } else callback()
+}
 
-const validateAgreement = (rule: any, value: any, callback: any) => {
-    if (!value) {
-        callback(new Error('请先阅读并同意用户协议和隐私政策'));
-    } else {
-        callback();
-    }
-};
+const validateAgreement = (rule: any, value: boolean, callback: any) => {
+    value ? callback() : callback(new Error('请先阅读并同意用户协议和隐私政策'))
+}
 
-// [修改点 5] 更新表单验证规则
-const registerRules = reactive<FormRules>({
+const registerRules = reactive<RegisterFormRules>({
+    username: [
+        { required: true, message: '请输入用户昵称', trigger: 'blur' },
+        { min: 1, max: 14, message: '昵称长度 1-14 个字符', trigger: 'blur' }
+    ],
     email: [
         { required: true, message: '请输入邮箱地址', trigger: 'blur' },
         { type: 'email', message: '邮箱地址格式不正确', trigger: ['blur', 'change'] },
     ],
-    verificationCode: [
+    code: [
         { required: true, message: '请输入邮箱验证码', trigger: 'blur' },
     ],
-    username: [
+    account: [                      // ✅ 统一为 account
         { required: true, message: '请输入用户名', trigger: 'blur' },
         { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' },
     ],
@@ -161,53 +187,49 @@ const registerRules = reactive<FormRules>({
         { validator: validatePass, trigger: 'blur', required: true },
         { min: 6, message: '密码长度不能少于6位', trigger: 'blur' },
     ],
-    confirmPassword: [
+    confirm_password: [
         { validator: validatePass2, trigger: 'blur', required: true },
     ],
-    agreeTerms: [
-        { validator: validateAgreement, trigger: 'change' }
-    ]
-});
+    agree_terms: [
+        { validator: validateAgreement, trigger: 'change' },
+    ],
+})
 
-// --- 提交与跳转 ---
+/* ---------- 提交 ---------- */
 const handleRegister = async () => {
-    if (!registerFormRef.value) return;
+    if (!registerFormRef.value) return
     try {
-        const valid = await registerFormRef.value.validate();
-        if (valid) {
-            loading.value = true;
-            // 模拟API调用
-            console.log('Form data:', registerForm);
-            setTimeout(() => {
-                ElMessage.success('注册成功！');
-                loading.value = false;
-                router.push('/login');
-            }, 1500);
+        await registerFormRef.value.validate()
+        loading.value = true
+        const resp = await Register(registerForm)
+        if (resp.code === 0) {
+            ElMessage.success('注册成功！')
+            router.replace('/login')
         } else {
-            ElMessage.error('请检查表单输入项！');
+            ElMessage.error(resp.message || '注册失败')
         }
-    } catch (error) {
-        console.error("Validation failed:", error);
+    } catch (err: any) {
+        err === false
+            ? ElMessage.error('请检查表单输入项！')
+            : ElMessage.error(err.message || '网络异常')
+    } finally {
+        loading.value = false
     }
-};
+}
 
-// --- 新增: 处理内部人员开关变化的函数 ---
-const handleInternalSwitchChange = (value: boolean | string | number) => {
-    if (value === true) {
-        ElMessage.info({
-            message: '内部账号注册后需要管理员审核。',
-            duration: 4000 // 让提示显示时间长一点
-        });
+/* ---------- 内部人员提示 ---------- */
+const handleInternalSwitchChange = (val: boolean | string | number) => {
+    if (val === true) {
+        ElMessage.info({ message: '内部账号注册后需要管理员审核。', duration: 4000 })
     }
-};
+}
 
-const goToLogin = () => {
-    router.push('/login');
-};
+/* ---------- 跳转登录 ---------- */
+const goToLogin = () => router.push('/login')
 </script>
 
 <style scoped>
-/* --- 整体布局 --- */
+/* 样式与之前完全一致，无需改动 */
 .register-container {
     display: flex;
     justify-content: center;
@@ -217,18 +239,15 @@ const goToLogin = () => {
     background-color: #f0f2f5;
 }
 
-/* --- 注册卡片 --- */
 .register-card {
     width: 100%;
     max-width: 380px;
-    /* 与登录页宽度一致 */
     padding: 40px;
     background: #ffffff;
     border-radius: 16px;
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
 }
 
-/* --- 卡片头部 --- */
 .card-header {
     text-align: center;
     margin-bottom: 30px;
@@ -246,12 +265,10 @@ const goToLogin = () => {
     color: #909399;
 }
 
-/* --- 表单与输入框核心对齐样式 --- */
 .el-form-item {
     margin-bottom: 22px;
 }
 
-/* 标签样式 */
 :deep(.el-form-item__label) {
     font-weight: 500;
     color: #606266;
@@ -259,7 +276,6 @@ const goToLogin = () => {
     line-height: 1.2;
 }
 
-/* 输入框通用样式 */
 :deep(.el-input__wrapper) {
     height: 48px;
     padding: 0 15px;
@@ -277,18 +293,11 @@ const goToLogin = () => {
     border-color: var(--el-color-primary);
 }
 
-:deep(.el-input__inner) {
-    font-size: 14px;
-}
-
-
-/* --- 验证码输入框与按钮对齐 --- */
 .verification-code-wrapper {
     display: flex;
     align-items: center;
     gap: 10px;
     width: 100%;
-    /* <-- 核心修复：撑满整行 */
 }
 
 .verification-code-wrapper .el-input {
@@ -298,10 +307,8 @@ const goToLogin = () => {
 .send-code-btn {
     flex-shrink: 0;
     height: 48px;
-    /* 与输入框高度一致 */
     border-radius: 8px;
     background-color: #e8f3ff;
-    /* 与登录页样式一致 */
     color: var(--el-color-primary);
     border: none;
     font-weight: 500;
@@ -311,7 +318,6 @@ const goToLogin = () => {
     background-color: #d9e9ff;
 }
 
-/* --- 底部链接与主按钮 --- */
 .register-btn {
     width: 100%;
     height: 48px;
@@ -327,7 +333,6 @@ const goToLogin = () => {
     font-size: 14px;
 }
 
-/* --- 响应式 --- */
 @media (max-width: 480px) {
     .register-card {
         padding: 24px;

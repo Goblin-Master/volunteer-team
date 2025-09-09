@@ -1,13 +1,22 @@
 package repo
 
 import (
+	"errors"
+	"strings"
+	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/model"
 	"volunteer-team/backend/internal/repo/dto"
+)
+
+var (
+	EMAIL_IS_USED   = errors.New("邮箱已经被使用")
+	ACCOUNT_IS_USED = errors.New("账号已经被使用")
 )
 
 type IUserRepo interface {
 	LoginWithAccount(account string, password string) (model.User, error)
 	LoginWithEmail(email string) (model.User, error)
+	Register(user_id int64, username, email, account, password string) error //这个结构默认都注册普通用户
 }
 type UserRepo struct {
 	userDto *dto.UserDto
@@ -27,4 +36,26 @@ func (ur *UserRepo) LoginWithAccount(account string, password string) (model.Use
 
 func (ur *UserRepo) LoginWithEmail(email string) (model.User, error) {
 	return ur.userDto.VerifyUserByEmail(email)
+}
+
+func (ur *UserRepo) Register(user_id int64, username, email, account, password string) error {
+	user := model.User{
+		Username: username,
+		UserID:   user_id,
+		Account:  account,
+		Password: password,
+		Email:    email,
+	}
+	err := ur.userDto.AddUser(user)
+	if err != nil {
+		if strings.Contains(err.Error(), "for key 'user.uni_user_account'") {
+			return ACCOUNT_IS_USED
+		} else if strings.Contains(err.Error(), "for key 'user.uni_user_email'") {
+			return EMAIL_IS_USED
+		} else {
+			global.Log.Error(err)
+			return err
+		}
+	}
+	return nil
 }

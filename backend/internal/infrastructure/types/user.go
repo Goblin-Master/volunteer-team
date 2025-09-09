@@ -20,3 +20,15 @@ type GetCodeReq struct {
 type GetCodeResp struct {
 	Code string `json:"code"`
 }
+
+type RegisterReq struct {
+	Account    string `json:"account"`
+	Password   string `json:"password"`
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	Code       string `json:"code"`
+	IsInternal bool   `json:"is_internal"`
+}
+type RegisterResp struct {
+	Message string `json:"message"`
+}

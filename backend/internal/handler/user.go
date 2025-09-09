@@ -18,10 +18,18 @@ func NewUserHandler() *UserHandler {
 		userLogic: logic.NewUserLogic(),
 	}
 }
-func (uh *UserHandler) LoginHandler(c *gin.Context) {
+
+func (uh *UserHandler) Login(c *gin.Context) {
 	cr := middleware.GetBind[types.LoginReq](c)
 	global.Log.Info(cr)
 	resp, err := uh.userLogic.LoginLogic(cr)
+	response.Response(c, resp, err)
+}
+
+func (uh *UserHandler) Register(c *gin.Context) {
+	cr := middleware.GetBind[types.RegisterReq](c)
+	global.Log.Info(cr)
+	resp, err := uh.userLogic.RegisterLogic(cr)
 	response.Response(c, resp, err)
 }
 
@@ -29,5 +37,19 @@ func (uh *UserHandler) GetLoginCode(c *gin.Context) {
 	cr := middleware.GetBind[types.GetCodeReq](c)
 	global.Log.Info(cr)
 	resp, err := uh.userLogic.GetLoginCode(cr)
+	response.Response(c, resp, err)
+}
+
+func (uh *UserHandler) GetRegisterCode(c *gin.Context) {
+	cr := middleware.GetBind[types.GetCodeReq](c)
+	global.Log.Info(cr)
+	resp, err := uh.userLogic.GetRegisterCode(cr)
+	response.Response(c, resp, err)
+}
+
+func (uh *UserHandler) GetResetCode(c *gin.Context) {
+	cr := middleware.GetBind[types.GetCodeReq](c)
+	global.Log.Info(cr)
+	resp, err := uh.userLogic.GetResetCode(cr)
 	response.Response(c, resp, err)
 }
