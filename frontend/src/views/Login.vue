@@ -136,6 +136,11 @@ import { Login, GetLoginCode } from "@/api/login.ts";
 import type { LoginResp } from "@/types/login.ts";
 import type BaseResp from "@/types/base.ts";
 import type { FormInstance } from "element-plus";
+import { useUserStore } from "@/stores/user";
+import { useRoute, useRouter } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
 
 const activeTab = ref("account");
 const isLoading = ref(false);
@@ -241,8 +246,12 @@ const handleLogin = (formEl?: FormInstance) => {
 
         if (res.code === 0) {
           ElMessage.success("登录成功!");
-          localStorage.setItem("token", res.data.token);
-          // TODO: Redirect to dashboard
+          useUserStore().setUserInfo(res.data);
+          // 检查是否有重定向参数
+          const redirectPath = (route.query.redirect as string) || "/";
+
+          // 登录成功后跳转到重定向路径，或默认跳转到主页
+          router.replace(redirectPath);
         } else {
           ElMessage.error(res.message || "登录失败");
         }
@@ -261,9 +270,6 @@ const handleLogin = (formEl?: FormInstance) => {
     }
   });
 };
-
-import { useRouter } from "vue-router";
-const router = useRouter();
 
 const goToRegister = () => {
   router.push("/register");
