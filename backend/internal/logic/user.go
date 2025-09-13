@@ -2,22 +2,27 @@ package logic
 
 import (
 	"errors"
+	"fmt"
+	"io"
+	"mime/multipart"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/pkg/emailx"
 	"volunteer-team/backend/internal/infrastructure/pkg/jwtx"
 	"volunteer-team/backend/internal/infrastructure/types"
 	"volunteer-team/backend/internal/infrastructure/utils/code"
+	"volunteer-team/backend/internal/infrastructure/utils/fileUtils"
 	"volunteer-team/backend/internal/infrastructure/utils/snowflake"
 	"volunteer-team/backend/internal/repo"
 )
 
 type IUserLogic interface {
-	Login(req types.LoginReq) (types.LoginResp, error)
-	Register(req types.RegisterReq) (types.RegisterResp, error)
-	GetLoginCode(req types.GetCodeReq) (types.GetCodeResp, error)
-	GetRegisterCode(req types.GetCodeReq) (types.GetCodeResp, error)
-	GetResetCode(req types.GetCodeReq) (types.GetCodeResp, error)
-	ResetPassword(req types.ResetPasswordReq) (types.ResetPasswordResp, error)
+	Login(types.LoginReq) (types.LoginResp, error)
+	Register(types.RegisterReq) (types.RegisterResp, error)
+	GetLoginCode(types.GetCodeReq) (types.GetCodeResp, error)
+	GetRegisterCode(types.GetCodeReq) (types.GetCodeResp, error)
+	GetResetCode(types.GetCodeReq) (types.GetCodeResp, error)
+	ResetPassword(types.ResetPasswordReq) (types.ResetPasswordResp, error)
+	UpdateAvatar(int64, *multipart.FileHeader) (string, error)
 }
 type UserLogic struct {
 	userRepo *repo.UserRepo
@@ -43,6 +48,8 @@ var (
 	EMAIL_IS_USED             = errors.New("邮箱已经被使用")
 	ACCOUNT_IS_USED           = errors.New("账号已经被使用")
 	USER_NOT_EXIST            = errors.New("用户不存在")
+	FILE_OVER_SIZE            = errors.New(fmt.Sprintf("文件大小不能超过%dMB", global.FILE_MAX_SIZE/1024/1024))
+	FILE_READ_ERROR           = errors.New("文件读取失败")
 )
 
 func (ul *UserLogic) Login(req types.LoginReq) (types.LoginResp, error) {
@@ -162,4 +169,43 @@ func (ul *UserLogic) GetResetCode(req types.GetCodeReq) (types.GetCodeResp, erro
 	}
 	resp.Code = c
 	return resp, nil
+}
+
+func (ul *UserLogic) UpdateAvatar(userID int64, file *multipart.FileHeader) (string, error) {
+	//图片大小限制
+	if file.Size > global.FILE_MAX_SIZE {
+		return "", FILE_OVER_SIZE
+	}
+	//图片格式限制
+	filename := file.Filename
+	suffix, err := fileUtils.FileSuffixJudge(filename)
+	if err != nil {
+		global.Log.Error(err)
+		//FileSuffixJudge内部已经做好err处理
+		return "", err
+	}
+	//文件hash（不同文件名，内容相同视为同一个文件）
+	data, err := file.Open()
+	defer func() {
+		if e := data.Close(); e != nil {
+			global.Log.Error(e)
+		}
+	}()
+	if err != nil {
+		global.Log.Error(err)
+		return "", FILE_READ_ERROR
+	}
+	byteData, _ := io.ReadAll(data)
+	hash := fileUtils.Md5(byteData)
+	// 更新用户头像
+	filePath := fmt.Sprintf("%s.%s", hash, suffix)
+	err = ul.userRepo.UpdateAvatarByID(userID, filePath)
+	if err != nil {
+		if errors.Is(err, repo.USER_NOT_EXIST) {
+			return "", USER_NOT_EXIST
+		}
+		global.Log.Error(err)
+		return "", DEFAULT_ERROR
+	}
+	return filePath, nil
 }

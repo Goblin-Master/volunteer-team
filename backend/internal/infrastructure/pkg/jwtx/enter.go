@@ -3,19 +3,20 @@ package jwtx
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
 	"strings"
 	"time"
 	"volunteer-team/backend/internal/infrastructure/configs"
 	"volunteer-team/backend/internal/infrastructure/global"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type Role int
 
 const (
-	ADMIN Role = iota + 1
-	USER
+	INTERNAL_USER Role = iota + 1
+	COMMON_USER
 )
 
 type MyClaims struct {

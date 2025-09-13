@@ -274,9 +274,19 @@ const registerRules = reactive<RegisterFormRules>({
 /* ---------- 提交 ---------- */
 const handleRegister = async () => {
   if (!registerFormRef.value) return;
+
+  // 1. 明确地等待表单验证结果
+  const valid = await registerFormRef.value.validate().catch(() => false);
+
+  // 2. 如果验证失败，直接返回，并给出准确的提示
+  if (!valid) {
+    ElMessage.error("请检查表单输入项！");
+    return;
+  }
+
+  // 3. 如果验证成功，才执行后续的注册逻辑
+  loading.value = true;
   try {
-    await registerFormRef.value.validate();
-    loading.value = true;
     const resp = await Register(registerForm);
     if (resp.code === 0) {
       ElMessage.success("注册成功！");
@@ -285,9 +295,9 @@ const handleRegister = async () => {
       ElMessage.error(resp.message || "注册失败");
     }
   } catch (err: any) {
-    err === false
-      ? ElMessage.error("请检查表单输入项！")
-      : ElMessage.error(err.message || "网络异常");
+    // 4. 这里只处理网络请求或后端接口的错误
+    ElMessage.error(err.message || "网络异常");
+    console.error(err);
   } finally {
     loading.value = false;
   }

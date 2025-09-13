@@ -12,7 +12,7 @@ service.interceptors.request.use(
     // 在发送请求前做些什么
     // 比如，统一为请求添加 token
     const userStore = useUserStore();
-    const token = userStore.token;
+    const  token = userStore.token;
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }

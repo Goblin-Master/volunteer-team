@@ -15,10 +15,11 @@ type Config struct {
 }
 
 type App struct {
-	Host string `mapstructure:"host"`
-	Port int    `mapstructure:"port"`
-	Env  string `mapstructure:"env"`
-	Log  string `mapstructure:"log"`
+	Host    string `mapstructure:"host"`
+	Port    int    `mapstructure:"port"`
+	Env     string `mapstructure:"env"`
+	Log     string `mapstructure:"log"`
+	Uploads string `mapstructure:"uploads"`
 }
 
 func (app *App) Link() string {

@@ -1,12 +1,15 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/middleware"
+	"volunteer-team/backend/internal/infrastructure/pkg/jwtx"
 	"volunteer-team/backend/internal/infrastructure/types"
 	"volunteer-team/backend/internal/infrastructure/utils/response"
 	"volunteer-team/backend/internal/logic"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
@@ -32,12 +35,14 @@ func (uh *UserHandler) Register(c *gin.Context) {
 	resp, err := uh.userLogic.Register(cr)
 	response.Response(c, resp, err)
 }
+
 func (uh *UserHandler) ResetPassword(c *gin.Context) {
 	cr := middleware.GetBind[types.ResetPasswordReq](c)
 	global.Log.Info(cr)
 	resp, err := uh.userLogic.ResetPassword(cr)
 	response.Response(c, resp, err)
 }
+
 func (uh *UserHandler) GetLoginCode(c *gin.Context) {
 	cr := middleware.GetBind[types.GetCodeReq](c)
 	global.Log.Info(cr)
@@ -57,4 +62,17 @@ func (uh *UserHandler) GetResetCode(c *gin.Context) {
 	global.Log.Info(cr)
 	resp, err := uh.userLogic.GetResetCode(cr)
 	response.Response(c, resp, err)
+}
+
+func (uh *UserHandler) UpdateAvatar(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		response.Response(c, nil, err)
+		return
+	}
+	resp, err := uh.userLogic.UpdateAvatar(jwtx.GetUserID(c), file)
+	if err != nil {
+		response.Response(c, nil, err)
+	}
+	response.Response(c, resp, c.SaveUploadedFile(file, fmt.Sprintf("%s/%s", global.FILE_STORE_PATH, resp)))
 }

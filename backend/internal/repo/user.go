@@ -18,8 +18,9 @@ var (
 type IUserRepo interface {
 	LoginWithAccount(account string, password string) (model.User, error)
 	LoginWithEmail(email string) (model.User, error)
-	Register(user_id int64, username, email, account, password string) error //这个结构默认都注册普通用户
+	Register(userID int64, username, email, account, password string) error //这个结构默认都注册普通用户
 	ResetPassword(email, newPassword string) error
+	UpdateAvatarByID(userID int64, url string) error
 }
 type UserRepo struct {
 	userDto *dto.UserDto
@@ -41,10 +42,10 @@ func (ur *UserRepo) LoginWithEmail(email string) (model.User, error) {
 	return ur.userDto.VerifyUserByEmail(email)
 }
 
-func (ur *UserRepo) Register(user_id int64, username, email, account, password string) error {
+func (ur *UserRepo) Register(userID int64, username, email, account, password string) error {
 	user := model.User{
 		Username: username,
-		UserID:   user_id,
+		UserID:   userID,
 		Account:  account,
 		Password: password,
 		Email:    email,
@@ -64,6 +65,18 @@ func (ur *UserRepo) Register(user_id int64, username, email, account, password s
 }
 func (ur *UserRepo) ResetPassword(email, newPassword string) error {
 	err := ur.userDto.UpdatePasswordByEmail(email, newPassword)
+	if err != nil {
+		if errors.Is(err, dto.USER_NOT_EXIST) {
+			return USER_NOT_EXIST
+		}
+		global.Log.Error(err)
+		return DEFAULT_ERROR
+	}
+	return nil
+}
+
+func (ur *UserRepo) UpdateAvatarByID(userID int64, url string) error {
+	err := ur.userDto.UpdateAvatarByID(userID, url)
 	if err != nil {
 		if errors.Is(err, dto.USER_NOT_EXIST) {
 			return USER_NOT_EXIST

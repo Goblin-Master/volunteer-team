@@ -1,62 +1,90 @@
 // src/stores/user.ts
 import { defineStore } from "pinia";
+import { ref, computed } from "vue";
 import type { LoginResp } from "@/types/login.ts";
-const baseURL: string = "http://127.0.0.1:9000";
+const base_url: string = "http://127.0.0.1:9000/uploads/";
 
-// 定义用户状态的类型
-interface UserState {
-  token: string | null;
-  username: string | null;
-  avatar: string | null;
-}
+// 这是一个简化的 token 解析函数，实际应用中建议使用 jwt-decode 等库
+const parse_token = (token: string) => {
+  try {
+    const payload_base64 = token.split('.')[1];
+    const payload = JSON.parse(atob(payload_base64));
+    return {
+      role: payload.role || 2, // 默认 role 为 2 (普通用户)
+    };
+  } catch (error) {
+    console.error('Failed to parse token:', error);
+    return null;
+  }
+};
 
-export const useUserStore = defineStore("user", {
-  state: (): UserState => ({
-    token: localStorage.getItem("user-token"), // 从 localStorage 读取初始 token
-    username: localStorage.getItem("user-username"),
-    avatar: localStorage.getItem("user-avatar"),
-  }),
+export const useUserStore = defineStore("user", () => {
+  // state
+  const token = ref(localStorage.getItem("user-token") || null);
+  const user_name = ref(localStorage.getItem("user-username") || null);
+  const avatar = ref(localStorage.getItem("user-avatar") || null);
 
-  // 添加 getters
-  getters: {
-    // 检查用户是否已登录
-    // 这个 getter 依赖于 token，当 token 变化时，它会自动重新计算
-    isUserLogin(state): boolean {
-      return !!state.token;
-    },
-    // 获取完整的头像 URL，如果后端只返回相对路径
-    // 假设后端返回 "/avatars/user123.jpg"
-    fullAvatarUrl(state): string | null {
-      if (state.avatar) {
-        return `${{ baseURL }}${state.avatar}`; // 组合成完整的 URL
-      }
-      return null;
-    },
-  },
+  // getters
+  // 检查用户是否已登录
+  const is_user_login = computed(() => !!token.value);
 
-  actions: {
-    setUserInfo(userData: LoginResp) {
-      // 1. 更新 Pinia store
-      this.token = userData.token;
-      this.username = userData.username;
-      this.avatar = userData.avatar;
+  // 核心：使用 computed 来实时解析 token 并返回 role
+  const user_role = computed(() => {
+    if (token.value) {
+      const parsed = parse_token(token.value);
+      return parsed ? parsed.role : null;
+    }
+    return null;
+  });
 
-      // 2. 同时将数据持久化到 localStorage
-      localStorage.setItem("user-token", userData.token);
-      localStorage.setItem("user-username", userData.username);
-      localStorage.setItem("user-avatar", userData.avatar);
-    },
+  // 获取完整的头像 URL
+  const full_avatar_url = computed(() => {
+    if (avatar.value) {
+      return `${base_url}${avatar.value}`;
+    }
+    // 提供一个默认头像
+    return 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg';
+  });
 
-    logout() {
-      // 1. 清空 Pinia store
-      this.token = null;
-      this.username = null;
-      this.avatar = null;
+  // actions
+  const setUserInfo = (userData: LoginResp) => {
+    // 1. 更新 Pinia store
+    token.value = userData.token;
+    user_name.value = userData.username;
+    avatar.value = userData.avatar;
 
-      // 2. 清空 localStorage
-      localStorage.removeItem("user-token");
-      localStorage.removeItem("user-username");
-      localStorage.removeItem("user-avatar");
-    },
-  },
+    // 2. 同时将数据持久化到 localStorage
+    localStorage.setItem("user-token", userData.token);
+    localStorage.setItem("user-username", userData.username);
+    localStorage.setItem("user-avatar", userData.avatar);
+  };
+
+  const logout = () => {
+    // 1. 清空 Pinia store
+    token.value = null;
+    user_name.value = null;
+    avatar.value = null;
+
+    // 2. 清空 localStorage
+    localStorage.removeItem("user-token");
+    localStorage.removeItem("user-username");
+    localStorage.removeItem("user-avatar");
+  };
+
+  const updateAvatar = (new_avatar_url: string) => {
+    avatar.value = new_avatar_url;
+    localStorage.setItem("user-avatar", new_avatar_url);
+  }
+
+  return {
+    token,
+    is_user_login,
+    user_name,
+    avatar,
+    user_role,
+    full_avatar_url,
+    setUserInfo,
+    logout,
+    updateAvatar
+  };
 });

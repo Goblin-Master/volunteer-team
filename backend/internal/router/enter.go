@@ -2,13 +2,14 @@ package router
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"volunteer-team/backend/internal/handler"
 	"volunteer-team/backend/internal/infrastructure/configs"
 	"volunteer-team/backend/internal/infrastructure/middleware"
 	"volunteer-team/backend/internal/infrastructure/types"
 	"volunteer-team/backend/internal/infrastructure/utils/response"
 	"volunteer-team/backend/internal/manager"
+
+	"github.com/gin-gonic/gin"
 )
 
 // RunServer 启动服务器 路由层
@@ -30,7 +31,7 @@ func listen() (*gin.Engine, error) {
 	// 注册全局中间件（例如获取 Trace ID）
 	manager.RequestGlobalMiddleware(r)
 	//配置静态路由，用于访问上传的文件
-	r.Static("/uploads", "uploads")
+	r.Static("/uploads", configs.Conf.App.Uploads)
 	// 创建 RouteManager 实例
 	routeManager := manager.NewRouteManager(r)
 	// 注册各业务路由组的具体路由
@@ -55,5 +56,6 @@ func registerRoutes(routeManager *manager.RouteManager) {
 		rg.POST("/code/register", middleware.BindJsonMiddleware[types.GetCodeReq], userHandler.GetRegisterCode)
 		rg.POST("/code/reset", middleware.BindJsonMiddleware[types.GetCodeReq], userHandler.GetResetCode)
 		rg.POST("/resetPassword", middleware.BindJsonMiddleware[types.ResetPasswordReq], userHandler.ResetPassword)
+		rg.POST("/updateAvatar", middleware.Authentication, userHandler.UpdateAvatar)
 	})
 }

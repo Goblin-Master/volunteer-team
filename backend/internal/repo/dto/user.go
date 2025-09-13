@@ -2,10 +2,11 @@ package dto
 
 import (
 	"errors"
-	"gorm.io/gorm"
 	"time"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/model"
+
+	"gorm.io/gorm"
 )
 
 type UserDto struct{}
@@ -55,6 +56,21 @@ func (ud *UserDto) UpdatePasswordByEmail(email, newPassword string) error {
 	result := global.DB.Model(&model.User{}).
 		Where("email = ?", email).
 		Update("password", newPassword)
+
+	if result.Error != nil {
+		global.Log.Error(result.Error)
+		return DEFAULT_ERROR
+	}
+	if result.RowsAffected == 0 {
+		return USER_NOT_EXIST // 没有匹配行
+	}
+	return nil
+}
+
+func (ud *UserDto) UpdateAvatarByID(userID int64, avatar string) error {
+	result := global.DB.Model(&model.User{}).
+		Where("user_id = ?", userID).
+		Update("avatar", avatar)
 
 	if result.Error != nil {
 		global.Log.Error(result.Error)
