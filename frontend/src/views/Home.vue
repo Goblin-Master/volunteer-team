@@ -5,11 +5,10 @@
     <main class="main-content">
       <div v-if="userStore.is_user_login" class="profile-card">
         <div class="profile-header">
-          <div class="avatar-wrapper">
+          <div class="avatar-wrapper" @click="showImagePreview">
             <el-image
               class="avatar-image"
               :src="userStore.full_avatar_url"
-              :preview-src-list="[userStore.full_avatar_url]"
               fit="cover"
             />
           </div>
@@ -51,6 +50,13 @@
               <h3 class="feature-title">我要报修</h3>
               <p class="feature-description">快速提交设备维修申请</p>
             </div>
+            <div class="feature-card">
+              <div class="feature-icon-wrapper" style="background-color: #fef0f0;">
+                <el-icon :size="32" color="#f56c6c"><List /></el-icon>
+              </div>
+              <h3 class="feature-title">我的订单</h3>
+              <p class="feature-description">查看并管理我的报修订单</p>
+            </div>
             <div class="feature-card" @click="showIntroduction">
               <div class="feature-icon-wrapper" style="background-color: #e9f8f1;">
                 <el-icon :size="32" color="#67c23a"><User /></el-icon>
@@ -83,6 +89,12 @@
         </el-button>
       </template>
     </main>
+
+    <el-dialog v-model="image_preview_visible" width="90%" center>
+      <div style="text-align: center;">
+        <el-image :src="userStore.full_avatar_url" fit="contain" style="max-width: 100%; max-height: 80vh;"></el-image>
+      </div>
+    </el-dialog>
 
     <el-dialog v-model="dialog_visible" title="更换头像" width="350px" center>
       <div class="upload-options">
@@ -121,21 +133,18 @@ import {
   FolderOpened
 } from '@element-plus/icons-vue';
 
-// Import the image directly. Webpack/Vite will handle the path.
 import introduction_image from '@/assets/introduce.jpg';
 
-// --- Vue Router 和 Pinia Store ---
 const router = useRouter();
 const userStore = useUserStore();
 
-// --- 响应式数据 ---
+const image_preview_visible = ref(false);
 const dialog_visible = ref(false);
 const introduction_dialog_visible = ref(false);
 const file_input_ref = ref<HTMLInputElement | null>(null);
 const currentTime = ref('');
 let timer: number | undefined;
 
-// --- 方法 ---
 const updateTime = () => {
   const now = new Date();
   const year = now.getFullYear();
@@ -170,33 +179,25 @@ const handleFileSelected = async (event: Event) => {
   if (!file) {
     return;
   }
-
-  // 1. 进行前端验证
   if (!file.type.startsWith('image/')) {
     ElMessage.error('请选择图片文件!');
     return;
   }
-  if (file.size / 1024 / 1024 > 10) {
-    ElMessage.error('图片大小不能超过 10MB!');
+  if (file.size / 1024 / 1024 > 2) {
+    ElMessage.error('图片大小不能超过 2MB!');
     return;
   }
 
-  // 2. 调用封装好的 API 接口
   try {
     const resp = await updateAvatar(file);
-
-    // 假设后端 code=0 表示成功
     if (resp.code === 0 && resp.data) {
-      const imageUrl = resp.data; // 这里拿到图片 URL
-
-      // 在这里处理后续逻辑，例如更新用户头像
+      const imageUrl = resp.data;
       userStore.updateAvatar(imageUrl);
       ElMessage.success('图片上传成功！');
     } else {
       ElMessage.error(resp.message || '图片上传失败');
     }
   } catch (error) {
-    // 处理网络错误或后端返回的非 2xx 状态码
     ElMessage.error('网络请求失败，请稍后重试。');
     console.error('上传失败:', error);
   }
@@ -206,19 +207,21 @@ const showIntroduction = () => {
   introduction_dialog_visible.value = true;
 };
 
-// --- 生命周期钩子 ---
+const showImagePreview = () => {
+  image_preview_visible.value = true;
+};
+
 onMounted(() => {
-  updateTime(); // 首次加载时立即更新时间
-  timer = setInterval(updateTime, 1000); // 每秒更新一次
+  updateTime();
+  timer = setInterval(updateTime, 1000);
 });
 
 onUnmounted(() => {
-  clearInterval(timer); // 组件卸载时清除定时器，防止内存泄漏
+  clearInterval(timer);
 });
 </script>
 
 <style scoped>
-/* (Keep all existing styles as they are) */
 .home-page-container {
   width: 100%;
   min-height: 100vh;
@@ -266,6 +269,7 @@ onUnmounted(() => {
   background-color: white;
   padding: 5px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 .avatar-image {
@@ -319,7 +323,6 @@ onUnmounted(() => {
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   transition: transform 0.3s, box-shadow 0.3s;
-  /* Add pointer cursor to indicate it's clickable */
   cursor: pointer;
 }
 
@@ -384,17 +387,13 @@ onUnmounted(() => {
   text-decoration: none;
 }
 
-/* 调整关于师友图片显示的样式 */
 .introduction-image-container {
-  /* 确保容器内图片按比例缩小，并居中显示 */
   display: flex;
   justify-content: center;
   align-items: center;
-  /* 限制图片容器的最大高度，避免在小屏幕上过高 */
   max-height: 80vh;
 }
 
-/* 使用深度选择器和自定义类名，精确地去除指定对话框的内边距 */
 :deep(.no-padding-dialog .el-dialog__body) {
   padding: 0px !important;
 }
