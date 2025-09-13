@@ -10,7 +10,7 @@ const parse_token = (token: string) => {
     const payload_base64 = token.split('.')[1];
     const payload = JSON.parse(atob(payload_base64));
     return {
-      role: payload.role || 2, // 默认 role 为 2 (普通用户)
+      role: payload.role_id || 2, // 默认 role 为 2 (普通用户)
     };
   } catch (error) {
     console.error('Failed to parse token:', error);
