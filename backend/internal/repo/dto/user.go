@@ -15,11 +15,6 @@ func NewUserDto() *UserDto {
 	return &UserDto{}
 }
 
-var (
-	USER_NOT_EXIST = errors.New("用户不存在")
-	DEFAULT_ERROR  = errors.New("默认错误")
-)
-
 func (ud *UserDto) VerifyUserByAccount(account, password string) (model.User, error) {
 	var user model.User
 	err := global.DB.Model(&model.User{}).Where("account = ? and password = ?", account, password).Take(&user).Error

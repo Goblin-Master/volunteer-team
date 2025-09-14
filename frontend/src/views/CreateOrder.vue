@@ -27,7 +27,11 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="所在校区" prop="campus_location">
-                <el-select v-model="order_form.campus_location" placeholder="请选择校区" style="width: 100%;">
+                <el-select
+                  v-model="order_form.campus_location"
+                  placeholder="请选择校区"
+                  style="width: 100%;"
+                >
                   <el-option label="松山湖校区" value="松山湖校区" />
                   <el-option label="莞城校区" value="莞城校区" />
                 </el-select>
@@ -75,6 +79,8 @@
               v-model="order_form.problem_description"
               type="textarea"
               :rows="4"
+              maxlength="500"
+              show-word-limit
               placeholder="请详细描述您遇到的问题..."
             />
           </el-form-item>
@@ -89,7 +95,12 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" class="submit-btn" @click="submitForm">
+            <el-button
+              type="primary"
+              class="submit-btn"
+              :loading="isLoading"
+              @click="submitForm"
+            >
               提交订单
             </el-button>
           </el-form-item>
@@ -103,10 +114,13 @@
 import { reactive, ref } from 'vue';
 import { ElMessage, ElNotification } from 'element-plus';
 import type { FormInstance } from 'element-plus';
-import { order_rules } from '@/types/createOrder.ts';
-import type { CreateOrderReq } from '@/types/createOrder.ts';
+import { order_rules } from '@/types/createOrder';
+import type { CreateOrderReq } from '@/types/createOrder';
+import { CreateOrder } from '@/api/createOrder';
 
+/* ---------- 表单实例 & 数据 ---------- */
 const order_form_ref = ref<FormInstance | null>(null);
+const isLoading = ref(false);
 
 const order_form: CreateOrderReq = reactive({
   username: '',
@@ -122,21 +136,38 @@ const order_form: CreateOrderReq = reactive({
   notes: '',
 });
 
-// ✅ 在这里使用非空断言操作符 `!`
+/* ---------- 提交 ---------- */
 const submitForm = async () => {
-  await order_form_ref.value!.validate((valid) => {
-    if (valid) {
-      console.log('提交的订单数据:', order_form);
+  if (!order_form_ref.value) return;
+  isLoading.value = true;
+
+  try {
+    // 1. 校验
+    await order_form_ref.value.validate();
+
+    // 2. 请求
+    const res = await CreateOrder(order_form);
+
+    // 3. 业务处理
+    if (res.code === 0) {
       ElNotification({
         title: '提交成功',
         message: '您的报修订单已提交，我们会尽快处理！',
         type: 'success',
-      });
-      order_form_ref.value!.resetFields();
+      })
+      order_form_ref.value.resetFields();
     } else {
-      ElMessage.error('请检查表单并填写所有必填项');
+      ElMessage.error(res.message || '提交失败');
     }
-  });
+  } catch (e: any) {
+    // 网络错误
+    if (e?.response || e?.request) {
+      ElMessage.error('网络错误或服务器无响应');
+    }
+    // 表单校验失败已由 Element 标红，不再 toast
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 

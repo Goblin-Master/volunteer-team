@@ -8,13 +8,6 @@ import (
 	"volunteer-team/backend/internal/repo/dto"
 )
 
-var (
-	EMAIL_IS_USED   = errors.New("邮箱已经被使用")
-	ACCOUNT_IS_USED = errors.New("账号已经被使用")
-	USER_NOT_EXIST  = errors.New("用户不存在")
-	DEFAULT_ERROR   = errors.New("默认错误")
-)
-
 type IUserRepo interface {
 	LoginWithAccount(account string, password string) (model.User, error)
 	LoginWithEmail(email string) (model.User, error)

@@ -50,7 +50,7 @@ const order_rules: FormRules = {
   ],
   problem_description: [
     { required: true, message: '请输入问题描述', trigger: 'blur' },
-    { min: 10, max: 500, message: '长度在 10 到 500 个字符', trigger: 'blur' },
+    { min: 2, max: 500, message: '长度在 2 到 500 个字符', trigger: 'blur' },
   ],
 };
 
