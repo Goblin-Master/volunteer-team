@@ -1,8 +1,9 @@
 package manager
 
 import (
-	"github.com/gin-gonic/gin"
 	"volunteer-team/backend/internal/infrastructure/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
 //主要管理路由组和中间件的注册
@@ -17,17 +18,19 @@ type Middleware func() gin.HandlerFunc
 type RouteManager struct {
 	UserRoutes   *gin.RouterGroup // 登录相关的路由组
 	CommonRoutes *gin.RouterGroup //通用功能相关的路由组
+	OrderRoutes  *gin.RouterGroup
 }
 
 // NewRouteManager 创建一个新的 RouteManager 实例，包含各业务功能的路由组
 func NewRouteManager(router *gin.Engine) *RouteManager {
 	return &RouteManager{
-		UserRoutes:   router.Group("/api/user"),   // 初始化登录路由组
+		UserRoutes:   router.Group("/api/user"),   // 用户相关路由组
 		CommonRoutes: router.Group("/api/common"), //通用功能相关的路由组
+		OrderRoutes:  router.Group("/api/order"),  // 订单相关路由组
 	}
 }
 
-// RegisterUserRoutes 注册登录相关的路由处理函数
+// RegisterUserRoutes 用户相关的路由组
 func (rm *RouteManager) RegisterUserRoutes(handler PathHandler) {
 	handler(rm.UserRoutes)
 }
@@ -35,6 +38,11 @@ func (rm *RouteManager) RegisterUserRoutes(handler PathHandler) {
 // RegisterCommonRoutes通用功能相关的路由组
 func (rm *RouteManager) RegisterCommonRoutes(handler PathHandler) {
 	handler(rm.CommonRoutes)
+}
+
+// RegisterOrderRoutes 订单功能相关的路由组
+func (rm *RouteManager) RegisterOrderRoutes(handler PathHandler) {
+	handler(rm.OrderRoutes)
 }
 
 // RegisterMiddleware 根据组名为对应的路由组注册中间件
@@ -45,6 +53,8 @@ func (rm *RouteManager) RegisterMiddleware(group string, middleware Middleware) 
 		rm.UserRoutes.Use(middleware())
 	case "common":
 		rm.CommonRoutes.Use(middleware())
+	case "order":
+		rm.OrderRoutes.Use(middleware())
 	}
 }
 

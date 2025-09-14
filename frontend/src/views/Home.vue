@@ -43,7 +43,7 @@
 
         <div class="features-grid">
           <template v-if="userStore.user_role === 2">
-            <div class="feature-card">
+            <div class="feature-card" @click="goToOrderPage">
               <div class="feature-icon-wrapper" style="background-color: #eef5ff;">
                 <el-icon :size="32" color="#409eff"><Setting /></el-icon>
               </div>
@@ -117,7 +117,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" name="Home">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from "vue-router";
 import { ElMessage } from 'element-plus';
@@ -183,8 +183,8 @@ const handleFileSelected = async (event: Event) => {
     ElMessage.error('请选择图片文件!');
     return;
   }
-  if (file.size / 1024 / 1024 > 2) {
-    ElMessage.error('图片大小不能超过 2MB!');
+  if (file.size / 1024 / 1024 > 10) {
+    ElMessage.error('图片大小不能超过 10MB!');
     return;
   }
 
@@ -211,6 +211,11 @@ const showImagePreview = () => {
   image_preview_visible.value = true;
 };
 
+// ✅ 新增的导航函数
+const goToOrderPage = () => {
+  router.push({ name: 'CreateOrder' });
+};
+
 onMounted(() => {
   updateTime();
   timer = setInterval(updateTime, 1000);
@@ -222,6 +227,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* 样式保持不变 */
 .home-page-container {
   width: 100%;
   min-height: 100vh;

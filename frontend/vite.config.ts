@@ -19,6 +19,11 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
   ],
+  server: {          // ← 移到这里，与 plugins 同级
+    host: '127.0.0.1',
+    port: 80,
+    open: true,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

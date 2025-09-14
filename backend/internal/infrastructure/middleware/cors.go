@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"strings"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func Cors() gin.HandlerFunc {
@@ -18,7 +19,7 @@ func Cors() gin.HandlerFunc {
 			if strings.HasPrefix(origin, "http://127.0.0.1") || strings.HasPrefix(origin, "http://localhost") {
 				return true
 			}
-			return strings.HasPrefix(origin, "http://www.example.com")
+			return strings.HasPrefix(origin, "http://10")
 		},
 		MaxAge: 12 * time.Hour,
 	})

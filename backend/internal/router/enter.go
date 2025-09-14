@@ -58,4 +58,8 @@ func registerRoutes(routeManager *manager.RouteManager) {
 		rg.POST("/resetPassword", middleware.BindJsonMiddleware[types.ResetPasswordReq], userHandler.ResetPassword)
 		rg.POST("/updateAvatar", middleware.Authentication, userHandler.UpdateAvatar)
 	})
+
+	routeManager.RegisterOrderRoutes(func(rg *gin.RouterGroup) {
+
+	})
 }
