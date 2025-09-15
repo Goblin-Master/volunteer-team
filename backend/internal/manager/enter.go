@@ -16,17 +16,19 @@ type Middleware func() gin.HandlerFunc
 
 // RouteManager 管理不同的路由组，按业务功能分组
 type RouteManager struct {
-	UserRoutes   *gin.RouterGroup // 登录相关的路由组
-	CommonRoutes *gin.RouterGroup //通用功能相关的路由组
-	OrderRoutes  *gin.RouterGroup
+	UserRoutes    *gin.RouterGroup // 登录相关的路由组
+	CommonRoutes  *gin.RouterGroup //通用功能相关的路由组
+	OrderRoutes   *gin.RouterGroup // 订单功能相关的路由组
+	SummaryRoutes *gin.RouterGroup // 总结功能相关的路由组
 }
 
 // NewRouteManager 创建一个新的 RouteManager 实例，包含各业务功能的路由组
 func NewRouteManager(router *gin.Engine) *RouteManager {
 	return &RouteManager{
-		UserRoutes:   router.Group("/api/user"),   // 用户相关路由组
-		CommonRoutes: router.Group("/api/common"), //通用功能相关的路由组
-		OrderRoutes:  router.Group("/api/order"),  // 订单相关路由组
+		UserRoutes:    router.Group("/api/user"),    // 用户相关路由组
+		CommonRoutes:  router.Group("/api/common"),  //通用功能相关的路由组
+		OrderRoutes:   router.Group("/api/order"),   // 订单相关路由组
+		SummaryRoutes: router.Group("/api/summary"), //总结功能相关路由组
 	}
 }
 
@@ -45,6 +47,11 @@ func (rm *RouteManager) RegisterOrderRoutes(handler PathHandler) {
 	handler(rm.OrderRoutes)
 }
 
+// RegisterSummaryRoutes 总结功能相关路由组
+func (rm *RouteManager) RegisterSummaryRoutes(handler PathHandler) {
+	handler(rm.SummaryRoutes)
+}
+
 // RegisterMiddleware 根据组名为对应的路由组注册中间件
 // group 参数为 "login"、"profile"、"team"或"Common"，分别对应不同的路由组
 func (rm *RouteManager) RegisterMiddleware(group string, middleware Middleware) {
@@ -55,6 +62,8 @@ func (rm *RouteManager) RegisterMiddleware(group string, middleware Middleware) 
 		rm.CommonRoutes.Use(middleware())
 	case "order":
 		rm.OrderRoutes.Use(middleware())
+	case "summary":
+		rm.SummaryRoutes.Use(middleware())
 	}
 }
 

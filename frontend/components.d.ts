@@ -29,6 +29,7 @@ declare module 'vue' {
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
+    ElTag: typeof import('element-plus/es')['ElTag']
     Login: typeof import('./src/components/Login.vue')['default']
     NoticeCircle: typeof import('./src/components/NoticeCircle.vue')['default']
     Rew: typeof import('./src/components/rew.vue')['default']

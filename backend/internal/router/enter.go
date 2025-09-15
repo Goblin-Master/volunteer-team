@@ -66,4 +66,8 @@ func registerRoutes(routeManager *manager.RouteManager) {
 		rg.GET("/detail", middleware.Authentication, middleware.BindQueryMiddleware[types.OrderDetailReq], orderHandler.OrderDetail)
 		rg.PUT("/finish", middleware.Authentication, middleware.BindQueryMiddleware[types.FinishOrderReq], orderHandler.FinishOrder)
 	})
+
+	routeManager.RegisterSummaryRoutes(func(rg *gin.RouterGroup) {
+		//summaryHandler := handler.NewSummaryHandler()
+	})
 }

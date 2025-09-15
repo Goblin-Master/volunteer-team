@@ -95,7 +95,7 @@ const goOrderDetail = (order_id: number) => {
 }
 
 const goWriteSummary = (order_id: number) => {
-  router.push({ name: 'WriteSummary', params: { order_id } })
+  router.push({ name: 'Summary', query: { order_id } })
 }
 </script>
 

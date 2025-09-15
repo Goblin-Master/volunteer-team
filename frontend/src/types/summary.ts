@@ -1,0 +1,37 @@
+// 提交 payload 类型
+export interface SummaryPayload {
+  order_id: number
+  problem_type: string
+  problem_description: string
+  repair_summary: string
+  receiver_name: string
+}
+
+/* ---------- 校验规则（element-plus 格式） ---------- */
+import type { FormRules } from 'element-plus'
+
+export const summary_rules: FormRules = {
+  problem_type: [
+    { required: true, message: '请选择问题类型', trigger: 'change' }
+  ],
+  problem_desc: [
+    { required: true, message: '请输入问题描述', trigger: 'blur' },
+    { min: 2, message: '至少 2 个字', trigger: 'blur' }
+  ],
+  repair_summary: [
+    { required: true, message: '请填写修机总结', trigger: 'blur' },
+    { min: 2, message: '至少 2 个字', trigger: 'blur' }
+  ],
+  receiver_name: [
+    { required: true, message: '请输入接单人员姓名', trigger: 'blur' },
+    { pattern: /^[\u4e00-\u9fa5a-zA-Z\s]{2,10}$/, message: '2-10 位中文/字母', trigger: 'blur' }
+  ]
+}
+
+/* ---------- 本地模拟提交 ---------- */
+export async function submitSummaryMock(payload: SummaryPayload): Promise<void> {
+  // 随机 0.5-1s 延迟，模拟网络
+  await new Promise(r => setTimeout(r, 500 + Math.random() * 500))
+  if (Math.random() > 0.9) throw new Error('模拟服务器异常')
+  console.log('【模拟提交成功】', payload)
+}

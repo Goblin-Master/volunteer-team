@@ -6,6 +6,7 @@ import Home from "@/views/Home.vue";
 import CreateOrder from "@/views/CreateOrder.vue";
 import OrderList from "@/views/OrderList.vue";
 import OrderDetail from "@/views/OrderDetail.vue";
+import Summary from "@/views/Summary.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +48,12 @@ const router = createRouter({
       path:"/orderDetail",
       name:"OrderDetail",
       component: OrderDetail,
+      meta: { requiresAuth: true },
+    },
+    {
+      path:"/summary",
+      name:"Summary",
+      component: Summary,
       meta: { requiresAuth: true },
     },
     {

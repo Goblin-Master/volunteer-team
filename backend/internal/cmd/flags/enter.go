@@ -31,6 +31,7 @@ func migrateTables() {
 	err := global.DB.AutoMigrate(
 		&model.User{},
 		&model.Order{},
+		&model.Summary{},
 	)
 	if err != nil {
 		global.Log.Error("数据库迁移失败")

@@ -16,7 +16,7 @@ type Order struct {
 	OSVersion          string `gorm:"column:os_version;type:varchar(20);not null;comment:'操作系统版本'"`                                                           // 系统版本
 	ProblemDescription string `gorm:"column:problem_description;type:text;not null;comment:'问题描述'"`                                                           // 问题描述
 	Notes              string `gorm:"column:notes;type:text;comment:'备注'"`
-	State              int    `gorm:"column:state;type:tinyint;default:1;comment:'订单处理状态';index:idx_state_time,priority:1"` // 备注
+	State              int8   `gorm:"column:state;type:tinyint;default:1;comment:'订单处理状态';index:idx_state_time,priority:1"` // 备注
 }
 
 // TableName 设置表名
