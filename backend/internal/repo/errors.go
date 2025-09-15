@@ -11,3 +11,6 @@ var (
 	ACCOUNT_IS_USED = errors.New("账号已经被使用")
 	USER_NOT_EXIST  = errors.New("用户不存在")
 )
+var (
+	ORDER_NOT_EXIST = errors.New("订单不存在")
+)

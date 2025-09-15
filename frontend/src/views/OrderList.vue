@@ -1,6 +1,6 @@
 <template>
   <div class="order-list-page-container">
-    <div class="header-title">我的报修订单</div>
+    <div class="header-title">报修订单</div>
 
     <main class="main-content">
       <el-card class="order-card" shadow="never">

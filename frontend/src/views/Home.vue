@@ -67,12 +67,12 @@
           </template>
 
           <template v-else-if="userStore.user_role === 1">
-            <div class="feature-card">
+            <div class="feature-card" @click="goToOrderListPage">   <!-- ← 新增点击 -->
               <div class="feature-icon-wrapper" style="background-color: #fef0f0;">
                 <el-icon :size="32" color="#f56c6c"><List /></el-icon>
               </div>
               <h3 class="feature-title">未处理订单</h3>
-              <p class="feature-description">查看并处理待维修订单</p>
+              <p class="feature-description">查看并处理维修订单</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon-wrapper" style="background-color: #fdf6ec;">

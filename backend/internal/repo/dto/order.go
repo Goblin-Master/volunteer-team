@@ -34,7 +34,7 @@ func (od *OrderDto) GetOrderListByCommon(userID int64) ([]model.Order, error) {
 
 func (od *OrderDto) GetOrderListByInternal() ([]model.Order, error) {
 	var list []model.Order
-	err := global.DB.Where("status = ?", enum.UNTACKLE).
+	err := global.DB.Where("state = ?", enum.UNTACKLE).
 		Order("ctime ASC"). // 先报先处理
 		Find(&list).Error
 	if err != nil {
@@ -54,4 +54,20 @@ func (od *OrderDto) GetOrderByID(id int) (model.Order, error) {
 		return order, DEFAULT_ERROR
 	}
 	return order, nil
+}
+
+func (od *OrderDto) UpdateOrderStateByID(id int) error {
+	// 直接 WHERE + Update，只改 password 字段
+	result := global.DB.Model(&model.Order{}).
+		Where("id = ?", id).
+		Update("state", enum.TACKLE)
+
+	if result.Error != nil {
+		global.Log.Error(result.Error)
+		return DEFAULT_ERROR
+	}
+	if result.RowsAffected == 0 {
+		return ORDER_NOT_EXIST // 没有匹配行
+	}
+	return nil
 }

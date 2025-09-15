@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"errors"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/model"
 	"volunteer-team/backend/internal/infrastructure/pkg/jwtx"
@@ -12,6 +13,7 @@ type IOrderLogic interface {
 	CreateOrder(int64, types.CreateOrderReq) (string, error)
 	GetOrderList(int64, jwtx.Role) (types.OrderListResp, error)
 	OrderDetail(int64, jwtx.Role, int) (types.OrderDetailResp, error)
+	FinishOrder(jwtx.Role, int) (string, error)
 }
 type OrderLogic struct {
 	orderRepo *repo.OrderRepo
@@ -95,4 +97,19 @@ func (ol *OrderLogic) OrderDetail(userID int64, role jwtx.Role, id int) (types.O
 	resp.CampusLocation = data.CampusLocation
 	resp.Address = data.Address
 	return resp, nil
+}
+
+func (ol *OrderLogic) FinishOrder(role jwtx.Role, id int) (string, error) {
+	if role != jwtx.INTERNAL_USER {
+		return "", ORDER_IS_FORBIDDEN
+	}
+	err := ol.orderRepo.UpdateOrderState(id)
+	if err != nil {
+		if errors.Is(err, repo.ORDER_NOT_EXIST) {
+			return "", ORDER_NOT_EXIST
+		}
+		global.Log.Error(err)
+		return "", DEFAULT_ERROR
+	}
+	return "订单已完成", nil
 }

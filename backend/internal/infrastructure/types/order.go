@@ -40,3 +40,7 @@ type OrderDetailResp struct {
 	Notes              string `json:"notes"`               //备注
 	Ctime              int64  `json:"ctime"`               //创建时间
 }
+
+type FinishOrderReq struct {
+	ID int `form:"id"`
+}
