@@ -9,3 +9,7 @@ var (
 var (
 	USER_NOT_EXIST = errors.New("用户不存在")
 )
+
+var (
+	ORDER_NOT_EXIST = errors.New("订单不存在")
+)

@@ -11,6 +11,7 @@ import (
 type IOrderLogic interface {
 	CreateOrder(int64, types.CreateOrderReq) (string, error)
 	GetOrderList(int64, jwtx.Role) (types.OrderListResp, error)
+	OrderDetail(int) (types.OrderDetailResp, error)
 }
 type OrderLogic struct {
 	orderRepo *repo.OrderRepo
@@ -66,5 +67,28 @@ func (ol *OrderLogic) GetOrderList(userID int64, role jwtx.Role) (types.OrderLis
 		orders = append(orders, order)
 	}
 	resp.Orders = orders
+	return resp, nil
+}
+
+func (ol *OrderLogic) OrderDetail(id int) (types.OrderDetailResp, error) {
+	var resp types.OrderDetailResp
+	data, err := ol.orderRepo.OrderDetail(id)
+	if err != nil {
+		global.Log.Error(err)
+		return resp, DEFAULT_ERROR
+	}
+	//组装数据
+	resp.Notes = data.Notes
+	resp.OSVersion = data.OSVersion
+	resp.Ctime = data.Ctime
+	resp.ProblemDescription = data.ProblemDescription
+	resp.WachatID = data.WechatID
+	resp.DeviceModel = data.DeviceModel
+	resp.PhoneNumber = data.PhoneNumber
+	resp.Username = data.Username
+	resp.Department = data.Department
+	resp.StudentID = data.StudentID
+	resp.CampusLocation = data.CampusLocation
+	resp.Address = data.Address
 	return resp, nil
 }

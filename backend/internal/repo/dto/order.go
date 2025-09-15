@@ -1,10 +1,13 @@
 package dto
 
 import (
+	"errors"
 	"time"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/model"
 	"volunteer-team/backend/internal/infrastructure/model/enum"
+
+	"gorm.io/gorm"
 )
 
 type OrderDto struct{}
@@ -38,4 +41,17 @@ func (od *OrderDto) GetOrderListByInternal() ([]model.Order, error) {
 		return nil, DEFAULT_ERROR
 	}
 	return list, nil
+}
+
+func (od *OrderDto) GetOrderByID(id int) (model.Order, error) {
+	var order model.Order
+	err := global.DB.Where("id = ?", id).Take(&order).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return order, ORDER_NOT_EXIST
+		}
+		global.Log.Error(err)
+		return order, DEFAULT_ERROR
+	}
+	return order, nil
 }

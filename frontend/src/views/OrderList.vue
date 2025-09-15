@@ -12,7 +12,7 @@
             class="order-item"
           >
             <div class="order-left">
-              <div class="order-time">{{ format_time(item.ctime) }}</div>
+              <div class="order-time">{{ formatTime(item.ctime) }}</div>
               <div class="order-problem">{{ item.problem_description }}</div>
             </div>
 
@@ -21,7 +21,7 @@
                 type="primary"
                 size="small"
                 plain
-                @click="go_order_detail(item.id)"
+                @click="goOrderDetail(item.id)"
               >
                 查看详情
               </el-button>
@@ -31,7 +31,7 @@
                 type="warning"
                 size="small"
                 plain
-                @click="go_write_summary(item.id)"
+                @click="goWriteSummary(item.id)"
               >
                 写修机总结
               </el-button>
@@ -63,11 +63,11 @@ const user_role = user_store.user_role
 
 /* ---------- 生命周期 ---------- */
 onMounted(() => {
-  fetch_order_list()
+  fetchOrderList()
 })
 
 /* ---------- 方法 ---------- */
-const fetch_order_list = async () => {
+const fetchOrderList = async () => {
   try {
     const res = await GetOrderList()
     if (res.code === 0) {
@@ -80,21 +80,21 @@ const fetch_order_list = async () => {
   }
 }
 
-const format_time = (unixMs: number) => {
-  const date = new Date(unixMs)
-  const Y = date.getFullYear()
-  const M = String(date.getMonth() + 1).padStart(2, '0')
-  const D = String(date.getDate()).padStart(2, '0')
+const formatTime = (unix_ms: number) => {
+  const date = new Date(unix_ms)
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
   const h = String(date.getHours()).padStart(2, '0')
-  const m = String(date.getMinutes()).padStart(2, '0')
-  return `${Y}-${M}-${D} ${h}:${m}`
+  const min = String(date.getMinutes()).padStart(2, '0')
+  return `${y}-${m}-${d} ${h}:${min}`
 }
 
-const go_order_detail = (order_id: number) => {
-  router.push({ name: 'OrderDetail', params: { order_id } })
+const goOrderDetail = (order_id: number) => {
+  router.push({ name: 'OrderDetail', query: { order_id } })
 }
 
-const go_write_summary = (order_id: number) => {
+const goWriteSummary = (order_id: number) => {
   router.push({ name: 'WriteSummary', params: { order_id } })
 }
 </script>

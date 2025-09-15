@@ -10,6 +10,7 @@ type IOrderRepo interface {
 	CreateOrder(int64, types.CreateOrderReq) error
 	GetOrderListByCommon(int64) ([]model.Order, error)
 	GetOrderListByInternal() ([]model.Order, error)
+	OrderDetail(int) (model.Order, error)
 }
 type OrderRepo struct {
 	orderDto *dto.OrderDto
@@ -31,7 +32,7 @@ func (or *OrderRepo) CreateOrder(userID int64, req types.CreateOrderReq) error {
 		CampusLocation:     req.CampusLocation,
 		Department:         req.Department,
 		PhoneNumber:        req.PhoneNumber,
-		WechatID:           req.WachatID,
+		WechatID:           req.WechatID,
 		Address:            req.Address,
 		DeviceModel:        req.DeviceModel,
 		OSVersion:          req.OSVersion,
@@ -47,4 +48,8 @@ func (or *OrderRepo) GetOrderListByCommon(userID int64) ([]model.Order, error) {
 
 func (or *OrderRepo) GetOrderListByInternal() ([]model.Order, error) {
 	return or.orderDto.GetOrderListByInternal()
+}
+
+func (or *OrderRepo) OrderDetail(id int) (model.Order, error) {
+	return or.orderDto.GetOrderByID(id)
 }

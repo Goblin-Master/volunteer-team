@@ -145,6 +145,7 @@ const submitForm = async () => {
     // 1. 校验
     await order_form_ref.value.validate();
 
+    console.log(order_form)
     // 2. 请求
     const res = await CreateOrder(order_form);
 

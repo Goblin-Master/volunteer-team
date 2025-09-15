@@ -34,3 +34,10 @@ func (oh *OrderHandler) GetOrderList(c *gin.Context) {
 	resp, err := oh.orderLogic.GetOrderList(userID, role)
 	response.Response(c, resp, err)
 }
+
+func (oh *OrderHandler) OrderDetail(c *gin.Context) {
+	cr := middleware.GetBind[types.OrderDetailReq](c)
+	global.Log.Info(cr)
+	resp, err := oh.orderLogic.OrderDetail(cr.ID)
+	response.Response(c, resp, err)
+}
