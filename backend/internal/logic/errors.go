@@ -21,3 +21,7 @@ var (
 	FILE_OVER_SIZE            = errors.New(fmt.Sprintf("文件大小不能超过%dMB", global.FILE_MAX_SIZE/1024/1024))
 	FILE_READ_ERROR           = errors.New("文件读取失败")
 )
+
+var (
+	ORDER_IS_FORBIDDEN = errors.New("禁止查看别人的订单")
+)

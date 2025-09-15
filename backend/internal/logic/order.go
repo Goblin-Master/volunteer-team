@@ -11,7 +11,7 @@ import (
 type IOrderLogic interface {
 	CreateOrder(int64, types.CreateOrderReq) (string, error)
 	GetOrderList(int64, jwtx.Role) (types.OrderListResp, error)
-	OrderDetail(int) (types.OrderDetailResp, error)
+	OrderDetail(int64, jwtx.Role, int) (types.OrderDetailResp, error)
 }
 type OrderLogic struct {
 	orderRepo *repo.OrderRepo
@@ -70,12 +70,16 @@ func (ol *OrderLogic) GetOrderList(userID int64, role jwtx.Role) (types.OrderLis
 	return resp, nil
 }
 
-func (ol *OrderLogic) OrderDetail(id int) (types.OrderDetailResp, error) {
+func (ol *OrderLogic) OrderDetail(userID int64, role jwtx.Role, id int) (types.OrderDetailResp, error) {
 	var resp types.OrderDetailResp
 	data, err := ol.orderRepo.OrderDetail(id)
 	if err != nil {
 		global.Log.Error(err)
 		return resp, DEFAULT_ERROR
+	}
+	//防止非内部人员查看到别人的订单
+	if role != jwtx.INTERNAL_USER && data.UserID != userID {
+		return resp, ORDER_IS_FORBIDDEN
 	}
 	//组装数据
 	resp.Notes = data.Notes

@@ -38,6 +38,7 @@ func (oh *OrderHandler) GetOrderList(c *gin.Context) {
 func (oh *OrderHandler) OrderDetail(c *gin.Context) {
 	cr := middleware.GetBind[types.OrderDetailReq](c)
 	global.Log.Info(cr)
-	resp, err := oh.orderLogic.OrderDetail(cr.ID)
+	//传role是为了防止恶意攻击，如直接调用接口会泄密
+	resp, err := oh.orderLogic.OrderDetail(jwtx.GetUserID(c), jwtx.GetRole(c), cr.ID)
 	response.Response(c, resp, err)
 }
