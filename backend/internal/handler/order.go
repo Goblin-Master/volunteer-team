@@ -27,3 +27,10 @@ func (oh *OrderHandler) CreateOrder(c *gin.Context) {
 	resp, err := oh.orderLogic.CreateOrder(jwtx.GetUserID(c), cr)
 	response.Response(c, resp, err)
 }
+
+func (oh *OrderHandler) GetOrderList(c *gin.Context) {
+	userID, role := jwtx.GetUserID(c), jwtx.GetRole(c)
+	global.Log.Info(userID, "  ", role)
+	resp, err := oh.orderLogic.GetOrderList(userID, role)
+	response.Response(c, resp, err)
+}

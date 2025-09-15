@@ -4,6 +4,7 @@ import Register from "@/views/Register.vue";
 import ResetPassword from "@/views/ResetPassword.vue";
 import Home from "@/views/Home.vue";
 import CreateOrder from "@/views/CreateOrder.vue";
+import OrderList from "@/views/OrderList.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +34,12 @@ const router = createRouter({
       path: "/createOrder", // ✅ 新增的订单路由
       name: "CreateOrder",
       component: CreateOrder,
+      meta: { requiresAuth: true },
+    },
+    {
+      path:"/orderList",
+      name:"OrderList",
+      component: OrderList,
       meta: { requiresAuth: true },
     },
     {

@@ -13,3 +13,13 @@ type CreateOrderReq struct {
 	ProblemDescription string `json:"problem_description"` //具体问题描述
 	Notes              string `json:"notes"`               //备注
 }
+
+type OrderItem struct {
+	ID                 int    `json:"id"`
+	Ctime              int64  `json:"ctime"`
+	ProblemDescription string `json:"problem_description"`
+}
+
+type OrderListResp struct {
+	Orders []OrderItem `json:"orders"`
+}

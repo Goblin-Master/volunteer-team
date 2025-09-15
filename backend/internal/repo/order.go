@@ -7,7 +7,9 @@ import (
 )
 
 type IOrderRepo interface {
-	CreateOrder(userID int64, req types.CreateOrderReq) error
+	CreateOrder(int64, types.CreateOrderReq) error
+	GetOrderListByCommon(int64) ([]model.Order, error)
+	GetOrderListByInternal() ([]model.Order, error)
 }
 type OrderRepo struct {
 	orderDto *dto.OrderDto
@@ -37,4 +39,12 @@ func (or *OrderRepo) CreateOrder(userID int64, req types.CreateOrderReq) error {
 		Notes:              req.Notes,
 	}
 	return or.orderDto.AddOrder(order)
+}
+
+func (or *OrderRepo) GetOrderListByCommon(userID int64) ([]model.Order, error) {
+	return or.orderDto.GetOrderListByCommon(userID)
+}
+
+func (or *OrderRepo) GetOrderListByInternal() ([]model.Order, error) {
+	return or.orderDto.GetOrderListByInternal()
 }

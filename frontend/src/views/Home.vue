@@ -43,14 +43,14 @@
 
         <div class="features-grid">
           <template v-if="userStore.user_role === 2">
-            <div class="feature-card" @click="goToOrderPage">
+            <div class="feature-card" @click="goToCreateOrderPage">
               <div class="feature-icon-wrapper" style="background-color: #eef5ff;">
                 <el-icon :size="32" color="#409eff"><Setting /></el-icon>
               </div>
               <h3 class="feature-title">我要报修</h3>
               <p class="feature-description">快速提交设备维修申请</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card" @click="goToOrderListPage">   <!-- ← 新增点击 -->
               <div class="feature-icon-wrapper" style="background-color: #fef0f0;">
                 <el-icon :size="32" color="#f56c6c"><List /></el-icon>
               </div>
@@ -212,8 +212,12 @@ const showImagePreview = () => {
 };
 
 // ✅ 新增的导航函数
-const goToOrderPage = () => {
+const goToCreateOrderPage = () => {
   router.push({ name: 'CreateOrder' });
+};
+
+const goToOrderListPage = () => {
+  router.push({ name: 'OrderList' });
 };
 
 onMounted(() => {

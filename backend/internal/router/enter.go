@@ -62,5 +62,6 @@ func registerRoutes(routeManager *manager.RouteManager) {
 	routeManager.RegisterOrderRoutes(func(rg *gin.RouterGroup) {
 		orderHandler := handler.NewOrderHandler()
 		rg.POST("/create", middleware.Authentication, middleware.BindJsonMiddleware[types.CreateOrderReq], orderHandler.CreateOrder)
+		rg.GET("/list", middleware.Authentication, orderHandler.GetOrderList)
 	})
 }
