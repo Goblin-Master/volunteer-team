@@ -25,42 +25,42 @@ func NewUserHandler() *UserHandler {
 func (uh *UserHandler) Login(c *gin.Context) {
 	cr := middleware.GetBind[types.LoginReq](c)
 	global.Log.Info(cr)
-	resp, err := uh.userLogic.Login(cr)
+	resp, err := uh.userLogic.Login(c.Request.Context(), cr)
 	response.Response(c, resp, err)
 }
 
 func (uh *UserHandler) Register(c *gin.Context) {
 	cr := middleware.GetBind[types.RegisterReq](c)
 	global.Log.Info(cr)
-	resp, err := uh.userLogic.Register(cr)
+	resp, err := uh.userLogic.Register(c.Request.Context(), cr)
 	response.Response(c, resp, err)
 }
 
 func (uh *UserHandler) ResetPassword(c *gin.Context) {
 	cr := middleware.GetBind[types.ResetPasswordReq](c)
 	global.Log.Info(cr)
-	resp, err := uh.userLogic.ResetPassword(cr)
+	resp, err := uh.userLogic.ResetPassword(c.Request.Context(), cr)
 	response.Response(c, resp, err)
 }
 
 func (uh *UserHandler) GetLoginCode(c *gin.Context) {
 	cr := middleware.GetBind[types.GetCodeReq](c)
 	global.Log.Info(cr)
-	resp, err := uh.userLogic.GetLoginCode(cr)
+	resp, err := uh.userLogic.GetLoginCode(c.Request.Context(), cr)
 	response.Response(c, resp, err)
 }
 
 func (uh *UserHandler) GetRegisterCode(c *gin.Context) {
 	cr := middleware.GetBind[types.GetCodeReq](c)
 	global.Log.Info(cr)
-	resp, err := uh.userLogic.GetRegisterCode(cr)
+	resp, err := uh.userLogic.GetRegisterCode(c.Request.Context(), cr)
 	response.Response(c, resp, err)
 }
 
 func (uh *UserHandler) GetResetCode(c *gin.Context) {
 	cr := middleware.GetBind[types.GetCodeReq](c)
 	global.Log.Info(cr)
-	resp, err := uh.userLogic.GetResetCode(cr)
+	resp, err := uh.userLogic.GetResetCode(c.Request.Context(), cr)
 	response.Response(c, resp, err)
 }
 
@@ -70,7 +70,7 @@ func (uh *UserHandler) UpdateAvatar(c *gin.Context) {
 		response.Response(c, nil, err)
 		return
 	}
-	resp, err := uh.userLogic.UpdateAvatar(jwtx.GetUserID(c), file)
+	resp, err := uh.userLogic.UpdateAvatar(c.Request.Context(), jwtx.GetUserID(c), file)
 	if err != nil {
 		response.Response(c, nil, err)
 	}

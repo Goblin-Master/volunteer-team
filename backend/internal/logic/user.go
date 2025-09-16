@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -16,13 +17,13 @@ import (
 )
 
 type IUserLogic interface {
-	Login(req types.LoginReq) (types.LoginResp, error)
-	Register(req types.RegisterReq) (types.RegisterResp, error)
-	GetLoginCode(req types.GetCodeReq) (types.GetCodeResp, error)
-	GetRegisterCode(req types.GetCodeReq) (types.GetCodeResp, error)
-	GetResetCode(req types.GetCodeReq) (types.GetCodeResp, error)
-	ResetPassword(req types.ResetPasswordReq) (types.ResetPasswordResp, error)
-	UpdateAvatar(userID int64, file *multipart.FileHeader) (string, error)
+	Login(ctx context.Context, req types.LoginReq) (types.LoginResp, error)
+	Register(ctx context.Context, req types.RegisterReq) (types.RegisterResp, error)
+	GetLoginCode(ctx context.Context, req types.GetCodeReq) (types.GetCodeResp, error)
+	GetRegisterCode(ctx context.Context, req types.GetCodeReq) (types.GetCodeResp, error)
+	GetResetCode(ctx context.Context, req types.GetCodeReq) (types.GetCodeResp, error)
+	ResetPassword(ctx context.Context, req types.ResetPasswordReq) (types.ResetPasswordResp, error)
+	UpdateAvatar(ctx context.Context, userID int64, file *multipart.FileHeader) (string, error)
 }
 type UserLogic struct {
 	userRepo *repo.UserRepo
@@ -38,11 +39,11 @@ func NewUserLogic() *UserLogic {
 
 var _ IUserLogic = (*UserLogic)(nil)
 
-func (ul *UserLogic) Login(req types.LoginReq) (types.LoginResp, error) {
+func (ul *UserLogic) Login(ctx context.Context, req types.LoginReq) (types.LoginResp, error) {
 	var resp types.LoginResp
 	switch req.LoginType {
 	case global.LOGIN_WITH_ACCOUNT:
-		data, err := ul.userRepo.LoginWithAccount(req.Account, req.Password)
+		data, err := ul.userRepo.LoginWithAccount(ctx, req.Account, req.Password)
 		if err != nil {
 			return resp, ACCOUNT_OR_PASSWORD_ERROR
 		}
@@ -62,7 +63,7 @@ func (ul *UserLogic) Login(req types.LoginReq) (types.LoginResp, error) {
 		if ok := ul.email.VerifyCode(req.Email, req.Code); !ok {
 			return resp, CODE_VERIFY_ERROR
 		}
-		data, err := ul.userRepo.LoginWithEmail(req.Email)
+		data, err := ul.userRepo.LoginWithEmail(ctx, req.Email)
 		if err != nil {
 			return resp, EMAIL_ERROR
 		}
@@ -84,12 +85,12 @@ func (ul *UserLogic) Login(req types.LoginReq) (types.LoginResp, error) {
 	}
 }
 
-func (ul *UserLogic) Register(req types.RegisterReq) (types.RegisterResp, error) {
+func (ul *UserLogic) Register(ctx context.Context, req types.RegisterReq) (types.RegisterResp, error) {
 	var resp types.RegisterResp
 	if ok := ul.email.VerifyCode(req.Email, req.Code); !ok {
 		return resp, CODE_VERIFY_ERROR
 	}
-	err := ul.userRepo.Register(snowflake.GetIntID(global.Node), req.Username, req.Email, req.Account, req.Password)
+	err := ul.userRepo.Register(ctx, snowflake.GetIntID(global.Node), req.Username, req.Email, req.Account, req.Password)
 	if err != nil {
 		if errors.Is(err, repo.EMAIL_IS_USED) {
 			return resp, EMAIL_IS_USED
@@ -104,12 +105,12 @@ func (ul *UserLogic) Register(req types.RegisterReq) (types.RegisterResp, error)
 	return resp, nil
 }
 
-func (ul *UserLogic) ResetPassword(req types.ResetPasswordReq) (types.ResetPasswordResp, error) {
+func (ul *UserLogic) ResetPassword(ctx context.Context, req types.ResetPasswordReq) (types.ResetPasswordResp, error) {
 	var resp types.ResetPasswordResp
 	if ok := ul.email.VerifyCode(req.Email, req.Code); !ok {
 		return resp, CODE_VERIFY_ERROR
 	}
-	err := ul.userRepo.ResetPassword(req.Email, req.NewPassword)
+	err := ul.userRepo.ResetPassword(ctx, req.Email, req.NewPassword)
 	if err != nil {
 		if errors.Is(err, repo.USER_NOT_EXIST) {
 			return resp, USER_NOT_EXIST
@@ -121,10 +122,10 @@ func (ul *UserLogic) ResetPassword(req types.ResetPasswordReq) (types.ResetPassw
 	return resp, nil
 }
 
-func (ul *UserLogic) GetLoginCode(req types.GetCodeReq) (types.GetCodeResp, error) {
+func (ul *UserLogic) GetLoginCode(ctx context.Context, req types.GetCodeReq) (types.GetCodeResp, error) {
 	var resp types.GetCodeResp
 	c := code.GenCode()
-	err := ul.email.SendLoginCode(req.Email, c)
+	err := ul.email.SendLoginCode(ctx, req.Email, c)
 	if err != nil {
 		global.Log.Error(err)
 		return resp, CODE_GET_ERROR
@@ -133,10 +134,10 @@ func (ul *UserLogic) GetLoginCode(req types.GetCodeReq) (types.GetCodeResp, erro
 	return resp, nil
 }
 
-func (ul *UserLogic) GetRegisterCode(req types.GetCodeReq) (types.GetCodeResp, error) {
+func (ul *UserLogic) GetRegisterCode(ctx context.Context, req types.GetCodeReq) (types.GetCodeResp, error) {
 	var resp types.GetCodeResp
 	c := code.GenCode()
-	err := ul.email.SendBindEmail(req.Email, c)
+	err := ul.email.SendBindEmail(ctx, req.Email, c)
 	if err != nil {
 		global.Log.Error(err)
 		return resp, CODE_GET_ERROR
@@ -145,10 +146,10 @@ func (ul *UserLogic) GetRegisterCode(req types.GetCodeReq) (types.GetCodeResp, e
 	return resp, nil
 }
 
-func (ul *UserLogic) GetResetCode(req types.GetCodeReq) (types.GetCodeResp, error) {
+func (ul *UserLogic) GetResetCode(ctx context.Context, req types.GetCodeReq) (types.GetCodeResp, error) {
 	var resp types.GetCodeResp
 	c := code.GenCode()
-	err := ul.email.SendResetPwdCode(req.Email, c)
+	err := ul.email.SendResetPwdCode(ctx, req.Email, c)
 	if err != nil {
 		global.Log.Error(err)
 		return resp, CODE_GET_ERROR
@@ -157,7 +158,7 @@ func (ul *UserLogic) GetResetCode(req types.GetCodeReq) (types.GetCodeResp, erro
 	return resp, nil
 }
 
-func (ul *UserLogic) UpdateAvatar(userID int64, file *multipart.FileHeader) (string, error) {
+func (ul *UserLogic) UpdateAvatar(ctx context.Context, userID int64, file *multipart.FileHeader) (string, error) {
 	//图片大小限制
 	if file.Size > global.FILE_MAX_SIZE {
 		return "", FILE_OVER_SIZE
@@ -185,7 +186,7 @@ func (ul *UserLogic) UpdateAvatar(userID int64, file *multipart.FileHeader) (str
 	hash := fileUtils.Md5(byteData)
 	// 更新用户头像
 	filePath := fmt.Sprintf("%s.%s", hash, suffix)
-	err = ul.userRepo.UpdateAvatarByID(userID, filePath)
+	err = ul.userRepo.UpdateAvatarByID(ctx, userID, filePath)
 	if err != nil {
 		if errors.Is(err, repo.USER_NOT_EXIST) {
 			return "", USER_NOT_EXIST

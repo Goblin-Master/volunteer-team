@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"context"
 	"errors"
 	"time"
 	"volunteer-team/backend/internal/infrastructure/global"
@@ -15,9 +16,9 @@ func NewUserDto() *UserDto {
 	return &UserDto{}
 }
 
-func (ud *UserDto) VerifyUserByAccount(account, password string) (model.User, error) {
+func (ud *UserDto) VerifyUserByAccount(ctx context.Context, account, password string) (model.User, error) {
 	var user model.User
-	err := global.DB.Model(&model.User{}).Where("account = ? and password = ?", account, password).Take(&user).Error
+	err := global.DB.WithContext(ctx).Model(&model.User{}).Where("account = ? and password = ?", account, password).Take(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return user, USER_NOT_EXIST
@@ -27,9 +28,9 @@ func (ud *UserDto) VerifyUserByAccount(account, password string) (model.User, er
 	}
 	return user, nil
 }
-func (ud *UserDto) VerifyUserByEmail(email string) (model.User, error) {
+func (ud *UserDto) VerifyUserByEmail(ctx context.Context, email string) (model.User, error) {
 	var user model.User
-	err := global.DB.Model(&model.User{}).Where("email = ?", email).Take(&user).Error
+	err := global.DB.WithContext(ctx).Model(&model.User{}).Where("email = ?", email).Take(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return user, USER_NOT_EXIST
@@ -40,15 +41,15 @@ func (ud *UserDto) VerifyUserByEmail(email string) (model.User, error) {
 	return user, nil
 }
 
-func (ud *UserDto) AddUser(user model.User) error {
+func (ud *UserDto) AddUser(ctx context.Context, user model.User) error {
 	user.Ctime = time.Now().UnixMilli()
 	user.Utime = time.Now().UnixMilli()
-	return global.DB.Create(&user).Error
+	return global.DB.WithContext(ctx).Create(&user).Error
 }
 
-func (ud *UserDto) UpdatePasswordByEmail(email, newPassword string) error {
+func (ud *UserDto) UpdatePasswordByEmail(ctx context.Context, email, newPassword string) error {
 	// 直接 WHERE + Update，只改 password 字段
-	result := global.DB.Model(&model.User{}).
+	result := global.DB.WithContext(ctx).Model(&model.User{}).
 		Where("email = ?", email).
 		Update("password", newPassword)
 
@@ -62,8 +63,8 @@ func (ud *UserDto) UpdatePasswordByEmail(email, newPassword string) error {
 	return nil
 }
 
-func (ud *UserDto) UpdateAvatarByID(userID int64, avatar string) error {
-	result := global.DB.Model(&model.User{}).
+func (ud *UserDto) UpdateAvatarByID(ctx context.Context, userID int64, avatar string) error {
+	result := global.DB.WithContext(ctx).Model(&model.User{}).
 		Where("user_id = ?", userID).
 		Update("avatar", avatar)
 

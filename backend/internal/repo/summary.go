@@ -1,13 +1,14 @@
 package repo
 
 import (
+	"context"
 	"volunteer-team/backend/internal/infrastructure/model"
 	"volunteer-team/backend/internal/infrastructure/types"
 	"volunteer-team/backend/internal/repo/dto"
 )
 
 type ISummaryRepo interface {
-	CreateSummary(userID int64, req types.CreateSummaryReq) error
+	CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) error
 }
 type SummaryRepo struct {
 	summaryDto *dto.SummaryDto
@@ -19,7 +20,7 @@ func NewSummaryRepo() *SummaryRepo {
 	}
 }
 
-func (sr *SummaryRepo) CreateSummary(userID int64, req types.CreateSummaryReq) error {
+func (sr *SummaryRepo) CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) error {
 	summary := model.Summary{
 		UserID:             userID,
 		RepairSummary:      req.RepairSummary,
@@ -28,5 +29,5 @@ func (sr *SummaryRepo) CreateSummary(userID int64, req types.CreateSummaryReq) e
 		ProblemType:        req.ProblemType,
 		OrderID:            req.OrderID,
 	}
-	return sr.summaryDto.AddSummary(summary)
+	return sr.summaryDto.AddSummary(ctx, summary)
 }

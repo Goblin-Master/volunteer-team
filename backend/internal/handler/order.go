@@ -24,14 +24,14 @@ func NewOrderHandler() *OrderHandler {
 func (oh *OrderHandler) CreateOrder(c *gin.Context) {
 	cr := middleware.GetBind[types.CreateOrderReq](c)
 	global.Log.Info(cr)
-	resp, err := oh.orderLogic.CreateOrder(jwtx.GetUserID(c), cr)
+	resp, err := oh.orderLogic.CreateOrder(c.Request.Context(), jwtx.GetUserID(c), cr)
 	response.Response(c, resp, err)
 }
 
 func (oh *OrderHandler) GetOrderList(c *gin.Context) {
 	userID, role := jwtx.GetUserID(c), jwtx.GetRole(c)
 	global.Log.Info(userID, "  ", role)
-	resp, err := oh.orderLogic.GetOrderList(userID, role)
+	resp, err := oh.orderLogic.GetOrderList(c.Request.Context(), userID, role)
 	response.Response(c, resp, err)
 }
 
@@ -39,13 +39,13 @@ func (oh *OrderHandler) OrderDetail(c *gin.Context) {
 	cr := middleware.GetBind[types.OrderDetailReq](c)
 	global.Log.Info(cr)
 	//传role是为了防止恶意攻击，如直接调用接口会泄密
-	resp, err := oh.orderLogic.OrderDetail(jwtx.GetUserID(c), jwtx.GetRole(c), cr.ID)
+	resp, err := oh.orderLogic.OrderDetail(c.Request.Context(), jwtx.GetUserID(c), jwtx.GetRole(c), cr.ID)
 	response.Response(c, resp, err)
 }
 
 func (oh *OrderHandler) FinishOrder(c *gin.Context) {
 	cr := middleware.GetBind[types.FinishOrderReq](c)
 	global.Log.Info(cr)
-	resp, err := oh.orderLogic.FinishOrder(jwtx.GetRole(c), cr.ID)
+	resp, err := oh.orderLogic.FinishOrder(c.Request.Context(), jwtx.GetRole(c), cr.ID)
 	response.Response(c, resp, err)
 }

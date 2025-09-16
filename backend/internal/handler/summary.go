@@ -24,6 +24,6 @@ func NewSummaryHandler() *SummaryHandler {
 func (sh *SummaryHandler) CreateSummary(c *gin.Context) {
 	cr := middleware.GetBind[types.CreateSummaryReq](c)
 	global.Log.Info(cr)
-	resp, err := sh.summaryLogic.CreateSummary(jwtx.GetUserID(c), cr)
+	resp, err := sh.summaryLogic.CreateSummary(c.Request.Context(), jwtx.GetUserID(c), cr)
 	response.Response(c, resp, err)
 }
