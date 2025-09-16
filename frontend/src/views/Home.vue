@@ -74,7 +74,7 @@
               <h3 class="feature-title">未处理订单</h3>
               <p class="feature-description">查看并处理维修订单</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card" @click="goToSummaryListPage">
               <div class="feature-icon-wrapper" style="background-color: #fdf6ec;">
                 <el-icon :size="32" color="#e6a23c"><Document /></el-icon>
               </div>
@@ -218,6 +218,10 @@ const goToCreateOrderPage = () => {
 
 const goToOrderListPage = () => {
   router.push({ name: 'OrderList' });
+};
+
+const goToSummaryListPage = () => {
+  router.push({ name: 'SummaryList' });
 };
 
 onMounted(() => {
