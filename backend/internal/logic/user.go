@@ -16,13 +16,13 @@ import (
 )
 
 type IUserLogic interface {
-	Login(types.LoginReq) (types.LoginResp, error)
-	Register(types.RegisterReq) (types.RegisterResp, error)
-	GetLoginCode(types.GetCodeReq) (types.GetCodeResp, error)
-	GetRegisterCode(types.GetCodeReq) (types.GetCodeResp, error)
-	GetResetCode(types.GetCodeReq) (types.GetCodeResp, error)
-	ResetPassword(types.ResetPasswordReq) (types.ResetPasswordResp, error)
-	UpdateAvatar(int64, *multipart.FileHeader) (string, error)
+	Login(req types.LoginReq) (types.LoginResp, error)
+	Register(req types.RegisterReq) (types.RegisterResp, error)
+	GetLoginCode(req types.GetCodeReq) (types.GetCodeResp, error)
+	GetRegisterCode(req types.GetCodeReq) (types.GetCodeResp, error)
+	GetResetCode(req types.GetCodeReq) (types.GetCodeResp, error)
+	ResetPassword(req types.ResetPasswordReq) (types.ResetPasswordResp, error)
+	UpdateAvatar(userID int64, file *multipart.FileHeader) (string, error)
 }
 type UserLogic struct {
 	userRepo *repo.UserRepo

@@ -14,7 +14,7 @@ export const summary_rules: FormRules = {
   problem_type: [
     { required: true, message: '请选择问题类型', trigger: 'change' }
   ],
-  problem_desc: [
+  problem_description: [
     { required: true, message: '请输入问题描述', trigger: 'blur' },
     { min: 2, message: '至少 2 个字', trigger: 'blur' }
   ],

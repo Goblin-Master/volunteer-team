@@ -9,11 +9,11 @@ import (
 )
 
 type IOrderRepo interface {
-	CreateOrder(int64, types.CreateOrderReq) error
-	GetOrderListByCommon(int64) ([]model.Order, error)
+	CreateOrder(userID int64, req types.CreateOrderReq) error
+	GetOrderListByCommon(userID int64) ([]model.Order, error)
 	GetOrderListByInternal() ([]model.Order, error)
-	OrderDetail(int) (model.Order, error)
-	UpdateOrderState(int) error
+	OrderDetail(id int) (model.Order, error)
+	UpdateOrderState(id int) error
 }
 type OrderRepo struct {
 	orderDto *dto.OrderDto

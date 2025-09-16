@@ -21,7 +21,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="问题描述" prop="problem_desc" required>
+        <el-form-item label="问题描述" prop="problem_description" required>
           <el-input
             v-model="form.problem_description"
             type="textarea"
@@ -48,7 +48,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="onSubmit" :loading="loading">提交</el-button>
+          <el-button type="primary" @click="handleSubmitSummary" :loading="loading">提交</el-button>
           <el-button @click="onBack">返回</el-button>
         </el-form-item>
       </el-form>
@@ -57,17 +57,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import type { FormInstance } from 'element-plus'
-import { summary_rules, submitSummaryMock, type SummaryPayload } from '@/types/summary.ts'
+import { ref, reactive, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import type { FormInstance } from 'element-plus';
+import { summary_rules, type SummaryPayload } from '@/types/summary';
+import { CreateSummary } from '@/api/summary';
 
-const route = useRoute()
-const router = useRouter()
-const order_id = Number(route.query.order_id)
-const formRef = ref<FormInstance>()
-const loading = ref(false)
+const route = useRoute();
+const router = useRouter();
+const order_id = Number(route.query.order_id);
+const formRef = ref<FormInstance>();
+const loading = ref(false);
 
 const form = reactive<SummaryPayload>({
   order_id,
@@ -75,35 +76,45 @@ const form = reactive<SummaryPayload>({
   problem_description: '',
   repair_summary: '',
   receiver_name: ''
-})
+});
 
-const rules = summary_rules
+const rules = summary_rules;
 
 onMounted(() => {
   if (!order_id) {
-    ElMessage.error('缺少订单参数')
-    router.back()
+    ElMessage.error('缺少订单参数');
+    router.back();
   }
-})
+});
 
-async function onSubmit() {
-  await formRef.value?.validate(async (valid) => {
-    if (!valid) return
-    loading.value = true
-    try {
-      await submitSummaryMock(form)
-      ElMessage.success('已记录')
-      router.back()
-    } catch {
-      ElMessage.error('提交失败')
-    } finally {
-      loading.value = false
+const handleSubmitSummary = async () => {
+  if (!formRef.value) return;
+
+  const valid = await formRef.value.validate().catch(() => false);
+  if (!valid) {
+    ElMessage.error('请检查表单输入项！');
+    return;
+  }
+
+  loading.value = true;
+  try {
+    const resp = await CreateSummary(form);
+    if (resp.code === 0) {
+      ElMessage.success('已记录');
+      router.back();
+    } else {
+      ElMessage.error(resp.message || '提交失败');
     }
-  })
-}
+  } catch (err: any) {
+    ElMessage.error(err.message || '网络异常');
+    console.error(err);
+  } finally {
+    loading.value = false;
+  }
+};
 
 function onBack() {
-  router.back()
+  router.back();
 }
 </script>
 
@@ -114,13 +125,11 @@ function onBack() {
   padding: 24px 16px;
   box-sizing: border-box;
 }
-
 .detail-card {
   background: #ffffff;
   border: 1px solid #ebeef5;
   border-radius: 4px;
 }
-
 .card-title {
   padding: 12px 24px;
   font-size: 16px;
@@ -128,7 +137,6 @@ function onBack() {
   color: #303133;
   border-bottom: 1px solid #ebeef5;
 }
-
 .w-full {
   width: 100%;
 }

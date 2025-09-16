@@ -10,10 +10,10 @@ import (
 )
 
 type IOrderLogic interface {
-	CreateOrder(int64, types.CreateOrderReq) (string, error)
-	GetOrderList(int64, jwtx.Role) (types.OrderListResp, error)
-	OrderDetail(int64, jwtx.Role, int) (types.OrderDetailResp, error)
-	FinishOrder(jwtx.Role, int) (string, error)
+	CreateOrder(userID int64, req types.CreateOrderReq) (string, error)
+	GetOrderList(userID int64, role jwtx.Role) (types.OrderListResp, error)
+	OrderDetail(userID int64, role jwtx.Role, id int) (types.OrderDetailResp, error)
+	FinishOrder(role jwtx.Role, id int) (string, error)
 }
 type OrderLogic struct {
 	orderRepo *repo.OrderRepo

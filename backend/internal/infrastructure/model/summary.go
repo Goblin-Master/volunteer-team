@@ -3,7 +3,7 @@ package model
 // Summary 维修小结表
 type Summary struct {
 	ID                 int    `gorm:"primaryKey;column:id;type:bigint;comment:'主键ID'"`                                         // 主键
-	OrderID            int64  `gorm:"column:order_id;type:bigint;not null;uniqueIndex:idx_order_id;comment:'关联订单ID'"`          // 逻辑外键 → order.id
+	OrderID            int    `gorm:"column:order_id;type:bigint;not null;uniqueIndex:idx_order_id;comment:'关联订单ID'"`          // 逻辑外键 → order.id
 	UserID             int64  `gorm:"column:user_id;type:bigint;not null;index:idx_user_ctime,priority:1;comment:'用户ID（冗余）'"`  // 冗余用户 ID，方便查询
 	Ctime              int64  `gorm:"column:ctime;type:bigint;not null;index:idx_user_ctime,priority:2;comment:'创建时间（秒级时间戳）'"` // 创建时间
 	Utime              int64  `gorm:"column:utime;type:bigint;not null;comment:'更新时间（秒级时间戳）'"`                                 // 更新时间
