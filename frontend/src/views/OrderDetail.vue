@@ -35,7 +35,7 @@
         </el-descriptions-item>
 
         <el-descriptions-item label="微信">
-          {{ detail.wachat_id || '-' }}
+          {{ detail.wechat_id || '-' }}
         </el-descriptions-item>
 
         <el-descriptions-item label="地址">
@@ -63,12 +63,12 @@
 </template>
 
 <script setup lang="ts" name="OrderDetail">
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { ArrowLeft } from '@element-plus/icons-vue'
-import { GetOrderDetail } from '@/api/orderDetail'
-import type { OrderDetailResp } from '@/types/order'
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import { ArrowLeft } from '@element-plus/icons-vue';
+import { GetOrderDetail } from '@/api/order.ts';
+import type { OrderDetailResp } from '@/types/order';
 
 /* ---------- 数据 ---------- */
 const route = useRoute()

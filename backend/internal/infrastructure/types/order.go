@@ -32,7 +32,7 @@ type OrderDetailResp struct {
 	CampusLocation     string `json:"campus_location"`
 	Department         string `json:"department"` //学院
 	PhoneNumber        string `json:"phone_number"`
-	WachatID           string `json:"wachat_id"`
+	WechatID           string `json:"wechat_id"`
 	Address            string `json:"address"`             //详细地址
 	DeviceModel        string `json:"device_model"`        //设备型号
 	OSVersion          string `json:"os_version"`          //操作系统类型

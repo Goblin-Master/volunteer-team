@@ -114,9 +114,8 @@
 import { reactive, ref } from 'vue';
 import { ElMessage, ElNotification } from 'element-plus';
 import type { FormInstance } from 'element-plus';
-import { order_rules } from '@/types/createOrder';
-import type { CreateOrderReq } from '@/types/createOrder';
-import { CreateOrder } from '@/api/createOrder';
+import { type CreateOrderReq,order_rules } from '@/types/order.ts';
+import { CreateOrder } from '@/api/order.ts';
 
 /* ---------- 表单实例 & 数据 ---------- */
 const order_form_ref = ref<FormInstance | null>(null);

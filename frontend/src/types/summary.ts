@@ -1,10 +1,10 @@
 // 提交 payload 类型
 export interface SummaryPayload {
-  order_id: number
-  problem_type: string
-  problem_description: string
-  repair_summary: string
-  receiver_name: string
+  order_id: number;
+  problem_type: string;
+  problem_description: string;
+  repair_summary: string;
+  receiver_name: string;
 }
 
 /* ---------- 校验规则（element-plus 格式） ---------- */

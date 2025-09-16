@@ -50,7 +50,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
-import { GetOrderList } from '@/api/orderList'
+import { GetOrderList } from '@/api/order.ts'
 import { useRouter } from 'vue-router'
 import type { OrderItem } from '@/types/order'
 

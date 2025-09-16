@@ -88,7 +88,7 @@ func (ol *OrderLogic) OrderDetail(userID int64, role jwtx.Role, id int) (types.O
 	resp.OSVersion = data.OSVersion
 	resp.Ctime = data.Ctime
 	resp.ProblemDescription = data.ProblemDescription
-	resp.WachatID = data.WechatID
+	resp.WechatID = data.WechatID
 	resp.DeviceModel = data.DeviceModel
 	resp.PhoneNumber = data.PhoneNumber
 	resp.Username = data.Username
