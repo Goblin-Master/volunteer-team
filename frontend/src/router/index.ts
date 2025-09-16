@@ -6,7 +6,8 @@ import Home from "@/views/Home.vue";
 import CreateOrder from "@/views/CreateOrder.vue";
 import OrderList from "@/views/OrderList.vue";
 import OrderDetail from "@/views/OrderDetail.vue";
-import Summary from "@/views/Summary.vue";
+import CreateSummary from "@/views/CreateSummary.vue";
+import SummaryList from "@/views/SummaryList.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,9 +52,15 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path:"/summary",
-      name:"Summary",
-      component: Summary,
+      path:"/createSummary",
+      name:"CreateSummary",
+      component: CreateSummary,
+      meta: { requiresAuth: true },
+    },
+    {
+      path:"/summaryList",
+      name:"SummaryList",
+      component: SummaryList,
       meta: { requiresAuth: true },
     },
     {
@@ -66,6 +73,7 @@ const router = createRouter({
 export default router;
 
 import { useUserStore } from "@/stores/user";
+
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();

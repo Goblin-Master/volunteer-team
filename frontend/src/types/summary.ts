@@ -28,6 +28,20 @@ export const summary_rules: FormRules = {
   ]
 }
 
+// summary.ts
+export interface SummaryItem {
+  id: number
+  order_id: number
+  utime: number
+  problem_type: string
+  problem_description: string
+  repair_summary: string
+  receiver_name: string
+}
+
+export interface SummaryListResp {
+  summaries: SummaryItem[]
+}
 /* ---------- 本地模拟提交 ---------- */
 export async function submitSummaryMock(payload: SummaryPayload): Promise<void> {
   // 随机 0.5-1s 延迟，模拟网络

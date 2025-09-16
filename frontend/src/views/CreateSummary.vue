@@ -56,7 +56,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" name='CreateSummary'>
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';

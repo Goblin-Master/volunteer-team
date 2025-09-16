@@ -47,12 +47,12 @@
 </template>
 
 <script setup lang="ts" name="OrderList">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { useUserStore } from '@/stores/user'
-import { GetOrderList } from '@/api/order.ts'
-import { useRouter } from 'vue-router'
-import type { OrderItem } from '@/types/order'
+import { ref, onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import { useUserStore } from '@/stores/user';
+import { GetOrderList } from '@/api/order.ts';
+import { useRouter } from 'vue-router';
+import type { OrderItem } from '@/types/order';
 
 /* ---------- 数据 ---------- */
 const user_store = useUserStore()
@@ -95,7 +95,7 @@ const goOrderDetail = (order_id: number) => {
 }
 
 const goWriteSummary = (order_id: number) => {
-  router.push({ name: 'Summary', query: { order_id } })
+  router.push({ name: 'CreateSummary', query: { order_id } })
 }
 </script>
 
