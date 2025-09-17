@@ -44,3 +44,17 @@ func (sd *SummaryDto) GetSummaryDetailByID(ctx context.Context, id int) (model.S
 	}
 	return summary, nil
 }
+
+func (sd *SummaryDto) UpdateSummaryByID(ctx context.Context, id int, data model.Summary) error {
+	data.ID = 0                         // 禁止结构体里的 ID 参与任何条件/更新
+	data.Utime = time.Now().UnixMilli() //更新修改时间
+	result := global.DB.WithContext(ctx).Model(&model.Summary{}).Where("id = ?", id).Updates(data)
+	if result.Error != nil {
+		global.Log.Error(result.Error)
+		return DEFAULT_ERROR
+	}
+	if result.RowsAffected == 0 {
+		return SUMMARY_NOT_EXIST // 没有匹配行
+	}
+	return nil
+}

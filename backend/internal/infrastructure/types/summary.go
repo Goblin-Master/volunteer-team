@@ -32,3 +32,11 @@ type SummaryDetailResp struct {
 	ReceiverName       string `json:"receiver_name" `
 	Utime              int64  `json:"utime" `
 }
+
+type UpdateSummaryReq struct {
+	ID                 int    `json:"id"`
+	ProblemType        string `json:"problem_type"`
+	ProblemDescription string `json:"problem_description" `
+	RepairSummary      string `json:"repair_summary" `
+	ReceiverName       string `json:"receiver_name" `
+}

@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"errors"
+	"time"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/model"
 	"volunteer-team/backend/internal/infrastructure/types"
@@ -13,6 +14,7 @@ type ISummaryRepo interface {
 	CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) error
 	GetSummaryList(ctx context.Context) ([]model.Summary, error)
 	GetSummaryDetail(ctx context.Context, id int) (model.Summary, error)
+	UpdateSummary(ctx context.Context, req types.UpdateSummaryReq) error
 }
 type SummaryRepo struct {
 	summaryDto *dto.SummaryDto
@@ -52,4 +54,22 @@ func (sr *SummaryRepo) GetSummaryDetail(ctx context.Context, id int) (model.Summ
 		return summary, DEFAULT_ERROR
 	}
 	return summary, nil
+}
+func (sr *SummaryRepo) UpdateSummary(ctx context.Context, req types.UpdateSummaryReq) error {
+	var summary = model.Summary{
+		Utime:              time.Now().UnixMilli(),
+		ProblemType:        req.ProblemType,
+		ProblemDescription: req.ProblemDescription,
+		RepairSummary:      req.RepairSummary,
+		ReceiverName:       req.ReceiverName,
+	}
+	err := sr.summaryDto.UpdateSummaryByID(ctx, req.ID, summary)
+	if err != nil {
+		if errors.Is(err, dto.SUMMARY_NOT_EXIST) {
+			return SUMMARY_NOT_EXIST
+		}
+		global.Log.Error(err)
+		return DEFAULT_ERROR
+	}
+	return nil
 }

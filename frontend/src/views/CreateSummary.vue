@@ -44,7 +44,7 @@
         </el-form-item>
 
         <el-form-item label="接单人员" prop="receiver_name" required>
-          <el-input v-model="form.receiver_name" placeholder="请输入姓名" />
+          <el-input v-model="form.receiver_name" placeholder="请输入姓名,人名之间用 , 隔开" />
         </el-form-item>
 
         <el-form-item>

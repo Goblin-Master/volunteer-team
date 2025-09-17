@@ -60,7 +60,7 @@
         <el-form-item label="接单人员" prop="receiver_name" required>
           <el-input
             v-model="form.receiver_name"
-            placeholder="请输入姓名"
+            placeholder="请输入姓名,人名之间用 , 隔开"
             :class="{ old: isCache }"
             @input="onceChange"
           />

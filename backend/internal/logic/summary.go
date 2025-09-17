@@ -15,6 +15,7 @@ type ISummaryLogic interface {
 	CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) (string, error)
 	GetSummaryList(ctx context.Context, role jwtx.Role) (types.SummaryListResp, error)
 	GetSummaryDetail(ctx context.Context, role jwtx.Role, id int) (types.SummaryDetailResp, error)
+	UpdateSummary(ctx context.Context, role jwtx.Role, req types.UpdateSummaryReq) (string, error)
 }
 type SummaryLogic struct {
 	summaryRepo *repo.SummaryRepo
@@ -114,4 +115,19 @@ func (sl *SummaryLogic) GetSummaryDetail(ctx context.Context, role jwtx.Role, id
 	resp.OrderID = data.OrderID
 	resp.ID = data.ID
 	return resp, nil
+}
+
+func (sl *SummaryLogic) UpdateSummary(ctx context.Context, role jwtx.Role, req types.UpdateSummaryReq) (string, error) {
+	if role != jwtx.INTERNAL_USER {
+		return "", SUMMARY_IS_FORBIDDEN
+	}
+	err := sl.summaryRepo.UpdateSummary(ctx, req)
+	if err != nil {
+		if errors.Is(err, repo.SUMMARY_NOT_EXIST) {
+			return "", SUMMARY_NOT_EXIST
+		}
+		global.Log.Error(err)
+		return "", DEFAULT_ERROR
+	}
+	return "更新修机总结成功", nil
 }

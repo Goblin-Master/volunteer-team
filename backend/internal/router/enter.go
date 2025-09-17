@@ -72,5 +72,6 @@ func registerRoutes(routeManager *manager.RouteManager) {
 		rg.POST("/create", middleware.Authentication, middleware.BindJsonMiddleware[types.CreateSummaryReq], summaryHandler.CreateSummary)
 		rg.GET("/list", middleware.Authentication, summaryHandler.GetSummaryList)
 		rg.GET("/detail", middleware.Authentication, middleware.BindQueryMiddleware[types.SummaryDetailReq], summaryHandler.GetSummaryDetail)
+		rg.PUT("/update", middleware.Authentication, middleware.BindJsonMiddleware[types.UpdateSummaryReq], summaryHandler.UpdateSummary)
 	})
 }

@@ -41,3 +41,10 @@ func (sh *SummaryHandler) GetSummaryDetail(c *gin.Context) {
 	resp, err := sh.summaryLogic.GetSummaryDetail(c.Request.Context(), jwtx.GetRole(c), cr.ID)
 	response.Response(c, resp, err)
 }
+
+func (sh *SummaryHandler) UpdateSummary(c *gin.Context) {
+	cr := middleware.GetBind[types.UpdateSummaryReq](c)
+	global.Log.Info(cr)
+	resp, err := sh.summaryLogic.UpdateSummary(c.Request.Context(), jwtx.GetRole(c), cr)
+	response.Response(c, resp, err)
+}

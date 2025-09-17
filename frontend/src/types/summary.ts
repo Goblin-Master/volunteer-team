@@ -24,7 +24,9 @@ export const summary_rules: FormRules = {
   ],
   receiver_name: [
     { required: true, message: '请输入接单人员姓名', trigger: 'blur' },
-    { pattern: /^[\u4e00-\u9fa5a-zA-Z\s]{2,10}$/, message: '2-10 位中文/字母', trigger: 'blur' }
+    { pattern: /^.{2,20}$/,
+      message: '长度 2-20 位',
+      trigger: 'blur' }
   ]
 }
 
