@@ -44,9 +44,9 @@ func (od *OrderDto) GetOrderListByInternal(ctx context.Context) ([]model.Order, 
 	return list, nil
 }
 
-func (od *OrderDto) GetOrderByID(ctx context.Context, id int) (model.Order, error) {
+func (od *OrderDto) GetOrderDetailByID(ctx context.Context, id int) (model.Order, error) {
 	var order model.Order
-	err := global.DB.WithContext(ctx).Where("id = ?", id).Take(&order).Error
+	err := global.DB.WithContext(ctx).Model(&model.Order{}).Where("id = ?", id).Take(&order).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return order, ORDER_NOT_EXIST

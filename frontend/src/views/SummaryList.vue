@@ -107,7 +107,13 @@ const goOrderDetail = (order_id: number) => {
 }
 
 const goUpdateSummary = (summary_id: number) => {
-  router.push({ name: 'UpdateSummary', query: { summary_id } })
+   // 整行数据一起带走
+  const target = summaries.value.find(v => v.id === summary_id)
+     router.push({
+        name: 'UpdateSummary',
+        query: { summary_id: String(summary_id) },
+        state: { preload: JSON.stringify(target) }
+   })
 }
 </script>
 

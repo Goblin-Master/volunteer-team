@@ -34,3 +34,10 @@ func (sh *SummaryHandler) GetSummaryList(c *gin.Context) {
 	resp, err := sh.summaryLogic.GetSummaryList(c.Request.Context(), role)
 	response.Response(c, resp, err)
 }
+
+func (sh *SummaryHandler) GetSummaryDetail(c *gin.Context) {
+	cr := middleware.GetBind[types.SummaryDetailReq](c)
+	global.Log.Info(cr)
+	resp, err := sh.summaryLogic.GetSummaryDetail(c.Request.Context(), jwtx.GetRole(c), cr.ID)
+	response.Response(c, resp, err)
+}

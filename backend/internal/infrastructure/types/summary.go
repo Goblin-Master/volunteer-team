@@ -20,3 +20,15 @@ type SummaryItem struct {
 type SummaryListResp struct {
 	Summaries []SummaryItem `json:"summaries"`
 }
+type SummaryDetailReq struct {
+	ID int `form:"id" binding:"required"`
+}
+type SummaryDetailResp struct {
+	ID                 int    `json:"id"`
+	OrderID            int    `json:"order_id" `
+	ProblemType        string `json:"problem_type"`
+	ProblemDescription string `json:"problem_description" `
+	RepairSummary      string `json:"repair_summary" `
+	ReceiverName       string `json:"receiver_name" `
+	Utime              int64  `json:"utime" `
+}

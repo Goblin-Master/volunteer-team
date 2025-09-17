@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"errors"
 	"time"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/model"
@@ -13,6 +14,7 @@ import (
 type ISummaryLogic interface {
 	CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) (string, error)
 	GetSummaryList(ctx context.Context, role jwtx.Role) (types.SummaryListResp, error)
+	GetSummaryDetail(ctx context.Context, role jwtx.Role, id int) (types.SummaryDetailResp, error)
 }
 type SummaryLogic struct {
 	summaryRepo *repo.SummaryRepo
@@ -62,7 +64,7 @@ func (sl *SummaryLogic) GetSummaryList(ctx context.Context, role jwtx.Role) (typ
 	switch role {
 	case jwtx.COMMON_USER: // 2
 		// 普通用户：无权查看总结
-		return resp, SUMAARY_IS_FORBIDDEN
+		return resp, SUMMARY_IS_FORBIDDEN
 	case jwtx.INTERNAL_USER: // 1
 		// 内部人员：查全部修机总结
 		data, err := sl.summaryRepo.GetSummaryList(ctx)
@@ -87,5 +89,29 @@ func (sl *SummaryLogic) GetSummaryList(ctx context.Context, role jwtx.Role) (typ
 		summaries = append(summaries, summary)
 	}
 	resp.Summaries = summaries
+	return resp, nil
+}
+
+func (sl *SummaryLogic) GetSummaryDetail(ctx context.Context, role jwtx.Role, id int) (types.SummaryDetailResp, error) {
+	var resp types.SummaryDetailResp
+	if role != jwtx.INTERNAL_USER {
+		return resp, SUMMARY_IS_FORBIDDEN
+	}
+	data, err := sl.summaryRepo.GetSummaryDetail(ctx, id)
+	if err != nil {
+		if errors.Is(err, repo.SUMMARY_NOT_EXIST) {
+			return resp, SUMMARY_NOT_EXIST
+		}
+		global.Log.Error(err)
+		return resp, DEFAULT_ERROR
+	}
+	//组装数据
+	resp.RepairSummary = data.RepairSummary
+	resp.ReceiverName = data.ReceiverName
+	resp.ProblemDescription = data.ProblemDescription
+	resp.ProblemType = data.ProblemType
+	resp.Utime = data.Utime
+	resp.OrderID = data.OrderID
+	resp.ID = data.ID
 	return resp, nil
 }

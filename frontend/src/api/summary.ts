@@ -1,6 +1,6 @@
 import req from './axios';
 import type BaseResp from '@/types/base';
-import type { SummaryListResp, SummaryPayload } from "@/types/summary.ts";
+import type { SummaryListResp, SummaryPayload,SummaryDetailResp,UpdateSummaryReq } from "@/types/summary.ts";
 
 export const CreateSummary = (data:SummaryPayload): Promise<BaseResp<string>> =>
   req({
@@ -11,3 +11,19 @@ export const CreateSummary = (data:SummaryPayload): Promise<BaseResp<string>> =>
 
 export const GetSummaryList = (): Promise<BaseResp<SummaryListResp>> =>
   req({ url: '/api/summary/list', method: 'get' })
+
+export const GetSummaryDetail = (id: number): Promise<BaseResp<SummaryDetailResp>> =>
+  req({
+    url: '/api/summary/detail',
+    method: 'get',
+    params: { id }
+  })
+
+export const UpdateSummary = (data: UpdateSummaryReq): Promise<BaseResp<SummaryDetailResp>> =>
+  req(
+    {
+      url: '/api/summary/update',
+      method: 'put',
+      data: data
+    }
+  )

@@ -63,7 +63,7 @@ func registerRoutes(routeManager *manager.RouteManager) {
 		orderHandler := handler.NewOrderHandler()
 		rg.POST("/create", middleware.Authentication, middleware.BindJsonMiddleware[types.CreateOrderReq], orderHandler.CreateOrder)
 		rg.GET("/list", middleware.Authentication, orderHandler.GetOrderList)
-		rg.GET("/detail", middleware.Authentication, middleware.BindQueryMiddleware[types.OrderDetailReq], orderHandler.OrderDetail)
+		rg.GET("/detail", middleware.Authentication, middleware.BindQueryMiddleware[types.OrderDetailReq], orderHandler.GetOrderDetail)
 		rg.PUT("/finish", middleware.Authentication, middleware.BindQueryMiddleware[types.FinishOrderReq], orderHandler.FinishOrder)
 	})
 
@@ -71,5 +71,6 @@ func registerRoutes(routeManager *manager.RouteManager) {
 		summaryHandler := handler.NewSummaryHandler()
 		rg.POST("/create", middleware.Authentication, middleware.BindJsonMiddleware[types.CreateSummaryReq], summaryHandler.CreateSummary)
 		rg.GET("/list", middleware.Authentication, summaryHandler.GetSummaryList)
+		rg.GET("/detail", middleware.Authentication, middleware.BindQueryMiddleware[types.SummaryDetailReq], summaryHandler.GetSummaryDetail)
 	})
 }

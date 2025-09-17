@@ -28,5 +28,6 @@ var (
 )
 
 var (
-	SUMAARY_IS_FORBIDDEN = errors.New("非内部人员不可查看修机总结")
+	SUMMARY_IS_FORBIDDEN = errors.New("非内部人员不可查看修机总结")
+	SUMMARY_NOT_EXIST    = errors.New("总结不存在")
 )

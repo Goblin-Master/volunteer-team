@@ -13,7 +13,7 @@ type IOrderRepo interface {
 	CreateOrder(ctx context.Context, userID int64, req types.CreateOrderReq) error
 	GetOrderListByCommon(ctx context.Context, userID int64) ([]model.Order, error)
 	GetOrderListByInternal(ctx context.Context) ([]model.Order, error)
-	OrderDetail(ctx context.Context, id int) (model.Order, error)
+	GetOrderDetail(ctx context.Context, id int) (model.Order, error)
 	UpdateOrderState(ctx context.Context, id int) error
 }
 type OrderRepo struct {
@@ -54,8 +54,16 @@ func (or *OrderRepo) GetOrderListByInternal(ctx context.Context) ([]model.Order,
 	return or.orderDto.GetOrderListByInternal(ctx)
 }
 
-func (or *OrderRepo) OrderDetail(ctx context.Context, id int) (model.Order, error) {
-	return or.orderDto.GetOrderByID(ctx, id)
+func (or *OrderRepo) GetOrderDetail(ctx context.Context, id int) (model.Order, error) {
+	data, err := or.orderDto.GetOrderDetailByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, dto.ORDER_NOT_EXIST) {
+			return data, ORDER_NOT_EXIST
+		}
+		global.Log.Info(err)
+		return data, DEFAULT_ERROR
+	}
+	return data, nil
 }
 
 func (or *OrderRepo) UpdateOrderState(ctx context.Context, id int) error {

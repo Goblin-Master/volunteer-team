@@ -49,3 +49,21 @@ export async function submitSummaryMock(payload: SummaryPayload): Promise<void> 
   if (Math.random() > 0.9) throw new Error('模拟服务器异常')
   console.log('【模拟提交成功】', payload)
 }
+
+export interface SummaryDetailResp {
+  id: number
+  order_id: number
+  utime: number
+  problem_type: string
+  problem_description: string
+  repair_summary: string
+  receiver_name: string
+}
+
+export interface UpdateSummaryReq {
+  id: number // 总结的订单
+  problem_type: string
+  problem_description: string
+  repair_summary: string
+  receiver_name: string
+}

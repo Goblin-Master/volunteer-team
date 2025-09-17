@@ -13,7 +13,7 @@ import (
 type IOrderLogic interface {
 	CreateOrder(ctx context.Context, userID int64, req types.CreateOrderReq) (string, error)
 	GetOrderList(ctx context.Context, userID int64, role jwtx.Role) (types.OrderListResp, error)
-	OrderDetail(ctx context.Context, userID int64, role jwtx.Role, id int) (types.OrderDetailResp, error)
+	GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, id int) (types.OrderDetailResp, error)
 	FinishOrder(ctx context.Context, role jwtx.Role, id int) (string, error)
 }
 type OrderLogic struct {
@@ -73,10 +73,13 @@ func (ol *OrderLogic) GetOrderList(ctx context.Context, userID int64, role jwtx.
 	return resp, nil
 }
 
-func (ol *OrderLogic) OrderDetail(ctx context.Context, userID int64, role jwtx.Role, id int) (types.OrderDetailResp, error) {
+func (ol *OrderLogic) GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, id int) (types.OrderDetailResp, error) {
 	var resp types.OrderDetailResp
-	data, err := ol.orderRepo.OrderDetail(ctx, id)
+	data, err := ol.orderRepo.GetOrderDetail(ctx, id)
 	if err != nil {
+		if errors.Is(err, repo.ORDER_NOT_EXIST) {
+			return resp, ORDER_NOT_EXIST
+		}
 		global.Log.Error(err)
 		return resp, DEFAULT_ERROR
 	}

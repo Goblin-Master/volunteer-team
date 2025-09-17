@@ -8,6 +8,7 @@ import OrderList from "@/views/OrderList.vue";
 import OrderDetail from "@/views/OrderDetail.vue";
 import CreateSummary from "@/views/CreateSummary.vue";
 import SummaryList from "@/views/SummaryList.vue";
+import UpdateSummary from "@/views/UpdateSummary.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,6 +62,12 @@ const router = createRouter({
       path:"/summaryList",
       name:"SummaryList",
       component: SummaryList,
+      meta: { requiresAuth: true },
+    },
+    {
+      path:"/updateSummary",
+      name:"UpdateSummary",
+      component: UpdateSummary,
       meta: { requiresAuth: true },
     },
     {

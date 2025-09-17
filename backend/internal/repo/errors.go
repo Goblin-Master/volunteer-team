@@ -14,3 +14,7 @@ var (
 var (
 	ORDER_NOT_EXIST = errors.New("订单不存在")
 )
+
+var (
+	SUMMARY_NOT_EXIST = errors.New("总结不存在")
+)
