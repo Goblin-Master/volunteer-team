@@ -1,24 +1,39 @@
+<!-- SummaryList.vue -->
 <template>
   <div class="summary-list-page-container">
-    <div class="header-title">修机总结</div>
+    <h1 class="header-title">修机总结</h1>
 
     <main class="main-content">
       <el-card class="summary-card" shadow="never">
-        <!-- 总结列表 -->
+        <!-- 列表 -->
         <div v-if="summaries.length" class="summary-list">
           <div
             v-for="item in summaries"
             :key="item.id"
             class="summary-item"
           >
+            <!-- 左侧信息 -->
             <div class="summary-left">
               <div class="summary-time">{{ formatTime(item.utime) }}</div>
-              <div class="summary-problem-type">问题类型：{{ item.problem_type }}</div>
-              <div class="summary-problem-desc">问题描述：{{ item.problem_description }}</div>
-              <div class="summary-repair">修机总结：{{ item.repair_summary }}</div>
-              <div class="summary-receiver">接单人员：{{ item.receiver_name }}</div>
+              <div class="summary-row">
+                <span class="label">问题类型：</span>
+                <span>{{ item.problem_type }}</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">问题描述：</span>
+                <span>{{ item.problem_description }}</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">修机总结：</span>
+                <span>{{ item.repair_summary }}</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">接单人员：</span>
+                <span>{{ item.receiver_name }}</span>
+              </div>
             </div>
 
+            <!-- 右侧操作 -->
             <div class="summary-right">
               <el-button
                 type="primary"
@@ -26,16 +41,15 @@
                 plain
                 @click="goOrderDetail(item.order_id)"
               >
-                查看订单详情
+                查看详情
               </el-button>
-
               <el-button
                 type="warning"
                 size="small"
                 plain
                 @click="goUpdateSummary(item.id)"
               >
-                更改修机总结
+                修改总结
               </el-button>
             </div>
           </div>
@@ -49,11 +63,11 @@
 </template>
 
 <script setup lang="ts" name="SummaryList">
-import { ref, onMounted } from 'vue';
-import { ElMessage } from 'element-plus';
-import { useRouter } from 'vue-router';
-import { GetSummaryList } from '@/api/summary.ts';
-import type { SummaryItem, SummaryListResp } from '@/types/summary.ts';
+import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { GetSummaryList } from '@/api/summary'
+import type { SummaryItem, SummaryListResp } from '@/types/summary'
 
 /* ---------- 数据 ---------- */
 const router = useRouter()
@@ -98,51 +112,53 @@ const goUpdateSummary = (summary_id: number) => {
 </script>
 
 <style scoped>
-/* 样式与之前完全一致，无需改动 */
+/* ---------- 唯一一套浅色样式 ---------- */
 .summary-list-page-container {
-  width: 100%;
   min-height: 100vh;
-  background-color: #f5f7fa;
-  padding: 40px 20px;
+  background: #f5f7fa;
+  padding: 40px 16px;
   box-sizing: border-box;
 }
 
 .header-title {
-  font-size: 18px;
-  color: #606266;
+  font-size: 20px;
+  font-weight: 500;
+  color: #303133;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .main-content {
-  max-width: 800px;
+  max-width: 840px;
   margin: 0 auto;
 }
 
 .summary-card {
-  border-radius: 16px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
-  padding: 8px 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+  background: #fff;
+  padding: 12px 0;
 }
 
 .summary-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .summary-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 16px 20px;
+  padding: 20px;
   background: #ffffff;
   border-radius: 12px;
-  transition: box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+  transition: transform .2s, box-shadow .2s;
 }
-
 .summary-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
 }
 
 .summary-left {
@@ -152,16 +168,17 @@ const goUpdateSummary = (summary_id: number) => {
 .summary-time {
   font-size: 13px;
   color: #909399;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
-.summary-problem-type,
-.summary-problem-desc,
-.summary-repair,
-.summary-receiver {
+.summary-row {
   font-size: 14px;
   color: #303133;
-  line-height: 1.6;
+  line-height: 1.7;
+}
+.summary-row .label {
+  font-weight: 500;
+  margin-right: 4px;
 }
 
 .summary-right {
@@ -169,15 +186,23 @@ const goUpdateSummary = (summary_id: number) => {
   gap: 8px;
   margin-left: 16px;
 }
+.summary-right .el-button {
+  min-width: 88px;
+}
 
-@media (max-width: 600px) {
+/* ---------- 空状态 ---------- */
+:deep(.el-empty__description) {
+  color: #909399;
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 640px) {
   .summary-item {
     flex-direction: column;
   }
   .summary-right {
-    margin-left: 0;
-    margin-top: 12px;
     width: 100%;
+    margin: 12px 0 0 0;
     justify-content: flex-end;
   }
 }

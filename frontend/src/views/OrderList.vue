@@ -1,6 +1,7 @@
+<!-- OrderList.vue -->
 <template>
   <div class="order-list-page-container">
-    <div class="header-title">报修订单</div>
+    <h1 class="header-title">报修订单</h1>
 
     <main class="main-content">
       <el-card class="order-card" shadow="never">
@@ -11,11 +12,16 @@
             :key="item.id"
             class="order-item"
           >
+            <!-- 左侧信息 -->
             <div class="order-left">
               <div class="order-time">{{ formatTime(item.ctime) }}</div>
-              <div class="order-problem">{{ item.problem_description }}</div>
+              <div class="order-row">
+                <span class="label">问题描述：</span>
+                <span>{{ item.problem_description }}</span>
+              </div>
             </div>
 
+            <!-- 右侧操作 -->
             <div class="order-right">
               <el-button
                 type="primary"
@@ -47,12 +53,12 @@
 </template>
 
 <script setup lang="ts" name="OrderList">
-import { ref, onMounted } from 'vue';
-import { ElMessage } from 'element-plus';
-import { useUserStore } from '@/stores/user';
-import { GetOrderList } from '@/api/order.ts';
-import { useRouter } from 'vue-router';
-import type { OrderItem } from '@/types/order';
+import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/stores/user'
+import { GetOrderList } from '@/api/order'
+import { useRouter } from 'vue-router'
+import type { OrderItem } from '@/types/order'
 
 /* ---------- 数据 ---------- */
 const user_store = useUserStore()
@@ -100,50 +106,53 @@ const goWriteSummary = (order_id: number) => {
 </script>
 
 <style scoped>
+/* ---------- 与修机总结完全同款样式 ---------- */
 .order-list-page-container {
-  width: 100%;
   min-height: 100vh;
-  background-color: #f5f7fa;
-  padding: 40px 20px;
+  background: #f5f7fa;
+  padding: 40px 16px;
   box-sizing: border-box;
 }
 
 .header-title {
-  font-size: 18px;
-  color: #606266;
+  font-size: 20px;
+  font-weight: 500;
+  color: #303133;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .main-content {
-  max-width: 800px;
+  max-width: 840px;
   margin: 0 auto;
 }
 
 .order-card {
-  border-radius: 16px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
-  padding: 8px 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+  background: #fff;
+  padding: 12px 0;
 }
 
 .order-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .order-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
+  align-items: flex-start;
+  padding: 20px;
   background: #ffffff;
   border-radius: 12px;
-  transition: box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+  transition: transform .2s, box-shadow .2s;
 }
-
 .order-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
 }
 
 .order-left {
@@ -153,13 +162,17 @@ const goWriteSummary = (order_id: number) => {
 .order-time {
   font-size: 13px;
   color: #909399;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
 }
 
-.order-problem {
-  font-size: 15px;
+.order-row {
+  font-size: 14px;
   color: #303133;
-  line-height: 1.5;
+  line-height: 1.7;
+}
+.order-row .label {
+  font-weight: 500;
+  margin-right: 4px;
 }
 
 .order-right {
@@ -167,16 +180,23 @@ const goWriteSummary = (order_id: number) => {
   gap: 8px;
   margin-left: 16px;
 }
+.order-right .el-button {
+  min-width: 88px;
+}
 
-@media (max-width: 600px) {
+/* ---------- 空状态 ---------- */
+:deep(.el-empty__description) {
+  color: #909399;
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 640px) {
   .order-item {
     flex-direction: column;
-    align-items: flex-start;
   }
   .order-right {
-    margin-left: 0;
-    margin-top: 12px;
     width: 100%;
+    margin: 12px 0 0 0;
     justify-content: flex-end;
   }
 }

@@ -9,6 +9,7 @@ import (
 
 type ISummaryRepo interface {
 	CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) error
+	GetSummaryList(ctx context.Context) ([]model.Summary, error)
 }
 type SummaryRepo struct {
 	summaryDto *dto.SummaryDto
@@ -20,6 +21,8 @@ func NewSummaryRepo() *SummaryRepo {
 	}
 }
 
+var _ ISummaryRepo = (*SummaryRepo)(nil)
+
 func (sr *SummaryRepo) CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) error {
 	summary := model.Summary{
 		UserID:             userID,
@@ -30,4 +33,8 @@ func (sr *SummaryRepo) CreateSummary(ctx context.Context, userID int64, req type
 		OrderID:            req.OrderID,
 	}
 	return sr.summaryDto.AddSummary(ctx, summary)
+}
+
+func (sr *SummaryRepo) GetSummaryList(ctx context.Context) ([]model.Summary, error) {
+	return sr.summaryDto.GetSummaryList(ctx)
 }

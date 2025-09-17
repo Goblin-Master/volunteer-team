@@ -70,5 +70,6 @@ func registerRoutes(routeManager *manager.RouteManager) {
 	routeManager.RegisterSummaryRoutes(func(rg *gin.RouterGroup) {
 		summaryHandler := handler.NewSummaryHandler()
 		rg.POST("/create", middleware.Authentication, middleware.BindJsonMiddleware[types.CreateSummaryReq], summaryHandler.CreateSummary)
+		rg.GET("/list", middleware.Authentication, summaryHandler.GetSummaryList)
 	})
 }

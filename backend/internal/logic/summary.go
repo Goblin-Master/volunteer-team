@@ -4,12 +4,15 @@ import (
 	"context"
 	"time"
 	"volunteer-team/backend/internal/infrastructure/global"
+	"volunteer-team/backend/internal/infrastructure/model"
+	"volunteer-team/backend/internal/infrastructure/pkg/jwtx"
 	"volunteer-team/backend/internal/infrastructure/types"
 	"volunteer-team/backend/internal/repo"
 )
 
 type ISummaryLogic interface {
 	CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) (string, error)
+	GetSummaryList(ctx context.Context, role jwtx.Role) (types.SummaryListResp, error)
 }
 type SummaryLogic struct {
 	summaryRepo *repo.SummaryRepo
@@ -22,6 +25,8 @@ func NewSummaryLogic() *SummaryLogic {
 		orderRepo:   repo.NewOrderRepo(),
 	}
 }
+
+var _ ISummaryLogic = (*SummaryLogic)(nil)
 
 func (sl *SummaryLogic) CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) (string, error) {
 	err := sl.summaryRepo.CreateSummary(ctx, userID, req)
@@ -49,4 +54,38 @@ func (sl *SummaryLogic) CreateSummary(ctx context.Context, userID int64, req typ
 		}
 	}(req.OrderID)
 	return "创建修机总结成功", nil
+}
+
+func (sl *SummaryLogic) GetSummaryList(ctx context.Context, role jwtx.Role) (types.SummaryListResp, error) {
+	var resp types.SummaryListResp
+	var list []model.Summary
+	switch role {
+	case jwtx.COMMON_USER: // 2
+		// 普通用户：无权查看总结
+		return resp, SUMAARY_IS_FORBIDDEN
+	case jwtx.INTERNAL_USER: // 1
+		// 内部人员：查全部修机总结
+		data, err := sl.summaryRepo.GetSummaryList(ctx)
+		if err != nil {
+			return resp, DEFAULT_ERROR
+		}
+		list = data
+	default:
+		return resp, DEFAULT_ERROR
+	}
+	var summaries []types.SummaryItem
+	for _, v := range list {
+		summary := types.SummaryItem{
+			OrderID:            v.OrderID,
+			ID:                 v.ID,
+			ProblemDescription: v.ProblemDescription,
+			Utime:              v.Utime,
+			ProblemType:        v.ProblemType,
+			RepairSummary:      v.RepairSummary,
+			ReceiverName:       v.ReceiverName,
+		}
+		summaries = append(summaries, summary)
+	}
+	resp.Summaries = summaries
+	return resp, nil
 }

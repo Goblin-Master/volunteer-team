@@ -27,3 +27,10 @@ func (sh *SummaryHandler) CreateSummary(c *gin.Context) {
 	resp, err := sh.summaryLogic.CreateSummary(c.Request.Context(), jwtx.GetUserID(c), cr)
 	response.Response(c, resp, err)
 }
+
+func (sh *SummaryHandler) GetSummaryList(c *gin.Context) {
+	role := jwtx.GetRole(c)
+	global.Log.Info(role)
+	resp, err := sh.summaryLogic.GetSummaryList(c.Request.Context(), role)
+	response.Response(c, resp, err)
+}

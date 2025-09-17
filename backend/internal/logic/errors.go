@@ -26,3 +26,7 @@ var (
 	ORDER_IS_FORBIDDEN = errors.New("禁止操作别人的订单")
 	ORDER_NOT_EXIST    = errors.New("订单不存在")
 )
+
+var (
+	SUMAARY_IS_FORBIDDEN = errors.New("非内部人员不可查看修机总结")
+)
