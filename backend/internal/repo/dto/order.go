@@ -44,9 +44,9 @@ func (od *OrderDto) GetOrderListByInternal(ctx context.Context) ([]model.Order, 
 	return list, nil
 }
 
-func (od *OrderDto) GetOrderDetailByID(ctx context.Context, id int) (model.Order, error) {
+func (od *OrderDto) GetOrderDetailByID(ctx context.Context, orderID int64) (model.Order, error) {
 	var order model.Order
-	err := global.DB.WithContext(ctx).Model(&model.Order{}).Where("id = ?", id).Take(&order).Error
+	err := global.DB.WithContext(ctx).Model(&model.Order{}).Where("order_id = ?", orderID).Take(&order).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return order, ORDER_NOT_EXIST
@@ -57,11 +57,11 @@ func (od *OrderDto) GetOrderDetailByID(ctx context.Context, id int) (model.Order
 	return order, nil
 }
 
-func (od *OrderDto) UpdateOrderStateByID(ctx context.Context, id int) error {
+func (od *OrderDto) UpdateOrderStateByID(ctx context.Context, orderID int64) error {
 	// 直接 WHERE + Update，只改 password 字段
 	result := global.DB.Model(&model.Order{}).
 		WithContext(ctx).
-		Where("id = ?", id).
+		Where("order_id = ?", orderID).
 		Update("state", enum.TACKLE)
 
 	if result.Error != nil {

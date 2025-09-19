@@ -112,10 +112,14 @@
 
 <script setup lang="ts" name="CreateOrder">
 import { reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';          // ① 引入
 import { ElMessage, ElNotification } from 'element-plus';
 import type { FormInstance } from 'element-plus';
-import { type CreateOrderReq,order_rules } from '@/types/order.ts';
+import { type CreateOrderReq, order_rules } from '@/types/order.ts';
 import { CreateOrder } from '@/api/order.ts';
+
+/* ---------- 路由 ---------- */
+const router = useRouter();                        // ② 实例化
 
 /* ---------- 表单实例 & 数据 ---------- */
 const order_form_ref = ref<FormInstance | null>(null);
@@ -141,30 +145,26 @@ const submitForm = async () => {
   isLoading.value = true;
 
   try {
-    // 1. 校验
     await order_form_ref.value.validate();
-
-    console.log(order_form)
-    // 2. 请求
     const res = await CreateOrder(order_form);
 
-    // 3. 业务处理
     if (res.code === 0) {
       ElNotification({
         title: '提交成功',
         message: '您的报修订单已提交，我们会尽快处理！',
         type: 'success',
-      })
+        duration: 2000,   // 2 秒后自动关闭
+      });
       order_form_ref.value.resetFields();
+
+      router.back();                 // ③ 返回上一页
     } else {
       ElMessage.error(res.message || '提交失败');
     }
   } catch (e: any) {
-    // 网络错误
     if (e?.response || e?.request) {
       ElMessage.error('网络错误或服务器无响应');
     }
-    // 表单校验失败已由 Element 标红，不再 toast
   } finally {
     isLoading.value = false;
   }

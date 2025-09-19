@@ -4,11 +4,11 @@ import type { OrderListResp } from '@/types/order.ts';
 import type { OrderDetailResp } from '@/types/order.ts';
 import type { CreateOrderReq } from '@/types/order.ts';
 
-export const GetOrderDetail = (id: number): Promise<BaseResp<OrderDetailResp>> =>
+export const GetOrderDetail = (order_id:string): Promise<BaseResp<OrderDetailResp>> =>
   req({
     url: '/api/order/detail',
     method: 'get',
-    params: { id }
+    params: { order_id }
   })
 
 

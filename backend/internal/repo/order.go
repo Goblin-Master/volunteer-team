@@ -10,11 +10,11 @@ import (
 )
 
 type IOrderRepo interface {
-	CreateOrder(ctx context.Context, userID int64, req types.CreateOrderReq) error
+	CreateOrder(ctx context.Context, userID int64, orderID int64, req types.CreateOrderReq) error
 	GetOrderListByCommon(ctx context.Context, userID int64) ([]model.Order, error)
 	GetOrderListByInternal(ctx context.Context) ([]model.Order, error)
-	GetOrderDetail(ctx context.Context, id int) (model.Order, error)
-	UpdateOrderState(ctx context.Context, id int) error
+	GetOrderDetail(ctx context.Context, orderID int64) (model.Order, error)
+	UpdateOrderState(ctx context.Context, orderID int64) error
 }
 type OrderRepo struct {
 	orderDto *dto.OrderDto
@@ -28,8 +28,9 @@ func NewOrderRepo() *OrderRepo {
 
 var _ IOrderRepo = (*OrderRepo)(nil)
 
-func (or *OrderRepo) CreateOrder(ctx context.Context, userID int64, req types.CreateOrderReq) error {
+func (or *OrderRepo) CreateOrder(ctx context.Context, userID int64, orderID int64, req types.CreateOrderReq) error {
 	order := model.Order{
+		OrderID:            orderID,
 		UserID:             userID,
 		StudentID:          req.StudentID,
 		Username:           req.Username,
@@ -54,8 +55,8 @@ func (or *OrderRepo) GetOrderListByInternal(ctx context.Context) ([]model.Order,
 	return or.orderDto.GetOrderListByInternal(ctx)
 }
 
-func (or *OrderRepo) GetOrderDetail(ctx context.Context, id int) (model.Order, error) {
-	data, err := or.orderDto.GetOrderDetailByID(ctx, id)
+func (or *OrderRepo) GetOrderDetail(ctx context.Context, orderID int64) (model.Order, error) {
+	data, err := or.orderDto.GetOrderDetailByID(ctx, orderID)
 	if err != nil {
 		if errors.Is(err, dto.ORDER_NOT_EXIST) {
 			return data, ORDER_NOT_EXIST
@@ -66,8 +67,8 @@ func (or *OrderRepo) GetOrderDetail(ctx context.Context, id int) (model.Order, e
 	return data, nil
 }
 
-func (or *OrderRepo) UpdateOrderState(ctx context.Context, id int) error {
-	err := or.orderDto.UpdateOrderStateByID(ctx, id)
+func (or *OrderRepo) UpdateOrderState(ctx context.Context, orderID int64) error {
+	err := or.orderDto.UpdateOrderStateByID(ctx, orderID)
 	if err != nil {
 		if errors.Is(err, dto.ORDER_NOT_EXIST) {
 			return ORDER_NOT_EXIST

@@ -1,7 +1,7 @@
 import type { FormRules } from 'element-plus';
 
 export interface OrderItem {
-  id: number
+  order_id: string
   ctime: number
   problem_description: string
 }
@@ -35,7 +35,7 @@ export interface OrderDetailResp {
   notes: string // 备注
 
   /* 系统字段 */
-  id: number // 订单主键
+  order_id: string // 订单id
   ctime: number // 创建时间（毫秒时间戳）
 }
 // 定义发送给后端的请求数据格式

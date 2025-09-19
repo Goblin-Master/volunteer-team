@@ -15,7 +15,7 @@ type CreateOrderReq struct {
 }
 
 type OrderItem struct {
-	ID                 int    `json:"id"`
+	OrderID            int64  `json:"order_id,string"`
 	Ctime              int64  `json:"ctime"`
 	ProblemDescription string `json:"problem_description"`
 }
@@ -24,7 +24,7 @@ type OrderListResp struct {
 	Orders []OrderItem `json:"orders"`
 }
 type OrderDetailReq struct {
-	ID int `form:"id"`
+	OrderID string `form:"order_id"`
 }
 type OrderDetailResp struct {
 	Username           string `json:"username"`
@@ -42,5 +42,5 @@ type OrderDetailResp struct {
 }
 
 type FinishOrderReq struct {
-	ID int `form:"id"`
+	OrderID string `form:"order_id"`
 }

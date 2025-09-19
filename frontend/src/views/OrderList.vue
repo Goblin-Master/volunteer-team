@@ -9,7 +9,7 @@
         <div v-if="order_list.length" class="order-list">
           <div
             v-for="item in order_list"
-            :key="item.id"
+            :key="item.order_id"
             class="order-item"
           >
             <!-- 左侧信息 -->
@@ -27,17 +27,17 @@
                 type="primary"
                 size="small"
                 plain
-                @click="goOrderDetail(item.id)"
+                @click="goOrderDetail(item.order_id)"
               >
                 查看详情
               </el-button>
 
               <el-button
-                v-if="user_role === 1"
+                v-if="user_role === Role.INTERNAL_USER"
                 type="warning"
                 size="small"
                 plain
-                @click="goWriteSummary(item.id)"
+                @click="goWriteSummary(item.order_id)"
               >
                 写修机总结
               </el-button>
@@ -53,12 +53,13 @@
 </template>
 
 <script setup lang="ts" name="OrderList">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { useUserStore } from '@/stores/user'
-import { GetOrderList } from '@/api/order'
-import { useRouter } from 'vue-router'
-import type { OrderItem } from '@/types/order'
+import {Role} from "@/enums/role.ts";
+import { ref, onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import { useUserStore } from '@/stores/user.ts';
+import { GetOrderList } from '@/api/order.ts';
+import { useRouter } from 'vue-router';
+import type { OrderItem } from '@/types/order.ts';
 
 /* ---------- 数据 ---------- */
 const user_store = useUserStore()
@@ -96,11 +97,11 @@ const formatTime = (unix_ms: number) => {
   return `${y}-${m}-${d} ${h}:${min}`
 }
 
-const goOrderDetail = (order_id: number) => {
-  router.push({ name: 'OrderDetail', query: { order_id } })
+const goOrderDetail = (order_id: string) => {
+  router.push({ name: 'OrderDetail', query: { order_id }})
 }
 
-const goWriteSummary = (order_id: number) => {
+const goWriteSummary = (order_id: string) => {
   router.push({ name: 'CreateSummary', query: { order_id } })
 }
 </script>

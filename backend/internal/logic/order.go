@@ -7,14 +7,15 @@ import (
 	"volunteer-team/backend/internal/infrastructure/model"
 	"volunteer-team/backend/internal/infrastructure/pkg/jwtx"
 	"volunteer-team/backend/internal/infrastructure/types"
+	"volunteer-team/backend/internal/infrastructure/utils/snowflake"
 	"volunteer-team/backend/internal/repo"
 )
 
 type IOrderLogic interface {
 	CreateOrder(ctx context.Context, userID int64, req types.CreateOrderReq) (string, error)
 	GetOrderList(ctx context.Context, userID int64, role jwtx.Role) (types.OrderListResp, error)
-	GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, id int) (types.OrderDetailResp, error)
-	FinishOrder(ctx context.Context, id int) (string, error)
+	GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, orderID int64) (types.OrderDetailResp, error)
+	FinishOrder(ctx context.Context, orderID int64) (string, error)
 }
 type OrderLogic struct {
 	orderRepo *repo.OrderRepo
@@ -29,7 +30,7 @@ func NewOrderLogic() *OrderLogic {
 var _ IOrderLogic = (*OrderLogic)(nil)
 
 func (ol *OrderLogic) CreateOrder(ctx context.Context, userID int64, req types.CreateOrderReq) (string, error) {
-	err := ol.orderRepo.CreateOrder(ctx, userID, req)
+	err := ol.orderRepo.CreateOrder(ctx, userID, snowflake.GetIntID(global.Node), req)
 	if err != nil {
 		global.Log.Error(err)
 		return "", DEFAULT_ERROR
@@ -63,7 +64,7 @@ func (ol *OrderLogic) GetOrderList(ctx context.Context, userID int64, role jwtx.
 	var orders []types.OrderItem
 	for _, v := range list {
 		order := types.OrderItem{
-			ID:                 v.ID,
+			OrderID:            v.OrderID,
 			ProblemDescription: v.ProblemDescription,
 			Ctime:              v.Ctime,
 		}
@@ -73,9 +74,9 @@ func (ol *OrderLogic) GetOrderList(ctx context.Context, userID int64, role jwtx.
 	return resp, nil
 }
 
-func (ol *OrderLogic) GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, id int) (types.OrderDetailResp, error) {
+func (ol *OrderLogic) GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, orderID int64) (types.OrderDetailResp, error) {
 	var resp types.OrderDetailResp
-	data, err := ol.orderRepo.GetOrderDetail(ctx, id)
+	data, err := ol.orderRepo.GetOrderDetail(ctx, orderID)
 	if err != nil {
 		if errors.Is(err, repo.ORDER_NOT_EXIST) {
 			return resp, ORDER_NOT_EXIST
@@ -103,8 +104,8 @@ func (ol *OrderLogic) GetOrderDetail(ctx context.Context, userID int64, role jwt
 	return resp, nil
 }
 
-func (ol *OrderLogic) FinishOrder(ctx context.Context, id int) (string, error) {
-	err := ol.orderRepo.UpdateOrderState(ctx, id)
+func (ol *OrderLogic) FinishOrder(ctx context.Context, orderID int64) (string, error) {
+	err := ol.orderRepo.UpdateOrderState(ctx, orderID)
 	if err != nil {
 		if errors.Is(err, repo.ORDER_NOT_EXIST) {
 			return "", ORDER_NOT_EXIST

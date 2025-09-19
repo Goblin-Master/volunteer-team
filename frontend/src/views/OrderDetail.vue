@@ -79,19 +79,19 @@ const detail = ref<OrderDetailResp>({} as OrderDetailResp)
 
 /* ---------- 生命周期 ---------- */
 onMounted(() => {
-  const id = Number(route.query.order_id)
-  if (!id) {
+  const order_id = String(route.query.order_id)
+  if (!order_id) {
     ElMessage.error('缺少订单 ID')
     return
   }
-  fetchDetail(id)
+  fetchDetail(order_id)
 })
 
 /* ---------- 方法 ---------- */
-async function fetchDetail(id: number) {
+async function fetchDetail(order_id:string) {
   try {
     loading.value = true
-    const res = await GetOrderDetail(id)
+    const res = await GetOrderDetail(order_id)
     if (res.code === 0 && res.data) {
       detail.value = res.data
     } else {

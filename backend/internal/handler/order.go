@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"strconv"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/middleware"
 	"volunteer-team/backend/internal/infrastructure/pkg/jwtx"
@@ -38,14 +39,23 @@ func (oh *OrderHandler) GetOrderList(c *gin.Context) {
 func (oh *OrderHandler) GetOrderDetail(c *gin.Context) {
 	cr := middleware.GetBind[types.OrderDetailReq](c)
 	global.Log.Info(cr)
-	//传role是为了防止恶意攻击，如直接调用接口会泄密
-	resp, err := oh.orderLogic.GetOrderDetail(c.Request.Context(), jwtx.GetUserID(c), jwtx.GetRole(c), cr.ID)
+	orderID, err := strconv.ParseInt(cr.OrderID, 10, 64)
+	if err != nil {
+		response.Response(c, nil, PARAMS_TYPE_ERROR)
+		return
+	}
+	resp, err := oh.orderLogic.GetOrderDetail(c.Request.Context(), jwtx.GetUserID(c), jwtx.GetRole(c), orderID)
 	response.Response(c, resp, err)
 }
 
 func (oh *OrderHandler) FinishOrder(c *gin.Context) {
 	cr := middleware.GetBind[types.FinishOrderReq](c)
 	global.Log.Info(cr)
-	resp, err := oh.orderLogic.FinishOrder(c.Request.Context(), cr.ID)
+	orderID, err := strconv.ParseInt(cr.OrderID, 10, 64)
+	if err != nil {
+		response.Response(c, nil, PARAMS_TYPE_ERROR)
+		return
+	}
+	resp, err := oh.orderLogic.FinishOrder(c.Request.Context(), orderID)
 	response.Response(c, resp, err)
 }

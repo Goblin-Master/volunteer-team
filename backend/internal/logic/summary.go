@@ -47,8 +47,8 @@ func (sl *SummaryLogic) CreateSummary(ctx context.Context, userID int64, req typ
 		// 新建一个与请求无关的 context，最长 3s
 		c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
-
-		if err := sl.orderRepo.UpdateOrderState(c, orderID); err != nil {
+		//TODO:暂时处理orderID
+		if err := sl.orderRepo.UpdateOrderState(c, int64(orderID)); err != nil {
 			global.Log.Error("UpdateOrderState failed:", err)
 			// TODO: 这里可以落一张“补偿任务表”，或者发 MQ,防止修机总结写失败，而订单完成，这样就永远写不了修机总结了
 			return
