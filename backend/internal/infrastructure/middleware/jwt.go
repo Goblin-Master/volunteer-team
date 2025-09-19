@@ -1,21 +1,30 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/pkg/jwtx"
+	"volunteer-team/backend/internal/infrastructure/utils/response"
+
+	"github.com/gin-gonic/gin"
 )
 
-func Authentication(c *gin.Context) {
-	UserID, Role, err := jwtx.ParseToken(c)
-	if err != nil {
-		global.Log.Error(err.Error())
-		c.String(401, err.Error())
-		c.Abort()
-		return
+func Authentication(role jwtx.Role) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		UserID, Role, err := jwtx.ParseToken(c)
+		if err != nil {
+			global.Log.Error(err.Error())
+			c.String(401, err.Error())
+			c.Abort()
+			return
+		}
+		if Role < role {
+			response.Response(c, nil, jwtx.PERMISSION_DENIED)
+			c.Abort()
+			return
+		}
+		//将用户id和角色加入ctx
+		c.Set(global.TOKEN_USER_ID, UserID)
+		c.Set(global.TOKEN_ROLE, Role)
+		c.Next()
 	}
-	//将用户id和角色加入ctx
-	c.Set(global.TOKEN_USER_ID, UserID)
-	c.Set(global.TOKEN_ROLE, Role)
-	c.Next()
 }

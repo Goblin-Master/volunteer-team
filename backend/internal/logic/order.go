@@ -14,7 +14,7 @@ type IOrderLogic interface {
 	CreateOrder(ctx context.Context, userID int64, req types.CreateOrderReq) (string, error)
 	GetOrderList(ctx context.Context, userID int64, role jwtx.Role) (types.OrderListResp, error)
 	GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, id int) (types.OrderDetailResp, error)
-	FinishOrder(ctx context.Context, role jwtx.Role, id int) (string, error)
+	FinishOrder(ctx context.Context, id int) (string, error)
 }
 type OrderLogic struct {
 	orderRepo *repo.OrderRepo
@@ -41,7 +41,7 @@ func (ol *OrderLogic) GetOrderList(ctx context.Context, userID int64, role jwtx.
 	var resp types.OrderListResp
 	var list []model.Order
 	switch role {
-	case jwtx.COMMON_USER: // 2
+	case jwtx.COMMON_USER:
 		// 普通用户：只查自己的单
 		data, err := ol.orderRepo.GetOrderListByCommon(ctx, userID)
 		if err != nil {
@@ -49,7 +49,7 @@ func (ol *OrderLogic) GetOrderList(ctx context.Context, userID int64, role jwtx.
 			return resp, DEFAULT_ERROR
 		}
 		list = data
-	case jwtx.INTERNAL_USER: // 1
+	case jwtx.INTERNAL_USER, jwtx.ADMIN:
 		// 内部人员：查全部“未处理”
 		data, err := ol.orderRepo.GetOrderListByInternal(ctx)
 		if err != nil {
@@ -103,10 +103,7 @@ func (ol *OrderLogic) GetOrderDetail(ctx context.Context, userID int64, role jwt
 	return resp, nil
 }
 
-func (ol *OrderLogic) FinishOrder(ctx context.Context, role jwtx.Role, id int) (string, error) {
-	if role != jwtx.INTERNAL_USER {
-		return "", ORDER_IS_FORBIDDEN
-	}
+func (ol *OrderLogic) FinishOrder(ctx context.Context, id int) (string, error) {
 	err := ol.orderRepo.UpdateOrderState(ctx, id)
 	if err != nil {
 		if errors.Is(err, repo.ORDER_NOT_EXIST) {

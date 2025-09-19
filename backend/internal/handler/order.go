@@ -46,6 +46,6 @@ func (oh *OrderHandler) GetOrderDetail(c *gin.Context) {
 func (oh *OrderHandler) FinishOrder(c *gin.Context) {
 	cr := middleware.GetBind[types.FinishOrderReq](c)
 	global.Log.Info(cr)
-	resp, err := oh.orderLogic.FinishOrder(c.Request.Context(), jwtx.GetRole(c), cr.ID)
+	resp, err := oh.orderLogic.FinishOrder(c.Request.Context(), cr.ID)
 	response.Response(c, resp, err)
 }

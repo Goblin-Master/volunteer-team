@@ -5,17 +5,15 @@ import (
 	"errors"
 	"time"
 	"volunteer-team/backend/internal/infrastructure/global"
-	"volunteer-team/backend/internal/infrastructure/model"
-	"volunteer-team/backend/internal/infrastructure/pkg/jwtx"
 	"volunteer-team/backend/internal/infrastructure/types"
 	"volunteer-team/backend/internal/repo"
 )
 
 type ISummaryLogic interface {
 	CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) (string, error)
-	GetSummaryList(ctx context.Context, role jwtx.Role) (types.SummaryListResp, error)
-	GetSummaryDetail(ctx context.Context, role jwtx.Role, id int) (types.SummaryDetailResp, error)
-	UpdateSummary(ctx context.Context, role jwtx.Role, req types.UpdateSummaryReq) (string, error)
+	GetSummaryList(ctx context.Context) (types.SummaryListResp, error)
+	GetSummaryDetail(ctx context.Context, id int) (types.SummaryDetailResp, error)
+	UpdateSummary(ctx context.Context, req types.UpdateSummaryReq) (string, error)
 }
 type SummaryLogic struct {
 	summaryRepo *repo.SummaryRepo
@@ -59,21 +57,11 @@ func (sl *SummaryLogic) CreateSummary(ctx context.Context, userID int64, req typ
 	return "创建修机总结成功", nil
 }
 
-func (sl *SummaryLogic) GetSummaryList(ctx context.Context, role jwtx.Role) (types.SummaryListResp, error) {
+func (sl *SummaryLogic) GetSummaryList(ctx context.Context) (types.SummaryListResp, error) {
 	var resp types.SummaryListResp
-	var list []model.Summary
-	switch role {
-	case jwtx.COMMON_USER: // 2
-		// 普通用户：无权查看总结
-		return resp, SUMMARY_IS_FORBIDDEN
-	case jwtx.INTERNAL_USER: // 1
-		// 内部人员：查全部修机总结
-		data, err := sl.summaryRepo.GetSummaryList(ctx)
-		if err != nil {
-			return resp, DEFAULT_ERROR
-		}
-		list = data
-	default:
+	// 内部人员：查全部修机总结
+	list, err := sl.summaryRepo.GetSummaryList(ctx)
+	if err != nil {
 		return resp, DEFAULT_ERROR
 	}
 	var summaries []types.SummaryItem
@@ -93,11 +81,8 @@ func (sl *SummaryLogic) GetSummaryList(ctx context.Context, role jwtx.Role) (typ
 	return resp, nil
 }
 
-func (sl *SummaryLogic) GetSummaryDetail(ctx context.Context, role jwtx.Role, id int) (types.SummaryDetailResp, error) {
+func (sl *SummaryLogic) GetSummaryDetail(ctx context.Context, id int) (types.SummaryDetailResp, error) {
 	var resp types.SummaryDetailResp
-	if role != jwtx.INTERNAL_USER {
-		return resp, SUMMARY_IS_FORBIDDEN
-	}
 	data, err := sl.summaryRepo.GetSummaryDetail(ctx, id)
 	if err != nil {
 		if errors.Is(err, repo.SUMMARY_NOT_EXIST) {
@@ -117,10 +102,7 @@ func (sl *SummaryLogic) GetSummaryDetail(ctx context.Context, role jwtx.Role, id
 	return resp, nil
 }
 
-func (sl *SummaryLogic) UpdateSummary(ctx context.Context, role jwtx.Role, req types.UpdateSummaryReq) (string, error) {
-	if role != jwtx.INTERNAL_USER {
-		return "", SUMMARY_IS_FORBIDDEN
-	}
+func (sl *SummaryLogic) UpdateSummary(ctx context.Context, req types.UpdateSummaryReq) (string, error) {
 	err := sl.summaryRepo.UpdateSummary(ctx, req)
 	if err != nil {
 		if errors.Is(err, repo.SUMMARY_NOT_EXIST) {

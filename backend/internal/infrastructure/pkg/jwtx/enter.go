@@ -15,8 +15,9 @@ import (
 type Role int
 
 const (
-	INTERNAL_USER Role = iota + 1
-	COMMON_USER
+	COMMON_USER = iota + 1
+	INTERNAL_USER
+	ADMIN
 )
 
 type MyClaims struct {
@@ -31,10 +32,11 @@ type Claims struct {
 }
 
 var (
-	DEFAULT_ERROR  = errors.New("jwt默认错误")
-	TOKEN_EMPTY    = errors.New("token为空")
-	TOKEN_EXPERIED = errors.New("token已过期")
-	TOKEN_INVALID  = errors.New("token无效")
+	DEFAULT_ERROR     = errors.New("jwt默认错误")
+	TOKEN_EMPTY       = errors.New("token为空")
+	TOKEN_EXPERIED    = errors.New("token已过期")
+	TOKEN_INVALID     = errors.New("token无效")
+	PERMISSION_DENIED = errors.New("权限不足")
 )
 
 func GenToken(c Claims) (string, error) {

@@ -10,7 +10,7 @@ type User struct {
 	Email    string `gorm:"column:email;type:varchar(20);unique;comment:'邮箱'"`
 	Username string `gorm:"column:username;type:varchar(20);not null;comment:'用户名'"`
 	Avatar   string `gorm:"column:avatar;type:varchar(255);not null;comment:'头像'"`
-	Role     int8   `gorm:"column:role;type:tinyint;default:2;comment:'角色'"`
+	Role     int8   `gorm:"column:role;type:tinyint;default:1;comment:'角色'"`
 }
 
 func (u *User) TableName() string {

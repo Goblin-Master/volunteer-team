@@ -29,22 +29,20 @@ func (sh *SummaryHandler) CreateSummary(c *gin.Context) {
 }
 
 func (sh *SummaryHandler) GetSummaryList(c *gin.Context) {
-	role := jwtx.GetRole(c)
-	global.Log.Info(role)
-	resp, err := sh.summaryLogic.GetSummaryList(c.Request.Context(), role)
+	resp, err := sh.summaryLogic.GetSummaryList(c.Request.Context())
 	response.Response(c, resp, err)
 }
 
 func (sh *SummaryHandler) GetSummaryDetail(c *gin.Context) {
 	cr := middleware.GetBind[types.SummaryDetailReq](c)
 	global.Log.Info(cr)
-	resp, err := sh.summaryLogic.GetSummaryDetail(c.Request.Context(), jwtx.GetRole(c), cr.ID)
+	resp, err := sh.summaryLogic.GetSummaryDetail(c.Request.Context(), cr.ID)
 	response.Response(c, resp, err)
 }
 
 func (sh *SummaryHandler) UpdateSummary(c *gin.Context) {
 	cr := middleware.GetBind[types.UpdateSummaryReq](c)
 	global.Log.Info(cr)
-	resp, err := sh.summaryLogic.UpdateSummary(c.Request.Context(), jwtx.GetRole(c), cr)
+	resp, err := sh.summaryLogic.UpdateSummary(c.Request.Context(), cr)
 	response.Response(c, resp, err)
 }

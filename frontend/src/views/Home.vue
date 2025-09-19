@@ -38,11 +38,11 @@
 
       <template v-if="userStore.is_user_login">
         <div class="user-role-title">
-          {{ userStore.user_role === 2 ? '普通用户' : '内部人员' }}
+          {{ userStore.user_role === Role.COMMON_USER ? '普通用户' : '内部人员' }}
         </div>
 
         <div class="features-grid">
-          <template v-if="userStore.user_role === 2">
+          <template v-if="userStore.user_role === Role.COMMON_USER">
             <div class="feature-card" @click="goToCreateOrderPage">
               <div class="feature-icon-wrapper" style="background-color: #eef5ff;">
                 <el-icon :size="32" color="#409eff"><Setting /></el-icon>
@@ -66,7 +66,7 @@
             </div>
           </template>
 
-          <template v-else-if="userStore.user_role === 1">
+          <template v-else-if="userStore.user_role === Role.INTERNAL_USER">
             <div class="feature-card" @click="goToOrderListPage">   <!-- ← 新增点击 -->
               <div class="feature-icon-wrapper" style="background-color: #fef0f0;">
                 <el-icon :size="32" color="#f56c6c"><List /></el-icon>
@@ -118,6 +118,7 @@
 </template>
 
 <script setup lang="ts" name="Home">
+import { Role } from '@/enums/role.ts';
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from "vue-router";
 import { ElMessage } from 'element-plus';

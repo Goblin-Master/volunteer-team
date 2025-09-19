@@ -1,14 +1,16 @@
 package test
 
 import (
+	"context"
 	"errors"
-	"github.com/go-playground/assert/v2"
 	"testing"
 	"time"
 	"volunteer-team/backend/internal/infrastructure/configs"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/pkg/emailx"
 	"volunteer-team/backend/internal/infrastructure/utils/code"
+
+	"github.com/go-playground/assert/v2"
 )
 
 func TestEmail(t *testing.T) {
@@ -22,7 +24,7 @@ func TestEmail(t *testing.T) {
 
 	// 1. 先记录时间
 	start := time.Now()
-	err := ex.SendLoginCode(mail, c)
+	err := ex.SendLoginCode(context.Background(), mail, c)
 	elapsed := time.Since(start)
 
 	t.Logf("SendLoginCode 耗时: %v, 返回错误: %v", elapsed, err)
