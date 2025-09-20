@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"errors"
+	"strconv"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/model"
 	"volunteer-team/backend/internal/infrastructure/pkg/jwtx"
@@ -14,8 +15,8 @@ import (
 type IOrderLogic interface {
 	CreateOrder(ctx context.Context, userID int64, req types.CreateOrderReq) (string, error)
 	GetOrderList(ctx context.Context, userID int64, role jwtx.Role) (types.OrderListResp, error)
-	GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, orderID int64) (types.OrderDetailResp, error)
-	FinishOrder(ctx context.Context, orderID int64) (string, error)
+	GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, req types.OrderDetailReq) (types.OrderDetailResp, error)
+	FinishOrder(ctx context.Context, req types.FinishOrderReq) (string, error)
 }
 type OrderLogic struct {
 	orderRepo *repo.OrderRepo
@@ -74,8 +75,12 @@ func (ol *OrderLogic) GetOrderList(ctx context.Context, userID int64, role jwtx.
 	return resp, nil
 }
 
-func (ol *OrderLogic) GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, orderID int64) (types.OrderDetailResp, error) {
+func (ol *OrderLogic) GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, req types.OrderDetailReq) (types.OrderDetailResp, error) {
 	var resp types.OrderDetailResp
+	orderID, err := strconv.ParseInt(req.OrderID, 10, 64)
+	if err != nil {
+		return resp, PARAMS_TYPE_ERROR
+	}
 	data, err := ol.orderRepo.GetOrderDetail(ctx, orderID)
 	if err != nil {
 		if errors.Is(err, repo.ORDER_NOT_EXIST) {
@@ -104,8 +109,12 @@ func (ol *OrderLogic) GetOrderDetail(ctx context.Context, userID int64, role jwt
 	return resp, nil
 }
 
-func (ol *OrderLogic) FinishOrder(ctx context.Context, orderID int64) (string, error) {
-	err := ol.orderRepo.UpdateOrderState(ctx, orderID)
+func (ol *OrderLogic) FinishOrder(ctx context.Context, req types.FinishOrderReq) (string, error) {
+	orderID, err := strconv.ParseInt(req.OrderID, 10, 64)
+	if err != nil {
+		return "", PARAMS_TYPE_ERROR
+	}
+	err = ol.orderRepo.UpdateOrderState(ctx, orderID)
 	if err != nil {
 		if errors.Is(err, repo.ORDER_NOT_EXIST) {
 			return "", ORDER_NOT_EXIST

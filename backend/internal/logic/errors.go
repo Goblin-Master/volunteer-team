@@ -7,9 +7,10 @@ import (
 )
 
 var (
-	DEFAULT_ERROR   = errors.New("默认错误")
-	FILE_OVER_SIZE  = errors.New(fmt.Sprintf("文件大小不能超过%dMB", global.FILE_MAX_SIZE/1024/1024))
-	FILE_READ_ERROR = errors.New("文件读取失败")
+	PARAMS_TYPE_ERROR = errors.New("参数格式错误")
+	DEFAULT_ERROR     = errors.New("默认错误")
+	FILE_OVER_SIZE    = errors.New(fmt.Sprintf("文件大小不能超过%dMB", global.FILE_MAX_SIZE/1024/1024))
+	FILE_READ_ERROR   = errors.New("文件读取失败")
 )
 var (
 	LOGIN_WITH_FAILED_WAY     = errors.New("暂不支持这种登录方式")
