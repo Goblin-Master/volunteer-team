@@ -98,13 +98,13 @@ import { GetSummaryDetail, UpdateSummary } from '@/api/summary'
 /* ---------------- 基础准备 ---------------- */
 const route = useRoute()
 const router = useRouter()
-const summary_id = Number(route.query.summary_id)
+const summary_id = String(route.query.summary_id)
 const form_ref = ref<FormInstance>()
 const loading = ref(false)
 
 /* 表单 */
 const form = reactive<SummaryPayload>({
-  order_id: 0,
+  order_id: '',
   problem_type: '',
   problem_description: '',
   repair_summary: '',
@@ -161,7 +161,7 @@ async function handle_submit_summary() {
   loading.value = true
   try {
     const payload: UpdateSummaryReq = {
-      id: summary_id,
+      summary_id: summary_id,
       ...form
     }
     const resp = await UpdateSummary(payload)

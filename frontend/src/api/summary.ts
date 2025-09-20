@@ -12,11 +12,11 @@ export const CreateSummary = (data:SummaryPayload): Promise<BaseResp<string>> =>
 export const GetSummaryList = (): Promise<BaseResp<SummaryListResp>> =>
   req({ url: '/api/summary/list', method: 'get' })
 
-export const GetSummaryDetail = (id: number): Promise<BaseResp<SummaryDetailResp>> =>
+export const GetSummaryDetail = (summary_id:string): Promise<BaseResp<SummaryDetailResp>> =>
   req({
     url: '/api/summary/detail',
     method: 'get',
-    params: { id }
+    params: { summary_id }
   })
 
 export const UpdateSummary = (data: UpdateSummaryReq): Promise<BaseResp<SummaryDetailResp>> =>

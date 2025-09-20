@@ -9,7 +9,7 @@
         <div v-if="summaries.length" class="summary-list">
           <div
             v-for="item in summaries"
-            :key="item.id"
+            :key="item.summary_id"
             class="summary-item"
           >
             <!-- 左侧信息 -->
@@ -47,7 +47,7 @@
                 type="warning"
                 size="small"
                 plain
-                @click="goUpdateSummary(item.id)"
+                @click="goUpdateSummary(item.summary_id)"
               >
                 修改总结
               </el-button>
@@ -102,13 +102,13 @@ const formatTime = (unix_ms: number) => {
   return `${y}-${m}-${d} ${h}:${min}`
 }
 
-const goOrderDetail = (order_id: number) => {
+const goOrderDetail = (order_id: string) => {
   router.push({ name: 'OrderDetail', query: { order_id } })
 }
 
-const goUpdateSummary = (summary_id: number) => {
+const goUpdateSummary = (summary_id: string) => {
    // 整行数据一起带走
-  const target = summaries.value.find(v => v.id === summary_id)
+  const target = summaries.value.find(v => v.summary_id === summary_id)
      router.push({
         name: 'UpdateSummary',
         query: { summary_id: String(summary_id) },

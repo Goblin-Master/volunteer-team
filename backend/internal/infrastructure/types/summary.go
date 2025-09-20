@@ -1,7 +1,7 @@
 package types
 
 type CreateSummaryReq struct {
-	OrderID            int    `json:"order_id" binding:"required"`
+	OrderID            string `json:"order_id" binding:"required"`
 	ProblemType        string `json:"problem_type" binding:"required"`
 	ProblemDescription string `json:"problem_description" binding:"required"`
 	RepairSummary      string `json:"repair_summary" binding:"required"`
@@ -9,8 +9,8 @@ type CreateSummaryReq struct {
 }
 
 type SummaryItem struct {
-	ID                 int    `json:"id"`
-	OrderID            int    `json:"order_id" `
+	SummaryID          int64  `json:"summary_id,string"`
+	OrderID            int64  `json:"order_id,string"`
 	ProblemType        string `json:"problem_type"`
 	ProblemDescription string `json:"problem_description" `
 	RepairSummary      string `json:"repair_summary" `
@@ -21,11 +21,11 @@ type SummaryListResp struct {
 	Summaries []SummaryItem `json:"summaries"`
 }
 type SummaryDetailReq struct {
-	ID int `form:"id" binding:"required"`
+	SummaryID string `form:"summary_id" binding:"required"`
 }
 type SummaryDetailResp struct {
-	ID                 int    `json:"id"`
-	OrderID            int    `json:"order_id" `
+	SummaryID          int64  `json:"summary_id,string"`
+	OrderID            int64  `json:"order_id,string"`
 	ProblemType        string `json:"problem_type"`
 	ProblemDescription string `json:"problem_description" `
 	RepairSummary      string `json:"repair_summary" `
@@ -34,7 +34,7 @@ type SummaryDetailResp struct {
 }
 
 type UpdateSummaryReq struct {
-	ID                 int    `json:"id"`
+	SummaryID          string `json:"summary_id" binding:"required"`
 	ProblemType        string `json:"problem_type"`
 	ProblemDescription string `json:"problem_description" `
 	RepairSummary      string `json:"repair_summary" `

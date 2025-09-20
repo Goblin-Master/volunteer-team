@@ -66,7 +66,7 @@ import { CreateSummary } from '@/api/summary';
 
 const route = useRoute();
 const router = useRouter();
-const order_id = Number(route.query.order_id);
+const order_id = String(route.query.order_id);
 const formRef = ref<FormInstance>();
 const loading = ref(false);
 

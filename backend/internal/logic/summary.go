@@ -3,16 +3,18 @@ package logic
 import (
 	"context"
 	"errors"
+	"strconv"
 	"time"
 	"volunteer-team/backend/internal/infrastructure/global"
 	"volunteer-team/backend/internal/infrastructure/types"
+	"volunteer-team/backend/internal/infrastructure/utils/snowflake"
 	"volunteer-team/backend/internal/repo"
 )
 
 type ISummaryLogic interface {
 	CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) (string, error)
 	GetSummaryList(ctx context.Context) (types.SummaryListResp, error)
-	GetSummaryDetail(ctx context.Context, id int) (types.SummaryDetailResp, error)
+	GetSummaryDetail(ctx context.Context, req types.SummaryDetailReq) (types.SummaryDetailResp, error)
 	UpdateSummary(ctx context.Context, req types.UpdateSummaryReq) (string, error)
 }
 type SummaryLogic struct {
@@ -30,14 +32,20 @@ func NewSummaryLogic() *SummaryLogic {
 var _ ISummaryLogic = (*SummaryLogic)(nil)
 
 func (sl *SummaryLogic) CreateSummary(ctx context.Context, userID int64, req types.CreateSummaryReq) (string, error) {
-	err := sl.summaryRepo.CreateSummary(ctx, userID, req)
+	//先校验id的合法性，避免浪费时间查询
+	orderID, err := strconv.ParseInt(req.OrderID, 10, 64)
+	if err != nil {
+		return "", PARAMS_TYPE_ERROR
+	}
+
+	err = sl.summaryRepo.CreateSummary(ctx, userID, orderID, snowflake.GetIntID(global.Node), req)
 	if err != nil {
 		global.Log.Error(err)
 		return "", DEFAULT_ERROR
 	}
 	//异步更新订单状态（独立 ctx，防止父 ctx 被取消）
 	//这里是为了实现写了修机总结就表示这一单完成了
-	go func(orderID int) {
+	go func(orderID int64) {
 		defer func() {
 			if p := recover(); p != nil {
 				global.Log.Error("UpdateOrderState panic:", p)
@@ -47,13 +55,12 @@ func (sl *SummaryLogic) CreateSummary(ctx context.Context, userID int64, req typ
 		// 新建一个与请求无关的 context，最长 3s
 		c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
-		//TODO:暂时处理orderID
-		if err := sl.orderRepo.UpdateOrderState(c, int64(orderID)); err != nil {
+		if err := sl.orderRepo.UpdateOrderState(c, orderID); err != nil {
 			global.Log.Error("UpdateOrderState failed:", err)
 			// TODO: 这里可以落一张“补偿任务表”，或者发 MQ,防止修机总结写失败，而订单完成，这样就永远写不了修机总结了
 			return
 		}
-	}(req.OrderID)
+	}(orderID)
 	return "创建修机总结成功", nil
 }
 
@@ -68,7 +75,7 @@ func (sl *SummaryLogic) GetSummaryList(ctx context.Context) (types.SummaryListRe
 	for _, v := range list {
 		summary := types.SummaryItem{
 			OrderID:            v.OrderID,
-			ID:                 v.ID,
+			SummaryID:          v.SummaryID,
 			ProblemDescription: v.ProblemDescription,
 			Utime:              v.Utime,
 			ProblemType:        v.ProblemType,
@@ -81,9 +88,13 @@ func (sl *SummaryLogic) GetSummaryList(ctx context.Context) (types.SummaryListRe
 	return resp, nil
 }
 
-func (sl *SummaryLogic) GetSummaryDetail(ctx context.Context, id int) (types.SummaryDetailResp, error) {
+func (sl *SummaryLogic) GetSummaryDetail(ctx context.Context, req types.SummaryDetailReq) (types.SummaryDetailResp, error) {
 	var resp types.SummaryDetailResp
-	data, err := sl.summaryRepo.GetSummaryDetail(ctx, id)
+	summaryID, err := strconv.ParseInt(req.SummaryID, 10, 64)
+	if err != nil {
+		return resp, PARAMS_TYPE_ERROR
+	}
+	data, err := sl.summaryRepo.GetSummaryDetail(ctx, summaryID)
 	if err != nil {
 		if errors.Is(err, repo.SUMMARY_NOT_EXIST) {
 			return resp, SUMMARY_NOT_EXIST
@@ -98,12 +109,16 @@ func (sl *SummaryLogic) GetSummaryDetail(ctx context.Context, id int) (types.Sum
 	resp.ProblemType = data.ProblemType
 	resp.Utime = data.Utime
 	resp.OrderID = data.OrderID
-	resp.ID = data.ID
+	resp.SummaryID = data.SummaryID
 	return resp, nil
 }
 
 func (sl *SummaryLogic) UpdateSummary(ctx context.Context, req types.UpdateSummaryReq) (string, error) {
-	err := sl.summaryRepo.UpdateSummary(ctx, req)
+	summaryID, err := strconv.ParseInt(req.SummaryID, 10, 64)
+	if err != nil {
+		return "", PARAMS_TYPE_ERROR
+	}
+	err = sl.summaryRepo.UpdateSummary(ctx, summaryID, req)
 	if err != nil {
 		if errors.Is(err, repo.SUMMARY_NOT_EXIST) {
 			return "", SUMMARY_NOT_EXIST

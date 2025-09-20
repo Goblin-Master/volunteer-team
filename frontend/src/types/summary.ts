@@ -1,10 +1,10 @@
 // 提交 payload 类型
 export interface SummaryPayload {
-  order_id: number;
-  problem_type: string;
-  problem_description: string;
-  repair_summary: string;
-  receiver_name: string;
+  order_id: string
+  problem_type: string
+  problem_description: string
+  repair_summary: string
+  receiver_name: string
 }
 
 /* ---------- 校验规则（element-plus 格式） ---------- */
@@ -30,10 +30,9 @@ export const summary_rules: FormRules = {
   ]
 }
 
-// summary.ts
 export interface SummaryItem {
-  id: number
-  order_id: number
+  summary_id: string
+  order_id: string
   utime: number
   problem_type: string
   problem_description: string
@@ -44,17 +43,10 @@ export interface SummaryItem {
 export interface SummaryListResp {
   summaries: SummaryItem[]
 }
-/* ---------- 本地模拟提交 ---------- */
-export async function submitSummaryMock(payload: SummaryPayload): Promise<void> {
-  // 随机 0.5-1s 延迟，模拟网络
-  await new Promise(r => setTimeout(r, 500 + Math.random() * 500))
-  if (Math.random() > 0.9) throw new Error('模拟服务器异常')
-  console.log('【模拟提交成功】', payload)
-}
 
 export interface SummaryDetailResp {
-  id: number
-  order_id: number
+  summary_id: string
+  order_id: string
   utime: number
   problem_type: string
   problem_description: string
@@ -63,7 +55,7 @@ export interface SummaryDetailResp {
 }
 
 export interface UpdateSummaryReq {
-  id: number // 总结的订单
+  summary_id: string
   problem_type: string
   problem_description: string
   repair_summary: string

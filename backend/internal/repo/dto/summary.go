@@ -32,9 +32,9 @@ func (sd *SummaryDto) GetSummaryList(ctx context.Context) ([]model.Summary, erro
 	return summary, nil
 }
 
-func (sd *SummaryDto) GetSummaryDetailByID(ctx context.Context, id int) (model.Summary, error) {
+func (sd *SummaryDto) GetSummaryDetailByID(ctx context.Context, summaryID int64) (model.Summary, error) {
 	var summary model.Summary
-	err := global.DB.WithContext(ctx).Model(&model.Summary{}).Where("id = ?", id).Take(&summary).Error
+	err := global.DB.WithContext(ctx).Model(&model.Summary{}).Where("summary_id = ?", summaryID).Take(&summary).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return summary, SUMMARY_NOT_EXIST
@@ -45,10 +45,9 @@ func (sd *SummaryDto) GetSummaryDetailByID(ctx context.Context, id int) (model.S
 	return summary, nil
 }
 
-func (sd *SummaryDto) UpdateSummaryByID(ctx context.Context, id int, data model.Summary) error {
-	data.ID = 0                         // 禁止结构体里的 ID 参与任何条件/更新
+func (sd *SummaryDto) UpdateSummaryByID(ctx context.Context, summaryID int64, data model.Summary) error {
 	data.Utime = time.Now().UnixMilli() //更新修改时间
-	result := global.DB.WithContext(ctx).Model(&model.Summary{}).Where("id = ?", id).Updates(data)
+	result := global.DB.WithContext(ctx).Model(&model.Summary{}).Where("summary_id = ?", summaryID).Updates(data)
 	if result.Error != nil {
 		global.Log.Error(result.Error)
 		return DEFAULT_ERROR

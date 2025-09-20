@@ -36,7 +36,7 @@ func (sh *SummaryHandler) GetSummaryList(c *gin.Context) {
 func (sh *SummaryHandler) GetSummaryDetail(c *gin.Context) {
 	cr := middleware.GetBind[types.SummaryDetailReq](c)
 	global.Log.Info(cr)
-	resp, err := sh.summaryLogic.GetSummaryDetail(c.Request.Context(), cr.ID)
+	resp, err := sh.summaryLogic.GetSummaryDetail(c.Request.Context(), cr)
 	response.Response(c, resp, err)
 }
 
