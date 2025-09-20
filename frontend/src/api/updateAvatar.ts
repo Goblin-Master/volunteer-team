@@ -1,6 +1,6 @@
 // src/api/file.ts
 import req from './axios';
-import type BaseResp  from '@/types/base.ts'; // 引入你的 BaseResp 类型
+import type BaseResp from '@/types/base.ts'; // 引入你的 BaseResp 类型
 
 /**
  * 上传图片文件的 API 接口。

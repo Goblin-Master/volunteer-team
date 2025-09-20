@@ -11,7 +11,8 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build"
+    "type-check": "vue-tsc --build",
+    "format": "prettier --write \"**/*.{js,ts,jsx,tsx,cjs,mjs,json,css,md,vue}\""
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
@@ -27,6 +28,7 @@
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/tsconfig": "^0.7.0",
     "npm-run-all2": "^8.0.4",
+    "prettier": "^3.6.2",
     "typescript": "~5.8.0",
     "unplugin-auto-import": "^20.0.0",
     "unplugin-vue-components": "^29.0.0",

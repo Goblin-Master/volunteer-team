@@ -129,64 +129,64 @@
 </template>
 
 <script setup lang="ts" name="Login">
-import { ref, reactive, computed } from "vue";
-import { User, Lock, Message } from "@element-plus/icons-vue"; // [修改点 2] 移除 Iphone
-import { ElMessage } from "element-plus";
-import { Login, GetLoginCode } from "@/api/login.ts";
-import type { LoginResp } from "@/types/login.ts";
-import type BaseResp from "@/types/base.ts";
-import type { FormInstance } from "element-plus";
-import { useUserStore } from "@/stores/user";
-import { useRoute, useRouter } from "vue-router";
+import { ref, reactive, computed } from 'vue';
+import { User, Lock, Message } from '@element-plus/icons-vue'; // [修改点 2] 移除 Iphone
+import { ElMessage } from 'element-plus';
+import { Login, GetLoginCode } from '@/api/login.ts';
+import type { LoginResp } from '@/types/login.ts';
+import type BaseResp from '@/types/base.ts';
+import type { FormInstance } from 'element-plus';
+import { useUserStore } from '@/stores/user';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
 
-const activeTab = ref("account");
+const activeTab = ref('account');
 const isLoading = ref(false);
 const isShaking = ref(false);
 
 // Account Login Form
 const accountFormRef = ref<FormInstance>();
 const accountForm = reactive({
-  account: "",
-  password: "",
+  account: '',
+  password: '',
 });
 const accountRules = reactive({
-  account: [{ required: true, message: "请输入您的账号", trigger: "blur" }],
-  password: [{ required: true, message: "请输入您的密码", trigger: "blur" }],
+  account: [{ required: true, message: '请输入您的账号', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入您的密码', trigger: 'blur' }],
 });
 
 // [修改点 3] Mobile Form -> Email Form
 const emailFormRef = ref<FormInstance>();
 const emailForm = reactive({
-  email: "",
-  code: "",
+  email: '',
+  code: '',
 });
 const emailRules = reactive({
   email: [
-    { required: true, message: "请输入您的邮箱", trigger: "blur" },
+    { required: true, message: '请输入您的邮箱', trigger: 'blur' },
     {
-      type: "email",
-      message: "请输入正确的邮箱格式",
-      trigger: ["blur", "change"],
+      type: 'email',
+      message: '请输入正确的邮箱格式',
+      trigger: ['blur', 'change'],
     },
   ],
-  code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
+  code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
 });
 
 // [修改点 4] 添加发送验证码逻辑
 const isSendingCode = ref(false);
 const countdown = ref(60);
 const codeButtonText = computed(() => {
-  return isSendingCode.value ? `${countdown.value}秒后重试` : "发送验证码";
+  return isSendingCode.value ? `${countdown.value}秒后重试` : '发送验证码';
 });
 const isEmailValid = computed(() =>
-  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailForm.email)
+  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailForm.email),
 );
 const sendVerificationCode = async () => {
   if (!isEmailValid.value) {
-    ElMessage.error("请输入有效的邮箱地址！");
+    ElMessage.error('请输入有效的邮箱地址！');
     return;
   }
   isSendingCode.value = true; // 1. 开始加载
@@ -194,15 +194,15 @@ const sendVerificationCode = async () => {
   try {
     const res = await GetLoginCode(emailForm.email);
     if (res.code === 0) {
-      ElMessage.success("验证码已发送至您的邮箱!");
+      ElMessage.success('验证码已发送至您的邮箱!');
       startCountdown(); // 2. 成功才倒计时
     } else {
-      ElMessage.error(res.message || "获取验证码失败!");
+      ElMessage.error(res.message || '获取验证码失败!');
       isSendingCode.value = false; // 3. 失败立即恢复按钮
     }
   } catch (error) {
-    console.error("GetCode request failed:", error);
-    ElMessage.error("网络错误或服务器无响应");
+    console.error('GetCode request failed:', error);
+    ElMessage.error('网络错误或服务器无响应');
     isSendingCode.value = false;
   }
 };
@@ -227,42 +227,42 @@ const handleLogin = (formEl?: FormInstance) => {
       isLoading.value = true;
       try {
         let data: any;
-        if (activeTab.value === "account") {
+        if (activeTab.value === 'account') {
           data = {
             account: accountForm.account,
             password: accountForm.password,
-            login_type: "account", // 建议增加登录类型字段
+            login_type: 'account', // 建议增加登录类型字段
           };
         } else {
           // activeTab.value === 'email'
           data = {
             email: emailForm.email,
             code: emailForm.code,
-            login_type: "email", // 建议增加登录类型字段
+            login_type: 'email', // 建议增加登录类型字段
           };
         }
 
         const res: BaseResp<LoginResp> = await Login(data);
 
         if (res.code === 0) {
-          ElMessage.success("登录成功!");
+          ElMessage.success('登录成功!');
           useUserStore().setUserInfo(res.data);
           // 检查是否有重定向参数
-          const redirectPath = (route.query.redirect as string) || "/";
+          const redirectPath = (route.query.redirect as string) || '/';
 
           // 登录成功后跳转到重定向路径，或默认跳转到主页
           router.replace(redirectPath);
         } else {
-          ElMessage.error(res.message || "登录失败");
+          ElMessage.error(res.message || '登录失败');
         }
       } catch (error) {
-        console.error("Login request failed:", error);
-        ElMessage.error("网络错误或服务器无响应");
+        console.error('Login request failed:', error);
+        ElMessage.error('网络错误或服务器无响应');
       } finally {
         isLoading.value = false;
       }
     } else {
-      console.log("error submit!");
+      console.log('error submit!');
       isShaking.value = true;
       setTimeout(() => {
         isShaking.value = false;
@@ -272,10 +272,10 @@ const handleLogin = (formEl?: FormInstance) => {
 };
 
 const goToRegister = () => {
-  router.push("/register");
+  router.push('/register');
 };
 const handleResetPassword = () => {
-  router.push("/resetPassword");
+  router.push('/resetPassword');
 };
 </script>
 

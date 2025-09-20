@@ -105,33 +105,33 @@
 </template>
 
 <script setup lang="ts" name="ResetPassword">
-import { ref, reactive, computed } from "vue";
-import { useRouter } from "vue-router";
-import { Message, Lock } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import type { FormInstance, FormRules } from "element-plus";
-import { GetResetPasswordCode, ResetPassword } from "@/api/resetPassword.ts"; // 确保路径正确
+import { ref, reactive, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { Message, Lock } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import type { FormInstance, FormRules } from 'element-plus';
+import { GetResetPasswordCode, ResetPassword } from '@/api/resetPassword.ts'; // 确保路径正确
 
 const router = useRouter();
 const form_ref = ref<FormInstance>();
 const is_loading = ref(false);
 
 const form_data = reactive({
-  email_address: "",
-  code: "",
-  new_password: "",
-  confirm_new_password: "",
+  email_address: '',
+  code: '',
+  new_password: '',
+  confirm_new_password: '',
 });
 
 // 验证规则
 const validatePass = (rule: any, value: string, callback: any) => {
   if (!value) {
-    callback(new Error("请输入新密码"));
+    callback(new Error('请输入新密码'));
   } else if (value.length < 6) {
-    callback(new Error("密码长度不能少于6位"));
+    callback(new Error('密码长度不能少于6位'));
   } else {
     if (form_data.confirm_new_password) {
-      form_ref.value?.validateField("confirm_new_password");
+      form_ref.value?.validateField('confirm_new_password');
     }
     callback();
   }
@@ -139,9 +139,9 @@ const validatePass = (rule: any, value: string, callback: any) => {
 
 const validateConfirmPass = (rule: any, value: string, callback: any) => {
   if (!value) {
-    callback(new Error("请再次输入密码"));
+    callback(new Error('请再次输入密码'));
   } else if (value !== form_data.new_password) {
-    callback(new Error("两次输入的密码不一致！"));
+    callback(new Error('两次输入的密码不一致！'));
   } else {
     callback();
   }
@@ -149,20 +149,20 @@ const validateConfirmPass = (rule: any, value: string, callback: any) => {
 
 const form_rules = reactive<FormRules>({
   email_address: [
-    { required: true, message: "请输入邮箱地址", trigger: "blur" },
+    { required: true, message: '请输入邮箱地址', trigger: 'blur' },
     {
-      type: "email",
-      message: "邮箱地址格式不正确",
-      trigger: ["blur", "change"],
+      type: 'email',
+      message: '邮箱地址格式不正确',
+      trigger: ['blur', 'change'],
     },
   ],
   code: [
-    { required: true, message: "请输入验证码", trigger: "blur" },
-    { len: 6, message: "验证码长度为6位", trigger: "blur" },
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+    { len: 6, message: '验证码长度为6位', trigger: 'blur' },
   ],
-  new_password: [{ required: true, validator: validatePass, trigger: "blur" }],
+  new_password: [{ required: true, validator: validatePass, trigger: 'blur' }],
   confirm_new_password: [
-    { required: true, validator: validateConfirmPass, trigger: "blur" },
+    { required: true, validator: validateConfirmPass, trigger: 'blur' },
   ],
 });
 
@@ -170,33 +170,33 @@ const form_rules = reactive<FormRules>({
 const is_sending_code = ref(false);
 const countdown_time = ref(60);
 const code_button_text = computed(() =>
-  is_sending_code.value ? `${countdown_time.value}秒后重试` : "发送验证码"
+  is_sending_code.value ? `${countdown_time.value}秒后重试` : '发送验证码',
 );
 
 const is_email_valid = computed(() =>
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-    form_data.email_address
-  )
+    form_data.email_address,
+  ),
 );
 
 const sendVerificationCode = async () => {
   if (!is_email_valid.value) {
-    ElMessage.error("请输入有效的邮箱地址！");
+    ElMessage.error('请输入有效的邮箱地址！');
     return;
   }
   is_sending_code.value = true;
   try {
     const res = await GetResetPasswordCode(form_data.email_address);
     if (res.code === 0) {
-      ElMessage.success("验证码已发送至您的邮箱!");
+      ElMessage.success('验证码已发送至您的邮箱!');
       startCountdown();
     } else {
-      ElMessage.error(res.message || "获取验证码失败!");
+      ElMessage.error(res.message || '获取验证码失败!');
       is_sending_code.value = false;
     }
   } catch (error) {
-    console.error("GetCode request failed:", error);
-    ElMessage.error("网络错误或服务器无响应");
+    console.error('GetCode request failed:', error);
+    ElMessage.error('网络错误或服务器无响应');
     is_sending_code.value = false;
   }
 };
@@ -227,26 +227,26 @@ const handleResetPassword = (form_el?: FormInstance) => {
         };
         const res = await ResetPassword(data);
         if (res.code === 0) {
-          ElMessage.success("密码重置成功，请使用新密码登录！");
-          router.replace("/login");
+          ElMessage.success('密码重置成功，请使用新密码登录！');
+          router.replace('/login');
         } else {
-          ElMessage.error(res.message || "重置密码失败");
+          ElMessage.error(res.message || '重置密码失败');
         }
       } catch (error) {
-        console.error("ResetPassword request failed:", error);
-        ElMessage.error("网络错误或服务器无响应");
+        console.error('ResetPassword request failed:', error);
+        ElMessage.error('网络错误或服务器无响应');
       } finally {
         is_loading.value = false;
       }
     } else {
-      ElMessage.error("请检查表单输入项！");
+      ElMessage.error('请检查表单输入项！');
     }
   });
 };
 
 // 返回登录页面
 const goToLogin = () => {
-  router.push("/login");
+  router.push('/login');
 };
 </script>
 

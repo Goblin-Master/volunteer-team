@@ -63,58 +63,58 @@
 </template>
 
 <script setup lang="ts" name="SummaryList">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
-import { GetSummaryList } from '@/api/summary'
-import type { SummaryItem, SummaryListResp } from '@/types/summary'
+import { ref, onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import { useRouter } from 'vue-router';
+import { GetSummaryList } from '@/api/summary';
+import type { SummaryItem, SummaryListResp } from '@/types/summary';
 
 /* ---------- 数据 ---------- */
-const router = useRouter()
-const summaries = ref<SummaryItem[]>([])
+const router = useRouter();
+const summaries = ref<SummaryItem[]>([]);
 
 /* ---------- 生命周期 ---------- */
 onMounted(() => {
-  fetchSummaryList()
-})
+  fetchSummaryList();
+});
 
 /* ---------- 方法 ---------- */
 const fetchSummaryList = async () => {
   try {
-    const res = await GetSummaryList()
+    const res = await GetSummaryList();
     if (res.code === 0) {
-      summaries.value = (res.data as SummaryListResp)?.summaries ?? []
+      summaries.value = (res.data as SummaryListResp)?.summaries ?? [];
     } else {
-      ElMessage.error(res.message || '获取修机总结失败')
+      ElMessage.error(res.message || '获取修机总结失败');
     }
   } catch {
-    ElMessage.error('网络错误或服务器无响应')
+    ElMessage.error('网络错误或服务器无响应');
   }
-}
+};
 
 const formatTime = (unix_ms: number) => {
-  const date = new Date(unix_ms)
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  const h = String(date.getHours()).padStart(2, '0')
-  const min = String(date.getMinutes()).padStart(2, '0')
-  return `${y}-${m}-${d} ${h}:${min}`
-}
+  const date = new Date(unix_ms);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  return `${y}-${m}-${d} ${h}:${min}`;
+};
 
 const goOrderDetail = (order_id: string) => {
-  router.push({ name: 'OrderDetail', query: { order_id } })
-}
+  router.push({ name: 'OrderDetail', query: { order_id } });
+};
 
 const goUpdateSummary = (summary_id: string) => {
-   // 整行数据一起带走
-  const target = summaries.value.find(v => v.summary_id === summary_id)
-     router.push({
-        name: 'UpdateSummary',
-        query: { summary_id: String(summary_id) },
-        state: { preload: JSON.stringify(target) }
-   })
-}
+  // 整行数据一起带走
+  const target = summaries.value.find((v) => v.summary_id === summary_id);
+  router.push({
+    name: 'UpdateSummary',
+    query: { summary_id: String(summary_id) },
+    state: { preload: JSON.stringify(target) },
+  });
+};
 </script>
 
 <style scoped>
@@ -141,7 +141,7 @@ const goUpdateSummary = (summary_id: string) => {
 
 .summary-card {
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   background: #fff;
   padding: 12px 0;
 }
@@ -159,12 +159,14 @@ const goUpdateSummary = (summary_id: string) => {
   padding: 20px;
   background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
-  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 .summary-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .summary-left {

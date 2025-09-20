@@ -6,8 +6,8 @@ export interface RegisterForm {
   account: string;
   password: string;
   confirm_password: string;
-  is_internal: boolean;   // 是否内部员工
-  agree_terms: boolean;   // 是否同意协议
+  is_internal: boolean; // 是否内部员工
+  agree_terms: boolean; // 是否同意协议
 }
 
 // 校验规则（Element-Plus 风格，可换其他库）

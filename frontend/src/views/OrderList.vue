@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts" name="OrderList">
-import {Role} from "@/enums/role.ts";
+import { Role } from '@/enums/role.ts';
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/stores/user.ts';
@@ -62,48 +62,48 @@ import { useRouter } from 'vue-router';
 import type { OrderItem } from '@/types/order.ts';
 
 /* ---------- 数据 ---------- */
-const user_store = useUserStore()
-const router = useRouter()
+const user_store = useUserStore();
+const router = useRouter();
 
-const order_list = ref<OrderItem[]>([])
-const user_role = user_store.user_role
+const order_list = ref<OrderItem[]>([]);
+const user_role = user_store.user_role;
 
 /* ---------- 生命周期 ---------- */
 onMounted(() => {
-  fetchOrderList()
-})
+  fetchOrderList();
+});
 
 /* ---------- 方法 ---------- */
 const fetchOrderList = async () => {
   try {
-    const res = await GetOrderList()
+    const res = await GetOrderList();
     if (res.code === 0) {
-      order_list.value = res.data?.orders ?? []
+      order_list.value = res.data?.orders ?? [];
     } else {
-      ElMessage.error(res.message || '获取订单失败')
+      ElMessage.error(res.message || '获取订单失败');
     }
   } catch {
-    ElMessage.error('网络错误或服务器无响应')
+    ElMessage.error('网络错误或服务器无响应');
   }
-}
+};
 
 const formatTime = (unix_ms: number) => {
-  const date = new Date(unix_ms)
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  const h = String(date.getHours()).padStart(2, '0')
-  const min = String(date.getMinutes()).padStart(2, '0')
-  return `${y}-${m}-${d} ${h}:${min}`
-}
+  const date = new Date(unix_ms);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  return `${y}-${m}-${d} ${h}:${min}`;
+};
 
 const goOrderDetail = (order_id: string) => {
-  router.push({ name: 'OrderDetail', query: { order_id }})
-}
+  router.push({ name: 'OrderDetail', query: { order_id } });
+};
 
 const goWriteSummary = (order_id: string) => {
-  router.push({ name: 'CreateSummary', query: { order_id } })
-}
+  router.push({ name: 'CreateSummary', query: { order_id } });
+};
 </script>
 
 <style scoped>
@@ -130,7 +130,7 @@ const goWriteSummary = (order_id: string) => {
 
 .order-card {
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   background: #fff;
   padding: 12px 0;
 }
@@ -148,12 +148,14 @@ const goWriteSummary = (order_id: string) => {
   padding: 20px;
   background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
-  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 .order-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .order-left {

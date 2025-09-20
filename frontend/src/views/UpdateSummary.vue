@@ -83,24 +83,24 @@
 </template>
 
 <script setup lang="ts" name="UpdateSummary">
-import { ref, reactive, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import type { FormInstance } from 'element-plus'
+import { ref, reactive, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import type { FormInstance } from 'element-plus';
 import {
   summary_rules,
   type SummaryPayload,
   type SummaryItem,
-  type UpdateSummaryReq
-} from '@/types/summary'
-import { GetSummaryDetail, UpdateSummary } from '@/api/summary'
+  type UpdateSummaryReq,
+} from '@/types/summary';
+import { GetSummaryDetail, UpdateSummary } from '@/api/summary';
 
 /* ---------------- 基础准备 ---------------- */
-const route = useRoute()
-const router = useRouter()
-const summary_id = String(route.query.summary_id)
-const form_ref = ref<FormInstance>()
-const loading = ref(false)
+const route = useRoute();
+const router = useRouter();
+const summary_id = String(route.query.summary_id);
+const form_ref = ref<FormInstance>();
+const loading = ref(false);
 
 /* 表单 */
 const form = reactive<SummaryPayload>({
@@ -108,78 +108,78 @@ const form = reactive<SummaryPayload>({
   problem_type: '',
   problem_description: '',
   repair_summary: '',
-  receiver_name: ''
-})
-const rules = summary_rules
+  receiver_name: '',
+});
+const rules = summary_rules;
 
 /* 旧数据标记 */
-const isCache = ref(true)
-const onceChange = () => (isCache.value = false)
+const isCache = ref(true);
+const onceChange = () => (isCache.value = false);
 
 /* ---------------- 生命周期 ---------------- */
 onMounted(async () => {
   if (!summary_id) {
-    ElMessage.error('缺少总结参数')
-    return router.back()
+    ElMessage.error('缺少总结参数');
+    return router.back();
   }
 
-  const cache = (history.state?.preload) as string | undefined
+  const cache = history.state?.preload as string | undefined;
   if (cache) {
     try {
-      const data = JSON.parse(cache) as SummaryItem
-      Object.assign(form, data)
-      isCache.value = true // 保持灰
-      return
+      const data = JSON.parse(cache) as SummaryItem;
+      Object.assign(form, data);
+      isCache.value = true; // 保持灰
+      return;
     } catch {}
   }
 
-  await load_old_summary()
-  isCache.value = false // 接口完成 → 正常颜色
-})
+  await load_old_summary();
+  isCache.value = false; // 接口完成 → 正常颜色
+});
 
 /* ---------------- 方法 ---------------- */
 async function load_old_summary() {
   try {
-    const res = await GetSummaryDetail(summary_id)
+    const res = await GetSummaryDetail(summary_id);
     if (res.code === 0) {
-      Object.assign(form, res.data)
+      Object.assign(form, res.data);
     } else {
-      ElMessage.error(res.message || '获取详情失败')
-      router.back()
+      ElMessage.error(res.message || '获取详情失败');
+      router.back();
     }
   } catch {
-    ElMessage.error('网络异常')
-    router.back()
+    ElMessage.error('网络异常');
+    router.back();
   }
 }
 
 async function handle_submit_summary() {
-  if (!form_ref.value) return
-  const valid = await form_ref.value.validate().catch(() => false)
-  if (!valid) return ElMessage.error('请检查表单输入项！')
+  if (!form_ref.value) return;
+  const valid = await form_ref.value.validate().catch(() => false);
+  if (!valid) return ElMessage.error('请检查表单输入项！');
 
-  loading.value = true
+  loading.value = true;
   try {
     const payload: UpdateSummaryReq = {
       summary_id: summary_id,
-      ...form
-    }
-    const resp = await UpdateSummary(payload)
+      ...form,
+    };
+    const resp = await UpdateSummary(payload);
     if (resp.code === 0) {
-      ElMessage.success('更新成功')
-      router.back()
+      ElMessage.success('更新成功');
+      router.back();
     } else {
-      ElMessage.error(resp.message || '更新失败')
+      ElMessage.error(resp.message || '更新失败');
     }
   } catch (e: any) {
-    ElMessage.error(e.message || '网络异常')
+    ElMessage.error(e.message || '网络异常');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 function on_back() {
-  router.back()
+  router.back();
 }
 </script>
 
@@ -214,7 +214,7 @@ function on_back() {
 .old .el-textarea__inner,
 .old .el-select__placeholder,
 .old .el-select__selected-item {
-  color: #c0c4cc !important;   /* 与你截图完全一致 */
+  color: #c0c4cc !important; /* 与你截图完全一致 */
   transition: color 0.2s;
 }
 </style>

@@ -71,51 +71,51 @@ import { GetOrderDetail } from '@/api/order.ts';
 import type { OrderDetailResp } from '@/types/order';
 
 /* ---------- 数据 ---------- */
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-const loading = ref(true)
-const detail = ref<OrderDetailResp>({} as OrderDetailResp)
+const loading = ref(true);
+const detail = ref<OrderDetailResp>({} as OrderDetailResp);
 
 /* ---------- 生命周期 ---------- */
 onMounted(() => {
-  const order_id = String(route.query.order_id)
+  const order_id = String(route.query.order_id);
   if (!order_id) {
-    ElMessage.error('缺少订单 ID')
-    return
+    ElMessage.error('缺少订单 ID');
+    return;
   }
-  fetchDetail(order_id)
-})
+  fetchDetail(order_id);
+});
 
 /* ---------- 方法 ---------- */
-async function fetchDetail(order_id:string) {
+async function fetchDetail(order_id: string) {
   try {
-    loading.value = true
-    const res = await GetOrderDetail(order_id)
+    loading.value = true;
+    const res = await GetOrderDetail(order_id);
     if (res.code === 0 && res.data) {
-      detail.value = res.data
+      detail.value = res.data;
     } else {
-      ElMessage.error(res.message || '获取详情失败')
+      ElMessage.error(res.message || '获取详情失败');
     }
   } catch {
-    ElMessage.error('网络错误或服务器无响应')
+    ElMessage.error('网络错误或服务器无响应');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 function formatTime(ms: number) {
-  const d = new Date(ms)
-  const Y = d.getFullYear()
-  const M = String(d.getMonth() + 1).padStart(2, '0')
-  const D = String(d.getDate()).padStart(2, '0')
-  const h = String(d.getHours()).padStart(2, '0')
-  const m = String(d.getMinutes()).padStart(2, '0')
-  return `${Y}-${M}-${D} ${h}:${m}`
+  const d = new Date(ms);
+  const Y = d.getFullYear();
+  const M = String(d.getMonth() + 1).padStart(2, '0');
+  const D = String(d.getDate()).padStart(2, '0');
+  const h = String(d.getHours()).padStart(2, '0');
+  const m = String(d.getMinutes()).padStart(2, '0');
+  return `${Y}-${M}-${D} ${h}:${m}`;
 }
 
 function goBack() {
-  router.back()
+  router.back();
 }
 </script>
 

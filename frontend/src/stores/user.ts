@@ -1,8 +1,8 @@
 // src/stores/user.ts
-import { defineStore } from "pinia";
-import { ref, computed } from "vue";
-import type { LoginResp } from "@/types/login.ts";
-const base_url: string = "http://127.0.0.1:9000/uploads/";
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import type { LoginResp } from '@/types/login.ts';
+const base_url: string = 'http://127.0.0.1:9000/uploads/';
 
 // 这是一个简化的 token 解析函数，实际应用中建议使用 jwt-decode 等库
 const parse_token = (token: string) => {
@@ -18,11 +18,11 @@ const parse_token = (token: string) => {
   }
 };
 
-export const useUserStore = defineStore("user", () => {
+export const useUserStore = defineStore('user', () => {
   // state
-  const token = ref(localStorage.getItem("user-token") || null);
-  const user_name = ref(localStorage.getItem("user-username") || null);
-  const avatar = ref(localStorage.getItem("user-avatar") || null);
+  const token = ref(localStorage.getItem('user-token') || null);
+  const user_name = ref(localStorage.getItem('user-username') || null);
+  const avatar = ref(localStorage.getItem('user-avatar') || null);
 
   // getters
   // 检查用户是否已登录
@@ -54,9 +54,9 @@ export const useUserStore = defineStore("user", () => {
     avatar.value = userData.avatar;
 
     // 2. 同时将数据持久化到 localStorage
-    localStorage.setItem("user-token", userData.token);
-    localStorage.setItem("user-username", userData.username);
-    localStorage.setItem("user-avatar", userData.avatar);
+    localStorage.setItem('user-token', userData.token);
+    localStorage.setItem('user-username', userData.username);
+    localStorage.setItem('user-avatar', userData.avatar);
   };
 
   const logout = () => {
@@ -66,15 +66,15 @@ export const useUserStore = defineStore("user", () => {
     avatar.value = null;
 
     // 2. 清空 localStorage
-    localStorage.removeItem("user-token");
-    localStorage.removeItem("user-username");
-    localStorage.removeItem("user-avatar");
+    localStorage.removeItem('user-token');
+    localStorage.removeItem('user-username');
+    localStorage.removeItem('user-avatar');
   };
 
   const updateAvatar = (new_avatar_url: string) => {
     avatar.value = new_avatar_url;
-    localStorage.setItem("user-avatar", new_avatar_url);
-  }
+    localStorage.setItem('user-avatar', new_avatar_url);
+  };
 
   return {
     token,
@@ -85,6 +85,6 @@ export const useUserStore = defineStore("user", () => {
     full_avatar_url,
     setUserInfo,
     logout,
-    updateAvatar
+    updateAvatar,
   };
 });

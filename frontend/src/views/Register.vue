@@ -153,22 +153,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
-import { useRouter } from "vue-router";
-import type { FormInstance } from "element-plus";
-import { ElMessage } from "element-plus";
-import { Message, Lock } from "@element-plus/icons-vue";
-import { Register, GetRegisterCode } from "@/api/register";
-import type { RegisterForm, RegisterFormRules } from "@/types/register";
+import { ref, reactive, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import type { FormInstance } from 'element-plus';
+import { ElMessage } from 'element-plus';
+import { Message, Lock } from '@element-plus/icons-vue';
+import { Register, GetRegisterCode } from '@/api/register';
+import type { RegisterForm, RegisterFormRules } from '@/types/register';
 
 /* ---------- 表单数据 ---------- */
 const registerForm = reactive<RegisterForm>({
-  email: "",
-  code: "",
-  username: "",
-  account: "", // ✅ 统一为 account
-  password: "",
-  confirm_password: "",
+  email: '',
+  code: '',
+  username: '',
+  account: '', // ✅ 统一为 account
+  password: '',
+  confirm_password: '',
   is_internal: false,
   agree_terms: false,
 });
@@ -181,30 +181,30 @@ const loading = ref(false);
 const isSendingCode = ref(false);
 const countdown = ref(60);
 const codeButtonText = computed(() =>
-  isSendingCode.value ? `${countdown.value}秒后重试` : "发送验证码"
+  isSendingCode.value ? `${countdown.value}秒后重试` : '发送验证码',
 );
 
 const isEmailValid = computed(() =>
-  /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(registerForm.email)
+  /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(registerForm.email),
 );
 
 const sendVerificationCode = async () => {
   if (!isEmailValid.value) {
-    ElMessage.error("请输入有效的邮箱地址！");
+    ElMessage.error('请输入有效的邮箱地址！');
     return;
   }
   isSendingCode.value = true;
   try {
     const res = await GetRegisterCode(registerForm.email);
     if (res.code === 0) {
-      ElMessage.success("验证码已发送至您的邮箱！");
+      ElMessage.success('验证码已发送至您的邮箱！');
       startCountdown();
     } else {
-      ElMessage.error(res.message || "获取验证码失败！");
+      ElMessage.error(res.message || '获取验证码失败！');
       isSendingCode.value = false;
     }
   } catch (e) {
-    ElMessage.error("网络错误或服务器无响应");
+    ElMessage.error('网络错误或服务器无响应');
     isSendingCode.value = false;
   }
 };
@@ -222,53 +222,53 @@ const startCountdown = () => {
 
 /* ---------- 校验规则 ---------- */
 const validatePass = (rule: any, value: string, callback: any) => {
-  if (!value) callback(new Error("请输入密码"));
+  if (!value) callback(new Error('请输入密码'));
   else {
     if (registerForm.confirm_password) {
-      registerFormRef.value?.validateField("confirmPassword");
+      registerFormRef.value?.validateField('confirmPassword');
     }
     callback();
   }
 };
 
 const validatePass2 = (rule: any, value: string, callback: any) => {
-  if (!value) callback(new Error("请再次输入密码"));
+  if (!value) callback(new Error('请再次输入密码'));
   else if (value !== registerForm.password) {
-    callback(new Error("两次输入的密码不一致！"));
+    callback(new Error('两次输入的密码不一致！'));
   } else callback();
 };
 
 const validateAgreement = (rule: any, value: boolean, callback: any) => {
-  value ? callback() : callback(new Error("请先阅读并同意用户协议和隐私政策"));
+  value ? callback() : callback(new Error('请先阅读并同意用户协议和隐私政策'));
 };
 
 const registerRules = reactive<RegisterFormRules>({
   username: [
-    { required: true, message: "请输入用户昵称", trigger: "blur" },
-    { min: 1, max: 14, message: "昵称长度 1-14 个字符", trigger: "blur" },
+    { required: true, message: '请输入用户昵称', trigger: 'blur' },
+    { min: 1, max: 14, message: '昵称长度 1-14 个字符', trigger: 'blur' },
   ],
   email: [
-    { required: true, message: "请输入邮箱地址", trigger: "blur" },
+    { required: true, message: '请输入邮箱地址', trigger: 'blur' },
     {
-      type: "email",
-      message: "邮箱地址格式不正确",
-      trigger: ["blur", "change"],
+      type: 'email',
+      message: '邮箱地址格式不正确',
+      trigger: ['blur', 'change'],
     },
   ],
-  code: [{ required: true, message: "请输入邮箱验证码", trigger: "blur" }],
+  code: [{ required: true, message: '请输入邮箱验证码', trigger: 'blur' }],
   account: [
     // ✅ 统一为 account
-    { required: true, message: "请输入用户名", trigger: "blur" },
-    { min: 3, max: 15, message: "长度在 3 到 15 个字符", trigger: "blur" },
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' },
   ],
   password: [
-    { validator: validatePass, trigger: "blur", required: true },
-    { min: 6, message: "密码长度不能少于6位", trigger: "blur" },
+    { validator: validatePass, trigger: 'blur', required: true },
+    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' },
   ],
   confirm_password: [
-    { validator: validatePass2, trigger: "blur", required: true },
+    { validator: validatePass2, trigger: 'blur', required: true },
   ],
-  agree_terms: [{ validator: validateAgreement, trigger: "change" }],
+  agree_terms: [{ validator: validateAgreement, trigger: 'change' }],
 });
 
 /* ---------- 提交 ---------- */
@@ -280,7 +280,7 @@ const handleRegister = async () => {
 
   // 2. 如果验证失败，直接返回，并给出准确的提示
   if (!valid) {
-    ElMessage.error("请检查表单输入项！");
+    ElMessage.error('请检查表单输入项！');
     return;
   }
 
@@ -289,14 +289,14 @@ const handleRegister = async () => {
   try {
     const resp = await Register(registerForm);
     if (resp.code === 0) {
-      ElMessage.success("注册成功！");
-      router.replace("/login");
+      ElMessage.success('注册成功！');
+      router.replace('/login');
     } else {
-      ElMessage.error(resp.message || "注册失败");
+      ElMessage.error(resp.message || '注册失败');
     }
   } catch (err: any) {
     // 4. 这里只处理网络请求或后端接口的错误
-    ElMessage.error(err.message || "网络异常");
+    ElMessage.error(err.message || '网络异常');
     console.error(err);
   } finally {
     loading.value = false;
@@ -307,14 +307,14 @@ const handleRegister = async () => {
 const handleInternalSwitchChange = (val: boolean | string | number) => {
   if (val === true) {
     ElMessage.info({
-      message: "内部账号注册后需要管理员审核。",
+      message: '内部账号注册后需要管理员审核。',
       duration: 4000,
     });
   }
 };
 
 /* ---------- 跳转登录 ---------- */
-const goToLogin = () => router.push("/login");
+const goToLogin = () => router.push('/login');
 </script>
 
 <style scoped>

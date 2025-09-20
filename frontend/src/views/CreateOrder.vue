@@ -14,12 +14,18 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="姓名" prop="username">
-                <el-input v-model="order_form.username" placeholder="请输入姓名" />
+                <el-input
+                  v-model="order_form.username"
+                  placeholder="请输入姓名"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="学号" prop="student_id">
-                <el-input v-model="order_form.student_id" placeholder="请输入学号" />
+                <el-input
+                  v-model="order_form.student_id"
+                  placeholder="请输入学号"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -30,7 +36,7 @@
                 <el-select
                   v-model="order_form.campus_location"
                   placeholder="请选择校区"
-                  style="width: 100%;"
+                  style="width: 100%"
                 >
                   <el-option label="松山湖校区" value="松山湖校区" />
                   <el-option label="莞城校区" value="莞城校区" />
@@ -39,7 +45,10 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="院系" prop="department">
-                <el-input v-model="order_form.department" placeholder="请输入院系" />
+                <el-input
+                  v-model="order_form.department"
+                  placeholder="请输入院系"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -47,29 +56,44 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="手机号" prop="phone_number">
-                <el-input v-model="order_form.phone_number" placeholder="请输入手机号" />
+                <el-input
+                  v-model="order_form.phone_number"
+                  placeholder="请输入手机号"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="微信号" prop="wechat_id">
-                <el-input v-model="order_form.wechat_id" placeholder="请输入微信号" />
+                <el-input
+                  v-model="order_form.wechat_id"
+                  placeholder="请输入微信号"
+                />
               </el-form-item>
             </el-col>
           </el-row>
 
           <el-form-item label="详细地址" prop="address">
-            <el-input v-model="order_form.address" placeholder="请输入详细地址" />
+            <el-input
+              v-model="order_form.address"
+              placeholder="请输入详细地址"
+            />
           </el-form-item>
 
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="电脑机型" prop="device_model">
-                <el-input v-model="order_form.device_model" placeholder="如：联想小新Pro 14" />
+                <el-input
+                  v-model="order_form.device_model"
+                  placeholder="如：联想小新Pro 14"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="操作系统版本" prop="os_version">
-                <el-input v-model="order_form.os_version" placeholder="如：Windows 11, macOS Ventura" />
+                <el-input
+                  v-model="order_form.os_version"
+                  placeholder="如：Windows 11, macOS Ventura"
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -112,14 +136,14 @@
 
 <script setup lang="ts" name="CreateOrder">
 import { reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';          // ① 引入
+import { useRouter } from 'vue-router'; // ① 引入
 import { ElMessage, ElNotification } from 'element-plus';
 import type { FormInstance } from 'element-plus';
 import { type CreateOrderReq, order_rules } from '@/types/order.ts';
 import { CreateOrder } from '@/api/order.ts';
 
 /* ---------- 路由 ---------- */
-const router = useRouter();                        // ② 实例化
+const router = useRouter(); // ② 实例化
 
 /* ---------- 表单实例 & 数据 ---------- */
 const order_form_ref = ref<FormInstance | null>(null);
@@ -153,11 +177,11 @@ const submitForm = async () => {
         title: '提交成功',
         message: '您的报修订单已提交，我们会尽快处理！',
         type: 'success',
-        duration: 2000,   // 2 秒后自动关闭
+        duration: 2000, // 2 秒后自动关闭
       });
       order_form_ref.value.resetFields();
 
-      router.back();                 // ③ 返回上一页
+      router.back(); // ③ 返回上一页
     } else {
       ElMessage.error(res.message || '提交失败');
     }

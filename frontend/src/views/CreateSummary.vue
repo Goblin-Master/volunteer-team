@@ -13,7 +13,11 @@
         <el-form-item label="订单号">{{ order_id }}</el-form-item>
 
         <el-form-item label="问题类型" prop="problem_type" required>
-          <el-select v-model="form.problem_type" placeholder="请选择" class="w-full">
+          <el-select
+            v-model="form.problem_type"
+            placeholder="请选择"
+            class="w-full"
+          >
             <el-option label="硬件故障" value="硬件故障" />
             <el-option label="软件问题" value="软件问题" />
             <el-option label="网络异常" value="网络异常" />
@@ -44,11 +48,19 @@
         </el-form-item>
 
         <el-form-item label="接单人员" prop="receiver_name" required>
-          <el-input v-model="form.receiver_name" placeholder="请输入姓名,人名之间用 , 隔开" />
+          <el-input
+            v-model="form.receiver_name"
+            placeholder="请输入姓名,人名之间用 , 隔开"
+          />
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="handleSubmitSummary" :loading="loading">提交</el-button>
+          <el-button
+            type="primary"
+            @click="handleSubmitSummary"
+            :loading="loading"
+            >提交</el-button
+          >
           <el-button @click="onBack">返回</el-button>
         </el-form-item>
       </el-form>
@@ -56,7 +68,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name='CreateSummary'>
+<script setup lang="ts" name="CreateSummary">
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
@@ -75,7 +87,7 @@ const form = reactive<SummaryPayload>({
   problem_type: '',
   problem_description: '',
   repair_summary: '',
-  receiver_name: ''
+  receiver_name: '',
 });
 
 const rules = summary_rules;

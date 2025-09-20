@@ -31,34 +31,47 @@
       </div>
 
       <div v-else class="not-logged-in">
-        <p>您尚未登录，请先
+        <p>
+          您尚未登录，请先
           <router-link to="/login">登录</router-link>
         </p>
       </div>
 
       <template v-if="userStore.is_user_login">
         <div class="user-role-title">
-          {{ userStore.user_role === Role.COMMON_USER ? '普通用户' : '内部人员' }}
+          {{
+            userStore.user_role === Role.COMMON_USER ? '普通用户' : '内部人员'
+          }}
         </div>
 
         <div class="features-grid">
           <template v-if="userStore.user_role === Role.COMMON_USER">
             <div class="feature-card" @click="goToCreateOrderPage">
-              <div class="feature-icon-wrapper" style="background-color: #eef5ff;">
+              <div
+                class="feature-icon-wrapper"
+                style="background-color: #eef5ff"
+              >
                 <el-icon :size="32" color="#409eff"><Setting /></el-icon>
               </div>
               <h3 class="feature-title">我要报修</h3>
               <p class="feature-description">快速提交设备维修申请</p>
             </div>
-            <div class="feature-card" @click="goToOrderListPage">   <!-- ← 新增点击 -->
-              <div class="feature-icon-wrapper" style="background-color: #fef0f0;">
+            <div class="feature-card" @click="goToOrderListPage">
+              <!-- ← 新增点击 -->
+              <div
+                class="feature-icon-wrapper"
+                style="background-color: #fef0f0"
+              >
                 <el-icon :size="32" color="#f56c6c"><List /></el-icon>
               </div>
               <h3 class="feature-title">我的订单</h3>
               <p class="feature-description">查看并管理我的报修订单</p>
             </div>
             <div class="feature-card" @click="showIntroduction">
-              <div class="feature-icon-wrapper" style="background-color: #e9f8f1;">
+              <div
+                class="feature-icon-wrapper"
+                style="background-color: #e9f8f1"
+              >
                 <el-icon :size="32" color="#67c23a"><User /></el-icon>
               </div>
               <h3 class="feature-title">关于师友</h3>
@@ -67,15 +80,22 @@
           </template>
 
           <template v-else-if="userStore.user_role === Role.INTERNAL_USER">
-            <div class="feature-card" @click="goToOrderListPage">   <!-- ← 新增点击 -->
-              <div class="feature-icon-wrapper" style="background-color: #fef0f0;">
+            <div class="feature-card" @click="goToOrderListPage">
+              <!-- ← 新增点击 -->
+              <div
+                class="feature-icon-wrapper"
+                style="background-color: #fef0f0"
+              >
                 <el-icon :size="32" color="#f56c6c"><List /></el-icon>
               </div>
               <h3 class="feature-title">未处理订单</h3>
               <p class="feature-description">查看并处理维修订单</p>
             </div>
             <div class="feature-card" @click="goToSummaryListPage">
-              <div class="feature-icon-wrapper" style="background-color: #fdf6ec;">
+              <div
+                class="feature-icon-wrapper"
+                style="background-color: #fdf6ec"
+              >
                 <el-icon :size="32" color="#e6a23c"><Document /></el-icon>
               </div>
               <h3 class="feature-title">修机总结</h3>
@@ -91,14 +111,25 @@
     </main>
 
     <el-dialog v-model="image_preview_visible" width="90%" center>
-      <div style="text-align: center;">
-        <el-image :src="userStore.full_avatar_url" fit="contain" style="max-width: 100%; max-height: 80vh;"></el-image>
+      <div style="text-align: center">
+        <el-image
+          :src="userStore.full_avatar_url"
+          fit="contain"
+          style="max-width: 100%; max-height: 80vh"
+        ></el-image>
       </div>
     </el-dialog>
 
     <el-dialog v-model="dialog_visible" title="更换头像" width="350px" center>
       <div class="upload-options">
-        <el-button type="primary" plain size="large" :icon="FolderOpened" @click="selectFromAlbum">从图库选择</el-button>
+        <el-button
+          type="primary"
+          plain
+          size="large"
+          :icon="FolderOpened"
+          @click="selectFromAlbum"
+          >从图库选择</el-button
+        >
       </div>
     </el-dialog>
 
@@ -109,21 +140,31 @@
       custom-class="no-padding-dialog"
     >
       <div class="introduction-image-container">
-        <el-image :src="introduction_image" fit="contain" style="width: 100%; height: 100%;"/>
+        <el-image
+          :src="introduction_image"
+          fit="contain"
+          style="width: 100%; height: 100%"
+        />
       </div>
     </el-dialog>
 
-    <input ref="file_input_ref" type="file" accept="image/*" style="display: none" @change="handleFileSelected" />
+    <input
+      ref="file_input_ref"
+      type="file"
+      accept="image/*"
+      style="display: none"
+      @change="handleFileSelected"
+    />
   </div>
 </template>
 
 <script setup lang="ts" name="Home">
 import { Role } from '@/enums/role.ts';
 import { ref, onMounted, onUnmounted } from 'vue';
-import { useRouter } from "vue-router";
+import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { useUserStore } from "@/stores/user";
-import { updateAvatar } from "@/api/updateAvatar.ts";
+import { useUserStore } from '@/stores/user';
+import { updateAvatar } from '@/api/updateAvatar.ts';
 import {
   Camera,
   Edit,
@@ -131,7 +172,7 @@ import {
   User,
   List,
   Document,
-  FolderOpened
+  FolderOpened,
 } from '@element-plus/icons-vue';
 
 import introduction_image from '@/assets/introduce.jpg';
@@ -243,7 +284,9 @@ onUnmounted(() => {
   background-color: #f5f7fa;
   padding: 40px 20px;
   box-sizing: border-box;
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+  font-family:
+    'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', Arial, sans-serif;
 }
 
 .header-title {
@@ -337,7 +380,9 @@ onUnmounted(() => {
   border-radius: 12px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
   cursor: pointer;
 }
 
