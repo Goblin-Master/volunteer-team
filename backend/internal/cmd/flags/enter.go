@@ -34,7 +34,8 @@ func migrateTables() {
 		&model.Summary{},
 	)
 	if err != nil {
-		global.Log.Error("数据库迁移失败")
+		global.Log.Errorf("数据库迁移失败: %v", err)
+		return
 	}
 	global.Log.Info("数据库迁移成功！")
 }
