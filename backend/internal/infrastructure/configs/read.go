@@ -2,10 +2,11 @@ package configs
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"path/filepath"
 	"runtime"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 func GetRootPath(myPath string) string {
@@ -33,5 +34,4 @@ func LoadConfig() {
 	if err := viper.Unmarshal(&Conf); err != nil {
 		panic(fmt.Errorf("配置解析失败: %w", err))
 	}
-	return
 }

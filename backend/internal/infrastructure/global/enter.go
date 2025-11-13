@@ -1,13 +1,14 @@
 package global
 
 import (
-	"github.com/go-redis/redis/v8"
-	"go.uber.org/zap"
-	"gorm.io/gorm"
 	"volunteer-team/backend/internal/infrastructure/pkg/mysqlx"
 	"volunteer-team/backend/internal/infrastructure/pkg/syncx"
 	"volunteer-team/backend/internal/infrastructure/pkg/zapx"
 	"volunteer-team/backend/internal/infrastructure/utils/snowflake"
+
+	"github.com/go-redis/redis/v8"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 var (

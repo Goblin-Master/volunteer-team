@@ -23,7 +23,7 @@ type App struct {
 }
 
 func (app *App) Link() string {
-	return fmt.Sprintf("%s:%s", app.Host, app.Port)
+	return fmt.Sprintf("%s:%d", app.Host, app.Port)
 }
 
 type DB struct {
