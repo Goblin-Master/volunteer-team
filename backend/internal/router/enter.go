@@ -18,7 +18,6 @@ func RunServer() {
 	r, err := listen()
 	if err != nil {
 		panic(err.Error())
-		return
 	}
 	err = r.Run(fmt.Sprintf("%s:%d", configs.Conf.App.Host, configs.Conf.App.Port)) // 启动 Gin 服务器
 	if err != nil {
