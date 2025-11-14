@@ -11,11 +11,11 @@
       <!-- 详情列表 -->
       <el-descriptions :column="2" border>
         <el-descriptions-item label="报修时间">
-          {{ formatTime(detail.ctime) }}
+          {{ formatTime(detail.createTime) }}
         </el-descriptions-item>
 
         <el-descriptions-item label="学号">
-          {{ detail.student_id || '-' }}
+          {{ detail.studentID || '-' }}
         </el-descriptions-item>
 
         <el-descriptions-item label="姓名">
@@ -23,7 +23,7 @@
         </el-descriptions-item>
 
         <el-descriptions-item label="校区">
-          {{ detail.campus_location || '-' }}
+          {{ detail.campusLocation || '-' }}
         </el-descriptions-item>
 
         <el-descriptions-item label="学院">
@@ -31,11 +31,11 @@
         </el-descriptions-item>
 
         <el-descriptions-item label="手机号">
-          {{ detail.phone_number || '-' }}
+          {{ detail.phoneNumber || '-' }}
         </el-descriptions-item>
 
         <el-descriptions-item label="微信">
-          {{ detail.wechat_id || '-' }}
+          {{ detail.wechatID || '-' }}
         </el-descriptions-item>
 
         <el-descriptions-item label="地址">
@@ -43,15 +43,15 @@
         </el-descriptions-item>
 
         <el-descriptions-item label="设备型号">
-          {{ detail.device_model || '-' }}
+          {{ detail.deviceModel || '-' }}
         </el-descriptions-item>
 
         <el-descriptions-item label="操作系统">
-          {{ detail.os_version || '-' }}
+          {{ detail.osVersion || '-' }}
         </el-descriptions-item>
 
         <el-descriptions-item label="问题描述" :span="2">
-          {{ detail.problem_description || '-' }}
+          {{ detail.problemDescription || '-' }}
         </el-descriptions-item>
 
         <el-descriptions-item label="备注" :span="2">
@@ -68,30 +68,30 @@ import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { ArrowLeft } from '@element-plus/icons-vue';
 import { GetOrderDetail } from '@/api/order.ts';
-import type { OrderDetailResp } from '@/types/order';
+import type { OrderDetailModel } from '@/types/order';
 
 /* ---------- 数据 ---------- */
 const route = useRoute();
 const router = useRouter();
 
 const loading = ref(true);
-const detail = ref<OrderDetailResp>({} as OrderDetailResp);
+const detail = ref<OrderDetailModel>({} as OrderDetailModel);
 
 /* ---------- 生命周期 ---------- */
 onMounted(() => {
-  const order_id = String(route.query.order_id);
-  if (!order_id) {
+  const orderID = String(route.query.orderID);
+  if (!orderID) {
     ElMessage.error('缺少订单 ID');
     return;
   }
-  fetchDetail(order_id);
+  fetchDetail(orderID);
 });
 
 /* ---------- 方法 ---------- */
-async function fetchDetail(order_id: string) {
+async function fetchDetail(orderID: string) {
   try {
     loading.value = true;
-    const res = await GetOrderDetail(order_id);
+    const res = await GetOrderDetail(orderID);
     if (res.code === 0 && res.data) {
       detail.value = res.data;
     } else {

@@ -133,7 +133,7 @@ import { ref, reactive, computed } from 'vue';
 import { User, Lock, Message } from '@element-plus/icons-vue'; // [修改点 2] 移除 Iphone
 import { ElMessage } from 'element-plus';
 import { Login, GetLoginCode } from '@/api/login.ts';
-import type { LoginResp } from '@/types/login.ts';
+import type { LoginModel } from '@/types/login.ts';
 import type BaseResp from '@/types/base.ts';
 import type { FormInstance } from 'element-plus';
 import { useUserStore } from '@/stores/user';
@@ -231,18 +231,18 @@ const handleLogin = (formEl?: FormInstance) => {
           data = {
             account: accountForm.account,
             password: accountForm.password,
-            login_type: 'account', // 建议增加登录类型字段
+            loginType: 'account',
           };
         } else {
           // activeTab.value === 'email'
           data = {
             email: emailForm.email,
             code: emailForm.code,
-            login_type: 'email', // 建议增加登录类型字段
+            loginType: 'email',
           };
         }
 
-        const res: BaseResp<LoginResp> = await Login(data);
+        const res: BaseResp<LoginModel> = await Login(data);
 
         if (res.code === 0) {
           ElMessage.success('登录成功!');

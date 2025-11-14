@@ -10,11 +10,11 @@
         label-width="90px"
         size="default"
       >
-        <el-form-item label="订单号">{{ order_id }}</el-form-item>
+        <el-form-item label="订单号">{{ form.orderID }}</el-form-item>
 
-        <el-form-item label="问题类型" prop="problem_type" required>
+        <el-form-item label="问题类型" prop="problemType" required>
           <el-select
-            v-model="form.problem_type"
+            v-model="form.problemType"
             placeholder="请选择"
             class="w-full"
           >
@@ -25,9 +25,9 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="问题描述" prop="problem_description" required>
+        <el-form-item label="问题描述" prop="problemDescription" required>
           <el-input
-            v-model="form.problem_description"
+            v-model="form.problemDescription"
             type="textarea"
             :rows="3"
             maxlength="200"
@@ -36,9 +36,9 @@
           />
         </el-form-item>
 
-        <el-form-item label="修机总结" prop="repair_summary" required>
+        <el-form-item label="修机总结" prop="repairSummary" required>
           <el-input
-            v-model="form.repair_summary"
+            v-model="form.repairSummary"
             type="textarea"
             :rows="4"
             maxlength="500"
@@ -47,9 +47,9 @@
           />
         </el-form-item>
 
-        <el-form-item label="接单人员" prop="receiver_name" required>
+        <el-form-item label="接单人员" prop="receiverName" required>
           <el-input
-            v-model="form.receiver_name"
+            v-model="form.receiverName"
             placeholder="请输入姓名,人名之间用 , 隔开"
           />
         </el-form-item>
@@ -73,27 +73,29 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import type { FormInstance } from 'element-plus';
-import { summary_rules, type SummaryPayload } from '@/types/summary';
+import { summaryModelRules, type SummaryItemModel } from '@/types/summary';
 import { CreateSummary } from '@/api/summary';
 
 const route = useRoute();
 const router = useRouter();
-const order_id = String(route.query.order_id);
+const orderID = String(route.query.orderID);
 const formRef = ref<FormInstance>();
 const loading = ref(false);
 
-const form = reactive<SummaryPayload>({
-  order_id,
-  problem_type: '',
-  problem_description: '',
-  repair_summary: '',
-  receiver_name: '',
+const form = reactive<SummaryItemModel>({
+  summaryID: '',
+  orderID: orderID,
+  updateTime: 0,
+  problemType: '',
+  problemDescription: '',
+  repairSummary: '',
+  receiverName: '',
 });
 
-const rules = summary_rules;
+const rules = summaryModelRules;
 
 onMounted(() => {
-  if (!order_id) {
+  if (!orderID) {
     ElMessage.error('缺少订单参数');
     router.back();
   }

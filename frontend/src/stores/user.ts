@@ -1,16 +1,16 @@
 // src/stores/user.ts
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { LoginResp } from '@/types/login.ts';
+import type { LoginModel } from '@/types/login.ts';
 const base_url: string = 'http://127.0.0.1:9000/uploads/';
 
 // 这是一个简化的 token 解析函数，实际应用中建议使用 jwt-decode 等库
-const parse_token = (token: string) => {
+const parseToken = (token: string) => {
   try {
-    const payload_base64 = token.split('.')[1];
-    const payload = JSON.parse(atob(payload_base64));
+    const payloadBase64 = token.split('.')[1];
+    const payload = JSON.parse(atob(payloadBase64));
     return {
-      role: payload.role_id || 2, // 默认 role 为 2 (普通用户)
+      role: payload.role || 1,
     };
   } catch (error) {
     console.error('Failed to parse token:', error);
@@ -21,24 +21,24 @@ const parse_token = (token: string) => {
 export const useUserStore = defineStore('user', () => {
   // state
   const token = ref(localStorage.getItem('user-token') || null);
-  const user_name = ref(localStorage.getItem('user-username') || null);
+  const username = ref(localStorage.getItem('user-username') || null);
   const avatar = ref(localStorage.getItem('user-avatar') || null);
 
   // getters
   // 检查用户是否已登录
-  const is_user_login = computed(() => !!token.value);
+  const isUserLogin = computed(() => !!token.value);
 
   // 核心：使用 computed 来实时解析 token 并返回 role
-  const user_role = computed(() => {
+  const userRole = computed(() => {
     if (token.value) {
-      const parsed = parse_token(token.value);
+      const parsed = parseToken(token.value);
       return parsed ? parsed.role : null;
     }
     return null;
   });
 
   // 获取完整的头像 URL
-  const full_avatar_url = computed(() => {
+  const fullAvatarUrl = computed(() => {
     if (avatar.value) {
       return `${base_url}${avatar.value}`;
     }
@@ -47,10 +47,10 @@ export const useUserStore = defineStore('user', () => {
   });
 
   // actions
-  const setUserInfo = (userData: LoginResp) => {
+  const setUserInfo = (userData: LoginModel) => {
     // 1. 更新 Pinia store
     token.value = userData.token;
-    user_name.value = userData.username;
+    username.value = userData.username;
     avatar.value = userData.avatar;
 
     // 2. 同时将数据持久化到 localStorage
@@ -62,7 +62,7 @@ export const useUserStore = defineStore('user', () => {
   const logout = () => {
     // 1. 清空 Pinia store
     token.value = null;
-    user_name.value = null;
+    username.value = null;
     avatar.value = null;
 
     // 2. 清空 localStorage
@@ -71,18 +71,18 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('user-avatar');
   };
 
-  const updateAvatar = (new_avatar_url: string) => {
-    avatar.value = new_avatar_url;
-    localStorage.setItem('user-avatar', new_avatar_url);
+  const updateAvatar = (newAvatarUrl: string) => {
+    avatar.value = newAvatarUrl;
+    localStorage.setItem('user-avatar', newAvatarUrl);
   };
 
   return {
     token,
-    is_user_login,
-    user_name,
+    isUserLogin,
+    username,
     avatar,
-    user_role,
-    full_avatar_url,
+    userRole,
+    fullAvatarUrl,
     setUserInfo,
     logout,
     updateAvatar,

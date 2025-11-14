@@ -6,18 +6,18 @@
     <main class="main-content">
       <el-card class="order-card" shadow="never">
         <!-- 订单列表 -->
-        <div v-if="order_list.length" class="order-list">
+        <div v-if="orderList.length" class="order-list">
           <div
-            v-for="item in order_list"
-            :key="item.order_id"
+            v-for="item in orderList"
+            :key="item.orderID"
             class="order-item"
           >
             <!-- 左侧信息 -->
             <div class="order-left">
-              <div class="order-time">{{ formatTime(item.ctime) }}</div>
+              <div class="order-time">{{ formatTime(item.createTime) }}</div>
               <div class="order-row">
                 <span class="label">问题描述：</span>
-                <span>{{ item.problem_description }}</span>
+                <span>{{ item.problemDescription }}</span>
               </div>
             </div>
 
@@ -27,17 +27,17 @@
                 type="primary"
                 size="small"
                 plain
-                @click="goOrderDetail(item.order_id)"
+                @click="goOrderDetail(item.orderID)"
               >
                 查看详情
               </el-button>
 
               <el-button
-                v-if="user_role === Role.INTERNAL_USER"
+                v-if="userRole === Role.INTERNAL_USER"
                 type="warning"
                 size="small"
                 plain
-                @click="goWriteSummary(item.order_id)"
+                @click="goWriteSummary(item.orderID)"
               >
                 写修机总结
               </el-button>
@@ -59,14 +59,14 @@ import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/stores/user.ts';
 import { GetOrderList } from '@/api/order.ts';
 import { useRouter } from 'vue-router';
-import type { OrderItem } from '@/types/order.ts';
+import type { OrderItemModel } from '@/types/order.ts';
 
 /* ---------- 数据 ---------- */
-const user_store = useUserStore();
+const userStore = useUserStore();
 const router = useRouter();
 
-const order_list = ref<OrderItem[]>([]);
-const user_role = user_store.user_role;
+const orderList = ref<OrderItemModel[]>([]);
+const userRole = userStore.userRole;
 
 /* ---------- 生命周期 ---------- */
 onMounted(() => {
@@ -78,7 +78,7 @@ const fetchOrderList = async () => {
   try {
     const res = await GetOrderList();
     if (res.code === 0) {
-      order_list.value = res.data?.orders ?? [];
+      orderList.value = res.data?.orders ?? [];
     } else {
       ElMessage.error(res.message || '获取订单失败');
     }
@@ -87,8 +87,8 @@ const fetchOrderList = async () => {
   }
 };
 
-const formatTime = (unix_ms: number) => {
-  const date = new Date(unix_ms);
+const formatTime = (unixMs: number) => {
+  const date = new Date(unixMs);
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
@@ -97,12 +97,12 @@ const formatTime = (unix_ms: number) => {
   return `${y}-${m}-${d} ${h}:${min}`;
 };
 
-const goOrderDetail = (order_id: string) => {
-  router.push({ name: 'OrderDetail', query: { order_id } });
+const goOrderDetail = (orderID: string) => {
+  router.push({ name: 'OrderDetail', query: { orderID } });
 };
 
-const goWriteSummary = (order_id: string) => {
-  router.push({ name: 'CreateSummary', query: { order_id } });
+const goWriteSummary = (orderID: string) => {
+  router.push({ name: 'CreateSummary', query: { orderID } });
 };
 </script>
 

@@ -5,36 +5,30 @@
     <main class="main-content">
       <el-card class="order-card">
         <el-form
-          ref="order_form_ref"
-          :model="order_form"
-          :rules="order_rules"
+          ref="orderFormRef"
+          :model="orderForm"
+          :rules="orderModelRules"
           label-position="top"
           class="order-form"
         >
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="姓名" prop="username">
-                <el-input
-                  v-model="order_form.username"
-                  placeholder="请输入姓名"
-                />
+                <el-input v-model="orderForm.username" placeholder="请输入姓名" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="学号" prop="student_id">
-                <el-input
-                  v-model="order_form.student_id"
-                  placeholder="请输入学号"
-                />
+              <el-form-item label="学号" prop="studentID">
+                <el-input v-model="orderForm.studentID" placeholder="请输入学号" />
               </el-form-item>
             </el-col>
           </el-row>
 
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="所在校区" prop="campus_location">
+              <el-form-item label="所在校区" prop="campusLocation">
                 <el-select
-                  v-model="order_form.campus_location"
+                  v-model="orderForm.campusLocation"
                   placeholder="请选择校区"
                   style="width: 100%"
                 >
@@ -45,62 +39,44 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="院系" prop="department">
-                <el-input
-                  v-model="order_form.department"
-                  placeholder="请输入院系"
-                />
+                <el-input v-model="orderForm.department" placeholder="请输入院系" />
               </el-form-item>
             </el-col>
           </el-row>
 
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="手机号" prop="phone_number">
-                <el-input
-                  v-model="order_form.phone_number"
-                  placeholder="请输入手机号"
-                />
+              <el-form-item label="手机号" prop="phoneNumber">
+                <el-input v-model="orderForm.phoneNumber" placeholder="请输入手机号" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="微信号" prop="wechat_id">
-                <el-input
-                  v-model="order_form.wechat_id"
-                  placeholder="请输入微信号"
-                />
+              <el-form-item label="微信号" prop="wechatID">
+                <el-input v-model="orderForm.wechatID" placeholder="请输入微信号" />
               </el-form-item>
             </el-col>
           </el-row>
 
           <el-form-item label="详细地址" prop="address">
-            <el-input
-              v-model="order_form.address"
-              placeholder="请输入详细地址"
-            />
+            <el-input v-model="orderForm.address" placeholder="请输入详细地址" />
           </el-form-item>
 
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="电脑机型" prop="device_model">
-                <el-input
-                  v-model="order_form.device_model"
-                  placeholder="如：联想小新Pro 14"
-                />
+              <el-form-item label="电脑机型" prop="deviceModel">
+                <el-input v-model="orderForm.deviceModel" placeholder="如：联想小新Pro 14" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="操作系统版本" prop="os_version">
-                <el-input
-                  v-model="order_form.os_version"
-                  placeholder="如：Windows 11, macOS Ventura"
-                />
+              <el-form-item label="操作系统版本" prop="osVersion">
+                <el-input v-model="orderForm.osVersion" placeholder="如：Windows 11, macOS Ventura" />
               </el-form-item>
             </el-col>
           </el-row>
 
-          <el-form-item label="问题描述" prop="problem_description">
+          <el-form-item label="问题描述" prop="problemDescription">
             <el-input
-              v-model="order_form.problem_description"
+              v-model="orderForm.problemDescription"
               type="textarea"
               :rows="4"
               maxlength="500"
@@ -111,7 +87,7 @@
 
           <el-form-item label="备注（选填）" prop="notes">
             <el-input
-              v-model="order_form.notes"
+              v-model="orderForm.notes"
               type="textarea"
               :rows="2"
               placeholder="其他需要说明的事项"
@@ -139,38 +115,38 @@ import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router'; // ① 引入
 import { ElMessage, ElNotification } from 'element-plus';
 import type { FormInstance } from 'element-plus';
-import { type CreateOrderReq, order_rules } from '@/types/order.ts';
+import { type CreateOrderItem, orderModelRules } from '@/types/order.ts';
 import { CreateOrder } from '@/api/order.ts';
 
 /* ---------- 路由 ---------- */
 const router = useRouter(); // ② 实例化
 
 /* ---------- 表单实例 & 数据 ---------- */
-const order_form_ref = ref<FormInstance | null>(null);
+const orderFormRef = ref<FormInstance | null>(null);
 const isLoading = ref(false);
 
-const order_form: CreateOrderReq = reactive({
+const orderForm: CreateOrderItem = reactive({
   username: '',
-  student_id: '',
-  campus_location: '',
+  studentID: '',
+  campusLocation: '',
   department: '',
-  phone_number: '',
-  wechat_id: '',
+  phoneNumber: '',
+  wechatID: '',
   address: '',
-  device_model: '',
-  os_version: '',
-  problem_description: '',
+  deviceModel: '',
+  osVersion: '',
+  problemDescription: '',
   notes: '',
 });
 
 /* ---------- 提交 ---------- */
 const submitForm = async () => {
-  if (!order_form_ref.value) return;
+  if (!orderFormRef.value) return;
   isLoading.value = true;
 
   try {
-    await order_form_ref.value.validate();
-    const res = await CreateOrder(order_form);
+    await orderFormRef.value.validate();
+    const res = await CreateOrder(orderForm);
 
     if (res.code === 0) {
       ElNotification({
@@ -179,7 +155,7 @@ const submitForm = async () => {
         type: 'success',
         duration: 2000, // 2 秒后自动关闭
       });
-      order_form_ref.value.resetFields();
+      orderFormRef.value.resetFields();
 
       router.back(); // ③ 返回上一页
     } else {

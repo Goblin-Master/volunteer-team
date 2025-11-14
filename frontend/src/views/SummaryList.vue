@@ -9,27 +9,27 @@
         <div v-if="summaries.length" class="summary-list">
           <div
             v-for="item in summaries"
-            :key="item.summary_id"
+            :key="item.summaryID"
             class="summary-item"
           >
             <!-- 左侧信息 -->
             <div class="summary-left">
-              <div class="summary-time">{{ formatTime(item.utime) }}</div>
+              <div class="summary-time">{{ formatTime(item.updateTime || 0) }}</div>
               <div class="summary-row">
                 <span class="label">问题类型：</span>
-                <span>{{ item.problem_type }}</span>
+                <span>{{ item.problemType }}</span>
               </div>
               <div class="summary-row">
                 <span class="label">问题描述：</span>
-                <span>{{ item.problem_description }}</span>
+                <span>{{ item.problemDescription }}</span>
               </div>
               <div class="summary-row">
                 <span class="label">修机总结：</span>
-                <span>{{ item.repair_summary }}</span>
+                <span>{{ item.repairSummary }}</span>
               </div>
               <div class="summary-row">
                 <span class="label">接单人员：</span>
-                <span>{{ item.receiver_name }}</span>
+                <span>{{ item.receiverName }}</span>
               </div>
             </div>
 
@@ -39,7 +39,7 @@
                 type="primary"
                 size="small"
                 plain
-                @click="goOrderDetail(item.order_id)"
+                @click="goOrderDetail(item.orderID)"
               >
                 查看详情
               </el-button>
@@ -47,7 +47,7 @@
                 type="warning"
                 size="small"
                 plain
-                @click="goUpdateSummary(item.summary_id)"
+                @click="goUpdateSummary(item.summaryID || '')"
               >
                 修改总结
               </el-button>
@@ -67,11 +67,11 @@ import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
 import { GetSummaryList } from '@/api/summary';
-import type { SummaryItem, SummaryListResp } from '@/types/summary';
+import type { SummaryItemModel } from '@/types/summary';
 
 /* ---------- 数据 ---------- */
 const router = useRouter();
-const summaries = ref<SummaryItem[]>([]);
+const summaries = ref<SummaryItemModel[]>([]);
 
 /* ---------- 生命周期 ---------- */
 onMounted(() => {
@@ -83,7 +83,7 @@ const fetchSummaryList = async () => {
   try {
     const res = await GetSummaryList();
     if (res.code === 0) {
-      summaries.value = (res.data as SummaryListResp)?.summaries ?? [];
+      summaries.value = res.data?.summaries ?? [];
     } else {
       ElMessage.error(res.message || '获取修机总结失败');
     }
@@ -92,8 +92,8 @@ const fetchSummaryList = async () => {
   }
 };
 
-const formatTime = (unix_ms: number) => {
-  const date = new Date(unix_ms);
+const formatTime = (unixMs: number) => {
+  const date = new Date(unixMs);
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
@@ -102,16 +102,16 @@ const formatTime = (unix_ms: number) => {
   return `${y}-${m}-${d} ${h}:${min}`;
 };
 
-const goOrderDetail = (order_id: string) => {
-  router.push({ name: 'OrderDetail', query: { order_id } });
+const goOrderDetail = (orderID: string) => {
+  router.push({ name: 'OrderDetail', query: { orderID } });
 };
 
-const goUpdateSummary = (summary_id: string) => {
+const goUpdateSummary = (summaryID: string) => {
   // 整行数据一起带走
-  const target = summaries.value.find((v) => v.summary_id === summary_id);
+  const target = summaries.value.find((v) => v.summaryID === summaryID);
   router.push({
     name: 'UpdateSummary',
-    query: { summary_id: String(summary_id) },
+    query: { summaryID: String(summaryID) },
     state: { preload: JSON.stringify(target) },
   });
 };

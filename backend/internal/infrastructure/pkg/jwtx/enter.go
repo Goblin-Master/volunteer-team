@@ -22,7 +22,7 @@ const (
 
 type MyClaims struct {
 	UserID int64 `json:"user_id"`
-	Role   Role  `json:"role_id"`
+	Role   Role  `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -32,11 +32,11 @@ type Claims struct {
 }
 
 var (
-	DEFAULT_ERROR     = errors.New("jwt默认错误")
-	TOKEN_EMPTY       = errors.New("token为空")
-	TOKEN_EXPERIED    = errors.New("token已过期")
-	TOKEN_INVALID     = errors.New("token无效")
-	PERMISSION_DENIED = errors.New("权限不足")
+	ErrDefault          = errors.New("jwt default error")
+	ErrTokenEmpty       = errors.New("token is empty")
+	ErrTokenExpired     = errors.New("token has expired")
+	ErrTokenInvalid     = errors.New("token is invalid")
+	ErrPermissionDenied = errors.New("permission denied")
 )
 
 func GenToken(c Claims) (string, error) {
@@ -61,7 +61,7 @@ func GenToken(c Claims) (string, error) {
 func ParseToken(c *gin.Context) (int64, Role, error) {
 	data := c.GetHeader("Authorization")
 	if data == "" {
-		return 0, 0, TOKEN_EMPTY
+		return 0, 0, ErrTokenEmpty
 	}
 	token := strings.TrimPrefix(data, "Bearer ")
 	// 解析token
@@ -71,21 +71,21 @@ func ParseToken(c *gin.Context) (int64, Role, error) {
 	})
 	if err != nil {
 		if strings.Contains(err.Error(), "token is expired") {
-			return 0, 0, TOKEN_EXPERIED
+			return 0, 0, ErrTokenExpired
 		}
 		if strings.Contains(err.Error(), "signature is invalid") {
-			return 0, 0, TOKEN_INVALID
+			return 0, 0, ErrTokenInvalid
 		}
 		if strings.Contains(err.Error(), "token contains an invalid") {
-			return 0, 0, TOKEN_INVALID
+			return 0, 0, ErrTokenInvalid
 		}
 		fmt.Println(err)
-		return 0, 0, DEFAULT_ERROR
+		return 0, 0, ErrDefault
 	}
 	if claims, ok := t.Claims.(*MyClaims); ok && t.Valid {
 		return claims.UserID, claims.Role, nil
 	}
-	return 0, 0, DEFAULT_ERROR
+	return 0, 0, ErrDefault
 }
 
 // 必须使用了鉴权中间件才能用

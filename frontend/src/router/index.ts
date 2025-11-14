@@ -83,7 +83,7 @@ import { useUserStore } from '@/stores/user';
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
-  const isLogin = userStore.is_user_login;
+  const isLogin = userStore.isUserLogin;
 
   // 定义需要重定向的公开页面
   const publicPages = ['Login', 'Register', 'ResetPassword'];

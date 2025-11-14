@@ -4,7 +4,7 @@
       <span class="circle-text">!</span>
     </div>
     <div
-      v-if="is_modal_open"
+      v-if="isModalOpen"
       class="notice-modal-overlay"
       @click.self="toggleModal"
     >
@@ -66,20 +66,20 @@ import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 // State
-const is_modal_open = ref(false);
+const isModalOpen = ref(false);
 
 // Router
 const route = useRoute();
-const login_paths = ['/login', '/register', '/resetPassword']; // 根据你的路由路径进行修改
+const loginPaths = ['/login', '/register', '/resetPassword'];
 
 // Computed
 const shouldShow = computed(() => {
-  return !login_paths.includes(route.path);
+  return !loginPaths.includes(route.path);
 });
 
 // Methods
 const toggleModal = () => {
-  is_modal_open.value = !is_modal_open.value;
+  isModalOpen.value = !isModalOpen.value;
 };
 </script>
 

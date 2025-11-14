@@ -18,7 +18,7 @@ func Authentication(role jwtx.Role) gin.HandlerFunc {
 			return
 		}
 		if Role < role {
-			response.Response(c, nil, jwtx.PERMISSION_DENIED)
+			response.Response(c, nil, jwtx.ErrPermissionDenied)
 			c.Abort()
 			return
 		}

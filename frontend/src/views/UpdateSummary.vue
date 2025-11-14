@@ -4,18 +4,18 @@
       <div class="card-title">更新修机总结</div>
 
       <el-form
-        ref="form_ref"
+        ref="formRef"
         :model="form"
         :rules="rules"
         label-width="90px"
         size="default"
       >
-        <el-form-item label="订单号">{{ form.order_id }}</el-form-item>
+        <el-form-item label="订单号">{{ form.orderID }}</el-form-item>
 
         <!-- 问题类型 -->
-        <el-form-item label="问题类型" prop="problem_type" required>
+        <el-form-item label="问题类型" prop="problemType" required>
           <el-select
-            v-model="form.problem_type"
+            v-model="form.problemType"
             placeholder="请选择"
             class="w_full"
             :class="{ old: isCache }"
@@ -29,9 +29,9 @@
         </el-form-item>
 
         <!-- 问题描述 -->
-        <el-form-item label="问题描述" prop="problem_description" required>
+        <el-form-item label="问题描述" prop="problemDescription" required>
           <el-input
-            v-model="form.problem_description"
+            v-model="form.problemDescription"
             type="textarea"
             :rows="3"
             maxlength="200"
@@ -43,9 +43,9 @@
         </el-form-item>
 
         <!-- 修机总结 -->
-        <el-form-item label="修机总结" prop="repair_summary" required>
+        <el-form-item label="修机总结" prop="repairSummary" required>
           <el-input
-            v-model="form.repair_summary"
+            v-model="form.repairSummary"
             type="textarea"
             :rows="4"
             maxlength="500"
@@ -57,9 +57,9 @@
         </el-form-item>
 
         <!-- 接单人员 -->
-        <el-form-item label="接单人员" prop="receiver_name" required>
+        <el-form-item label="接单人员" prop="receiverName" required>
           <el-input
-            v-model="form.receiver_name"
+            v-model="form.receiverName"
             placeholder="请输入姓名,人名之间用 , 隔开"
             :class="{ old: isCache }"
             @input="onceChange"
@@ -70,12 +70,12 @@
         <el-form-item>
           <el-button
             type="primary"
-            @click="handle_submit_summary"
+            @click="handleSubmitSummary"
             :loading="loading"
           >
             提交
           </el-button>
-          <el-button @click="on_back">返回</el-button>
+          <el-button @click="onBack">返回</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -87,30 +87,27 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import type { FormInstance } from 'element-plus';
-import {
-  summary_rules,
-  type SummaryPayload,
-  type SummaryItem,
-  type UpdateSummaryReq,
-} from '@/types/summary';
+import { summaryModelRules, type SummaryItemModel, type UpdateSummaryModel } from '@/types/summary';
 import { GetSummaryDetail, UpdateSummary } from '@/api/summary';
 
 /* ---------------- 基础准备 ---------------- */
 const route = useRoute();
 const router = useRouter();
-const summary_id = String(route.query.summary_id);
-const form_ref = ref<FormInstance>();
+const summaryID = String(route.query.summaryID);
+const formRef = ref<FormInstance>();
 const loading = ref(false);
 
 /* 表单 */
-const form = reactive<SummaryPayload>({
-  order_id: '',
-  problem_type: '',
-  problem_description: '',
-  repair_summary: '',
-  receiver_name: '',
+const form = reactive<SummaryItemModel>({
+  summaryID: '',
+  orderID: '',
+  updateTime: 0,
+  problemType: '',
+  problemDescription: '',
+  repairSummary: '',
+  receiverName: '',
 });
-const rules = summary_rules;
+const rules = summaryModelRules;
 
 /* 旧数据标记 */
 const isCache = ref(true);
@@ -118,7 +115,7 @@ const onceChange = () => (isCache.value = false);
 
 /* ---------------- 生命周期 ---------------- */
 onMounted(async () => {
-  if (!summary_id) {
+  if (!summaryID) {
     ElMessage.error('缺少总结参数');
     return router.back();
   }
@@ -126,21 +123,21 @@ onMounted(async () => {
   const cache = history.state?.preload as string | undefined;
   if (cache) {
     try {
-      const data = JSON.parse(cache) as SummaryItem;
+      const data = JSON.parse(cache) as SummaryItemModel;
       Object.assign(form, data);
       isCache.value = true; // 保持灰
       return;
     } catch {}
   }
 
-  await load_old_summary();
+  await loadOldSummary();
   isCache.value = false; // 接口完成 → 正常颜色
 });
 
 /* ---------------- 方法 ---------------- */
-async function load_old_summary() {
+async function loadOldSummary() {
   try {
-    const res = await GetSummaryDetail(summary_id);
+    const res = await GetSummaryDetail(summaryID);
     if (res.code === 0) {
       Object.assign(form, res.data);
     } else {
@@ -153,16 +150,19 @@ async function load_old_summary() {
   }
 }
 
-async function handle_submit_summary() {
-  if (!form_ref.value) return;
-  const valid = await form_ref.value.validate().catch(() => false);
+async function handleSubmitSummary() {
+  if (!formRef.value) return;
+  const valid = await formRef.value.validate().catch(() => false);
   if (!valid) return ElMessage.error('请检查表单输入项！');
 
   loading.value = true;
   try {
-    const payload: UpdateSummaryReq = {
-      summary_id: summary_id,
-      ...form,
+    const payload: UpdateSummaryModel = {
+      summaryID: summaryID,
+      problemType: form.problemType,
+      problemDescription: form.problemDescription,
+      repairSummary: form.repairSummary,
+      receiverName: form.receiverName,
     };
     const resp = await UpdateSummary(payload);
     if (resp.code === 0) {
@@ -178,7 +178,7 @@ async function handle_submit_summary() {
   }
 }
 
-function on_back() {
+function onBack() {
   router.back();
 }
 </script>

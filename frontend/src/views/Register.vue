@@ -97,9 +97,9 @@
         </el-form-item>
 
         <!-- 确认密码 -->
-        <el-form-item label="确认密码" prop="confirm_password">
+        <el-form-item label="确认密码" prop="confirmPassword">
           <el-input
-            v-model="registerForm.confirm_password"
+            v-model="registerForm.confirmPassword"
             type="password"
             placeholder="请再次输入密码"
             show-password
@@ -116,14 +116,14 @@
         <!-- 内部人员 -->
         <el-form-item label="内部人员">
           <el-switch
-            v-model="registerForm.is_internal"
+            v-model="registerForm.isInternal"
             @change="handleInternalSwitchChange"
           />
         </el-form-item>
 
         <!-- 协议勾选 -->
-        <el-form-item prop="agree_terms">
-          <el-checkbox v-model="registerForm.agree_terms">
+        <el-form-item prop="agreeTerms">
+          <el-checkbox v-model="registerForm.agreeTerms">
             我已阅读并同意
             <el-link type="primary" :underline="false">用户协议</el-link>
             和
@@ -159,18 +159,18 @@ import type { FormInstance } from 'element-plus';
 import { ElMessage } from 'element-plus';
 import { Message, Lock } from '@element-plus/icons-vue';
 import { Register, GetRegisterCode } from '@/api/register';
-import type { RegisterForm, RegisterFormRules } from '@/types/register';
+import type { RegisterModel, RegisterFormRules } from '@/types/register';
 
 /* ---------- 表单数据 ---------- */
-const registerForm = reactive<RegisterForm>({
+const registerForm = reactive<RegisterModel>({
   email: '',
   code: '',
   username: '',
-  account: '', // ✅ 统一为 account
+  account: '',
   password: '',
-  confirm_password: '',
-  is_internal: false,
-  agree_terms: false,
+  confirmPassword: '',
+  isInternal: false,
+  agreeTerms: false,
 });
 
 const registerFormRef = ref<FormInstance>();
@@ -224,7 +224,7 @@ const startCountdown = () => {
 const validatePass = (rule: any, value: string, callback: any) => {
   if (!value) callback(new Error('请输入密码'));
   else {
-    if (registerForm.confirm_password) {
+    if (registerForm.confirmPassword) {
       registerFormRef.value?.validateField('confirmPassword');
     }
     callback();
@@ -265,10 +265,10 @@ const registerRules = reactive<RegisterFormRules>({
     { validator: validatePass, trigger: 'blur', required: true },
     { min: 6, message: '密码长度不能少于6位', trigger: 'blur' },
   ],
-  confirm_password: [
+  confirmPassword: [
     { validator: validatePass2, trigger: 'blur', required: true },
   ],
-  agree_terms: [{ validator: validateAgreement, trigger: 'change' }],
+  agreeTerms: [{ validator: validateAgreement, trigger: 'change' }],
 });
 
 /* ---------- 提交 ---------- */

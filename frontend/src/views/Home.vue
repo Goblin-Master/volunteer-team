@@ -3,18 +3,18 @@
     <div class="header-title">管理您的个人信息</div>
 
     <main class="main-content">
-      <div v-if="userStore.is_user_login" class="profile-card">
+      <div v-if="userStore.isUserLogin" class="profile-card">
         <div class="profile-header">
           <div class="avatar-wrapper" @click="showImagePreview">
             <el-image
               class="avatar-image"
-              :src="userStore.full_avatar_url"
+              :src="userStore.fullAvatarUrl"
               fit="cover"
             />
           </div>
         </div>
         <div class="profile-body">
-          <h2 class="user-name">{{ userStore.user_name }}</h2>
+          <h2 class="user-name">{{ userStore.username }}</h2>
           <p class="current-time">{{ currentTime }}</p>
           <div class="action-buttons">
             <el-button
@@ -37,15 +37,15 @@
         </p>
       </div>
 
-      <template v-if="userStore.is_user_login">
+      <template v-if="userStore.isUserLogin">
         <div class="user-role-title">
           {{
-            userStore.user_role === Role.COMMON_USER ? '普通用户' : '内部人员'
+            userStore.userRole === Role.COMMON_USER ? '普通用户' : '内部人员'
           }}
         </div>
 
         <div class="features-grid">
-          <template v-if="userStore.user_role === Role.COMMON_USER">
+          <template v-if="userStore.userRole === Role.COMMON_USER">
             <div class="feature-card" @click="goToCreateOrderPage">
               <div
                 class="feature-icon-wrapper"
@@ -79,7 +79,7 @@
             </div>
           </template>
 
-          <template v-else-if="userStore.user_role === Role.INTERNAL_USER">
+          <template v-else-if="userStore.userRole === Role.INTERNAL_USER">
             <div class="feature-card" @click="goToOrderListPage">
               <!-- ← 新增点击 -->
               <div
@@ -110,17 +110,17 @@
       </template>
     </main>
 
-    <el-dialog v-model="image_preview_visible" width="90%" center>
+    <el-dialog v-model="imagePreviewVisible" width="90%" center>
       <div style="text-align: center">
         <el-image
-          :src="userStore.full_avatar_url"
+          :src="userStore.fullAvatarUrl"
           fit="contain"
           style="max-width: 100%; max-height: 80vh"
         ></el-image>
       </div>
     </el-dialog>
 
-    <el-dialog v-model="dialog_visible" title="更换头像" width="350px" center>
+    <el-dialog v-model="dialogVisible" title="更换头像" width="350px" center>
       <div class="upload-options">
         <el-button
           type="primary"
@@ -134,14 +134,14 @@
     </el-dialog>
 
     <el-dialog
-      v-model="introduction_dialog_visible"
+      v-model="introductionDialogVisible"
       title="关于师友"
       width="600px"
       custom-class="no-padding-dialog"
     >
       <div class="introduction-image-container">
         <el-image
-          :src="introduction_image"
+          :src="introductionImage"
           fit="contain"
           style="width: 100%; height: 100%"
         />
@@ -149,7 +149,7 @@
     </el-dialog>
 
     <input
-      ref="file_input_ref"
+      ref="fileInputRef"
       type="file"
       accept="image/*"
       style="display: none"
@@ -175,15 +175,15 @@ import {
   FolderOpened,
 } from '@element-plus/icons-vue';
 
-import introduction_image from '@/assets/introduce.jpg';
+import introductionImage from '@/assets/introduce.jpg';
 
 const router = useRouter();
 const userStore = useUserStore();
 
-const image_preview_visible = ref(false);
-const dialog_visible = ref(false);
-const introduction_dialog_visible = ref(false);
-const file_input_ref = ref<HTMLInputElement | null>(null);
+const imagePreviewVisible = ref(false);
+const dialogVisible = ref(false);
+const introductionDialogVisible = ref(false);
+const fileInputRef = ref<HTMLInputElement | null>(null);
 const currentTime = ref('');
 let timer: number | undefined;
 
@@ -205,13 +205,13 @@ const handleLogout = () => {
 };
 
 const openAvatarDialog = () => {
-  dialog_visible.value = true;
+  dialogVisible.value = true;
 };
 
 const selectFromAlbum = () => {
-  if (file_input_ref.value) {
-    file_input_ref.value.removeAttribute('capture');
-    file_input_ref.value.click();
+  if (fileInputRef.value) {
+    fileInputRef.value.removeAttribute('capture');
+    fileInputRef.value.click();
   }
 };
 
@@ -246,11 +246,11 @@ const handleFileSelected = async (event: Event) => {
 };
 
 const showIntroduction = () => {
-  introduction_dialog_visible.value = true;
+  introductionDialogVisible.value = true;
 };
 
 const showImagePreview = () => {
-  image_preview_visible.value = true;
+  imagePreviewVisible.value = true;
 };
 
 // ✅ 新增的导航函数
