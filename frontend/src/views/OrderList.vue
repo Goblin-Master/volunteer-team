@@ -107,20 +107,20 @@ const goWriteSummary = (orderID: string) => {
 </script>
 
 <style scoped>
-/* ---------- 与修机总结完全同款样式 ---------- */
+/* 容器 */
 .order-list-page-container {
   min-height: 100vh;
   background: #f5f7fa;
-  padding: 40px 16px;
+  padding: 24px 16px;
   box-sizing: border-box;
 }
 
 .header-title {
-  font-size: 20px;
-  font-weight: 500;
-  color: #303133;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .main-content {
@@ -128,11 +128,14 @@ const goWriteSummary = (orderID: string) => {
   margin: 0 auto;
 }
 
+/* 移除外层 Card 的阴影，让内部 item 承担视觉重量 */
 .order-card {
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  background: #fff;
-  padding: 12px 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+:deep(.el-card__body) {
+  padding: 0;
 }
 
 .order-list {
@@ -141,66 +144,85 @@ const goWriteSummary = (orderID: string) => {
   gap: 16px;
 }
 
+/* 单个订单项 - 现代化改造 */
 .order-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px;
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-}
-.order-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column; /* 移动端优先 */
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.order-left {
-  flex: 1;
+.order-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--el-color-primary);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.order-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+}
+.order-item:hover::before {
+  opacity: 1;
+}
+
+/* 内部布局 desktop */
+@media(min-width: 640px) {
+  .order-item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .order-left {
+    flex: 1;
+    padding-right: 20px;
+  }
+  .order-right {
+    flex-shrink: 0;
+    display: flex;
+    gap: 12px;
+  }
 }
 
 .order-time {
-  font-size: 13px;
+  font-size: 12px;
   color: #909399;
+  background: #f4f4f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
   margin-bottom: 12px;
 }
 
 .order-row {
-  font-size: 14px;
+  font-size: 15px;
   color: #303133;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 .order-row .label {
+  color: #606266;
   font-weight: 500;
-  margin-right: 4px;
 }
 
-.order-right {
-  display: flex;
-  gap: 8px;
-  margin-left: 16px;
-}
 .order-right .el-button {
-  min-width: 88px;
+  border-radius: 8px;
+  padding: 8px 16px;
 }
 
-/* ---------- 空状态 ---------- */
+/* 空状态 */
 :deep(.el-empty__description) {
   color: #909399;
-}
-
-/* ---------- 响应式 ---------- */
-@media (max-width: 640px) {
-  .order-item {
-    flex-direction: column;
-  }
-  .order-right {
-    width: 100%;
-    margin: 12px 0 0 0;
-    justify-content: flex-end;
-  }
 }
 </style>

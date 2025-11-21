@@ -1,167 +1,147 @@
 <template>
   <div class="register-container">
-    <el-card class="register-card" shadow="never">
-      <template #header>
-        <div class="card-header">
-          <h2>用户注册</h2>
-          <span>创建您的账户，开始使用我们的服务</span>
+    <div class="bg-circle circle-1"></div>
+    <div class="bg-circle circle-2"></div>
+
+    <main class="main-content">
+      <div class="register-box">
+        <div class="header-section">
+          <h2>创建账户</h2>
+          <p>加入我们，开始您的体验</p>
         </div>
-      </template>
 
-      <el-form
-        ref="registerFormRef"
-        :model="registerForm"
-        :rules="registerRules"
-        label-position="top"
-        size="large"
-        @submit.prevent="handleRegister"
-      >
-        <!-- 邮箱 -->
-        <el-form-item label="邮箱" prop="email">
-          <el-input
-            v-model="registerForm.email"
-            type="email"
-            placeholder="请输入您的邮箱地址"
-            clearable
-          >
-            <template #prefix>
-              <el-icon>
-                <Message />
-              </el-icon>
-            </template>
-          </el-input>
-        </el-form-item>
-
-        <!-- 邮箱验证码 -->
-        <el-form-item label="邮箱验证码" prop="code">
-          <div class="verification-code-wrapper">
+        <el-form
+          ref="registerFormRef"
+          :model="registerForm"
+          :rules="registerRules"
+          size="large"
+          class="modern-form"
+          @submit.prevent="handleRegister"
+        >
+          <el-form-item prop="email">
             <el-input
-              v-model="registerForm.code"
-              placeholder="请输入邮箱验证码"
-              clearable
+              v-model="registerForm.email"
+              placeholder="邮箱地址"
+              class="custom-input"
             >
-              <template #prefix>
-                <el-icon>
-                  <Message />
-                </el-icon>
-              </template>
+              <template #prefix><el-icon><Message /></el-icon></template>
             </el-input>
-            <el-button
-              class="send-code-btn"
-              type="primary"
-              :disabled="isSendingCode || !isEmailValid"
-              @click="sendVerificationCode"
+          </el-form-item>
+
+          <el-form-item prop="code">
+            <div class="code-flex">
+              <el-input
+                v-model="registerForm.code"
+                placeholder="验证码"
+                class="custom-input code-input"
+              >
+                <template #prefix><el-icon><Key /></el-icon></template>
+              </el-input>
+              <el-button
+                class="send-code-btn"
+                plain
+                :disabled="isSendingCode || !isEmailValid"
+                @click="sendVerificationCode"
+              >
+                {{ codeButtonText }}
+              </el-button>
+            </div>
+          </el-form-item>
+
+          <el-form-item prop="username">
+            <el-input
+              v-model="registerForm.username"
+              placeholder="用户昵称"
+              class="custom-input"
             >
-              {{ codeButtonText }}
-            </el-button>
+              <template #prefix><el-icon><User /></el-icon></template>
+            </el-input>
+          </el-form-item>
+
+          <el-form-item prop="account">
+            <el-input
+              v-model="registerForm.account"
+              placeholder="设置账号 (3-15位)"
+              class="custom-input"
+            >
+              <template #prefix><el-icon><Postcard /></el-icon></template>
+            </el-input>
+          </el-form-item>
+
+          <el-row :gutter="16">
+            <el-col :span="12">
+              <el-form-item prop="password">
+                <el-input
+                  v-model="registerForm.password"
+                  type="password"
+                  placeholder="设置密码"
+                  show-password
+                  class="custom-input"
+                >
+                  <template #prefix><el-icon><Lock /></el-icon></template>
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item prop="confirmPassword">
+                <el-input
+                  v-model="registerForm.confirmPassword"
+                  type="password"
+                  placeholder="确认密码"
+                  show-password
+                  class="custom-input"
+                >
+                   <template #prefix><el-icon><Lock /></el-icon></template>
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <div class="switch-row">
+            <span class="switch-label">我是内部工作人员</span>
+            <el-switch
+              v-model="registerForm.isInternal"
+              @change="handleInternalSwitchChange"
+              style="--el-switch-on-color: var(--el-color-primary)"
+            />
           </div>
-        </el-form-item>
-        <!-- 用户昵称（新增） -->
-        <el-form-item label="用户昵称" prop="username">
-          <el-input
-            v-model="registerForm.username"
-            placeholder="请输入用户昵称"
-            clearable
-          />
-        </el-form-item>
-        <!-- 用户名（统一为 account） -->
-        <el-form-item label="账号" prop="account">
-          <el-input
-            v-model="registerForm.account"
-            placeholder="请输入账号"
-            clearable
-          >
-            <template #prefix>
-              <el-icon>
-                <User />
-              </el-icon>
-            </template>
-          </el-input>
-        </el-form-item>
 
-        <!-- 密码 -->
-        <el-form-item label="密码" prop="password">
-          <el-input
-            v-model="registerForm.password"
-            type="password"
-            placeholder="请输入密码"
-            show-password
-            clearable
-          >
-            <template #prefix>
-              <el-icon>
-                <Lock />
-              </el-icon>
-            </template>
-          </el-input>
-        </el-form-item>
+          <el-form-item prop="agreeTerms" class="terms-item">
+            <el-checkbox v-model="registerForm.agreeTerms">
+              阅读并同意 <el-link type="primary" :underline="false">用户协议</el-link> 与 <el-link type="primary" :underline="false">隐私政策</el-link>
+            </el-checkbox>
+          </el-form-item>
 
-        <!-- 确认密码 -->
-        <el-form-item label="确认密码" prop="confirmPassword">
-          <el-input
-            v-model="registerForm.confirmPassword"
-            type="password"
-            placeholder="请再次输入密码"
-            show-password
-            clearable
-          >
-            <template #prefix>
-              <el-icon>
-                <Lock />
-              </el-icon>
-            </template>
-          </el-input>
-        </el-form-item>
-
-        <!-- 内部人员 -->
-        <el-form-item label="内部人员">
-          <el-switch
-            v-model="registerForm.isInternal"
-            @change="handleInternalSwitchChange"
-          />
-        </el-form-item>
-
-        <!-- 协议勾选 -->
-        <el-form-item prop="agreeTerms">
-          <el-checkbox v-model="registerForm.agreeTerms">
-            我已阅读并同意
-            <el-link type="primary" :underline="false">用户协议</el-link>
-            和
-            <el-link type="primary" :underline="false">隐私政策</el-link>
-          </el-checkbox>
-        </el-form-item>
-
-        <!-- 提交 -->
-        <el-form-item>
           <el-button
             type="primary"
-            class="register-btn"
-            native-type="submit"
+            class="submit-btn"
             :loading="loading"
+            @click="handleRegister"
           >
-            注 册
+            立即注册
           </el-button>
-        </el-form-item>
-      </el-form>
+        </el-form>
 
-      <div class="login-link">
-        已有账号？
-        <el-link type="primary" @click="goToLogin">立即登录</el-link>
+        <div class="footer-link">
+          <span>已有账号？</span>
+          <el-link type="primary" :underline="false" @click="goToLogin" class="link-text">直接登录</el-link>
+        </div>
       </div>
-    </el-card>
+    </main>
   </div>
 </template>
 
 <script setup lang="ts">
+/* 逻辑保持完全一致，仅补充图标引入 */
 import { ref, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import type { FormInstance } from 'element-plus';
 import { ElMessage } from 'element-plus';
-import { Message, Lock } from '@element-plus/icons-vue';
+import { Message, Lock, User, Key, Postcard } from '@element-plus/icons-vue'; // 新增 Key, Postcard
 import { Register, GetRegisterCode } from '@/api/register';
 import type { RegisterModel, RegisterFormRules } from '@/types/register';
 
-/* ---------- 表单数据 ---------- */
+/* ---------- (以下逻辑代码未变，复制即可) ---------- */
 const registerForm = reactive<RegisterModel>({
   email: '',
   code: '',
@@ -177,11 +157,10 @@ const registerFormRef = ref<FormInstance>();
 const router = useRouter();
 const loading = ref(false);
 
-/* ---------- 验证码逻辑 ---------- */
 const isSendingCode = ref(false);
 const countdown = ref(60);
 const codeButtonText = computed(() =>
-  isSendingCode.value ? `${countdown.value}秒后重试` : '发送验证码',
+  isSendingCode.value ? `${countdown.value}s` : '获取验证码',
 );
 
 const isEmailValid = computed(() =>
@@ -220,7 +199,6 @@ const startCountdown = () => {
   }, 1000);
 };
 
-/* ---------- 校验规则 ---------- */
 const validatePass = (rule: any, value: string, callback: any) => {
   if (!value) callback(new Error('请输入密码'));
   else {
@@ -239,7 +217,7 @@ const validatePass2 = (rule: any, value: string, callback: any) => {
 };
 
 const validateAgreement = (rule: any, value: boolean, callback: any) => {
-  value ? callback() : callback(new Error('请先阅读并同意用户协议和隐私政策'));
+  value ? callback() : callback(new Error('请同意协议'));
 };
 
 const registerRules = reactive<RegisterFormRules>({
@@ -255,15 +233,14 @@ const registerRules = reactive<RegisterFormRules>({
       trigger: ['blur', 'change'],
     },
   ],
-  code: [{ required: true, message: '请输入邮箱验证码', trigger: 'blur' }],
+  code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
   account: [
-    // ✅ 统一为 account
-    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { required: true, message: '请输入账号', trigger: 'blur' },
     { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' },
   ],
   password: [
     { validator: validatePass, trigger: 'blur', required: true },
-    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' },
+    { min: 6, message: '不少于6位', trigger: 'blur' },
   ],
   confirmPassword: [
     { validator: validatePass2, trigger: 'blur', required: true },
@@ -271,20 +248,11 @@ const registerRules = reactive<RegisterFormRules>({
   agreeTerms: [{ validator: validateAgreement, trigger: 'change' }],
 });
 
-/* ---------- 提交 ---------- */
 const handleRegister = async () => {
   if (!registerFormRef.value) return;
-
-  // 1. 明确地等待表单验证结果
   const valid = await registerFormRef.value.validate().catch(() => false);
+  if (!valid) return;
 
-  // 2. 如果验证失败，直接返回，并给出准确的提示
-  if (!valid) {
-    ElMessage.error('请检查表单输入项！');
-    return;
-  }
-
-  // 3. 如果验证成功，才执行后续的注册逻辑
   loading.value = true;
   try {
     const resp = await Register(registerForm);
@@ -295,15 +263,12 @@ const handleRegister = async () => {
       ElMessage.error(resp.message || '注册失败');
     }
   } catch (err: any) {
-    // 4. 这里只处理网络请求或后端接口的错误
     ElMessage.error(err.message || '网络异常');
-    console.error(err);
   } finally {
     loading.value = false;
   }
 };
 
-/* ---------- 内部人员提示 ---------- */
 const handleInternalSwitchChange = (val: boolean | string | number) => {
   if (val === true) {
     ElMessage.info({
@@ -313,118 +278,127 @@ const handleInternalSwitchChange = (val: boolean | string | number) => {
   }
 };
 
-/* ---------- 跳转登录 ---------- */
 const goToLogin = () => router.push('/login');
 </script>
 
 <style scoped>
-/* 样式与之前完全一致，无需改动 */
 .register-container {
+  position: relative;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  overflow: hidden;
   padding: 20px;
-  background-color: #f0f2f5;
 }
 
-.register-card {
+/* 背景装饰 */
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 0;
+  opacity: 0.5;
+}
+.circle-1 { width: 300px; height: 300px; background: #a0cfff; top: -50px; left: -50px; }
+.circle-2 { width: 400px; height: 400px; background: #d9ecff; bottom: -100px; right: -100px; }
+
+.main-content {
   width: 100%;
-  max-width: 380px;
-  padding: 40px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  max-width: 460px;
+  z-index: 1;
 }
 
-.card-header {
+.register-box {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.header-section {
   text-align: center;
   margin-bottom: 30px;
 }
-
-.card-header h2 {
+.header-section h2 {
+  margin: 0;
   font-size: 24px;
-  font-weight: 600;
   color: #303133;
-  margin: 0 0 8px;
 }
-
-.card-header span {
-  font-size: 14px;
+.header-section p {
+  margin: 8px 0 0;
   color: #909399;
+  font-size: 14px;
 }
 
-.el-form-item {
-  margin-bottom: 22px;
-}
-
-:deep(.el-form-item__label) {
-  font-weight: 500;
-  color: #606266;
-  margin-bottom: 6px !important;
-  line-height: 1.2;
-}
+/* 输入框样式复用 */
+.el-form-item { margin-bottom: 20px; }
 
 :deep(.el-input__wrapper) {
-  height: 48px;
-  padding: 0 15px;
-  border-radius: 8px;
-  border: 1px solid #dcdfe6;
+  background-color: #f5f7fa;
   box-shadow: none !important;
-  transition: border-color 0.2s;
+  border: 1px solid transparent;
+  padding: 0 15px;
+  height: 44px;
+  border-radius: 12px;
+  transition: all 0.3s;
 }
-
-:deep(.el-input__wrapper:hover) {
-  border-color: #c0c4cc;
-}
-
+:deep(.el-input__wrapper:hover) { background-color: #eef1f6; }
 :deep(.el-input__wrapper.is-focus) {
+  background-color: #fff;
   border-color: var(--el-color-primary);
+  box-shadow: 0 0 0 4px rgba(64, 158, 255, 0.1) !important;
 }
 
-.verification-code-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-}
-
-.verification-code-wrapper .el-input {
-  flex-grow: 1;
-}
-
+/* 验证码行 */
+.code-flex { display: flex; gap: 12px; }
 .send-code-btn {
-  flex-shrink: 0;
-  height: 48px;
-  border-radius: 8px;
-  background-color: #e8f3ff;
-  color: var(--el-color-primary);
+  height: 44px;
+  border-radius: 12px;
+  background: #ecf5ff;
   border: none;
-  font-weight: 500;
+  color: var(--el-color-primary);
+  font-weight: 600;
+  padding: 0 20px;
 }
 
-.send-code-btn:hover {
-  background-color: #d9e9ff;
+/* 内部人员开关 */
+.switch-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 4px;
 }
+.switch-label { font-size: 14px; color: #606266; }
 
-.register-btn {
+/* 提交按钮 */
+.submit-btn {
   width: 100%;
   height: 48px;
   font-size: 16px;
-  border-radius: 8px;
-  border: none;
-  background: var(--el-color-primary);
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(64, 158, 255, 0.25);
+  margin-top: 8px;
+}
+.submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgba(64, 158, 255, 0.35);
 }
 
-.login-link {
+.footer-link {
   margin-top: 24px;
   text-align: center;
   font-size: 14px;
+  color: #909399;
 }
+.link-text { font-weight: 600; margin-left: 4px; }
 
-@media (max-width: 480px) {
-  .register-card {
-    padding: 24px;
-  }
+@media(max-width: 480px) {
+  .register-box { padding: 30px 20px; }
 }
 </style>

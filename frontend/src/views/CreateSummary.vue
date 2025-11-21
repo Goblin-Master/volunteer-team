@@ -1,67 +1,82 @@
 <template>
-  <div class="detail-page">
-    <div class="detail-card">
-      <div class="card-title">修机总结</div>
+  <div class="page-container">
+    <div class="form-card">
+      <div class="header-bar">
+        <el-button icon="ArrowLeft" circle class="back-btn" @click="onBack" />
+        <span class="title">撰写修机总结</span>
+      </div>
 
       <el-form
         ref="formRef"
         :model="form"
         :rules="rules"
-        label-width="90px"
-        size="default"
+        label-position="top"
+        size="large"
+        class="modern-form"
       >
-        <el-form-item label="订单号">{{ form.orderID }}</el-form-item>
+        <div class="order-tag">
+          <span class="label">关联订单：</span>
+          <span class="value">{{ form.orderID }}</span>
+        </div>
 
-        <el-form-item label="问题类型" prop="problemType" required>
-          <el-select
-            v-model="form.problemType"
-            placeholder="请选择"
-            class="w-full"
-          >
-            <el-option label="硬件故障" value="硬件故障" />
-            <el-option label="软件问题" value="软件问题" />
-            <el-option label="网络异常" value="网络异常" />
-            <el-option label="其他" value="其他" />
-          </el-select>
-        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12" :xs="24">
+            <el-form-item label="问题类型" prop="problemType">
+              <el-select
+                v-model="form.problemType"
+                placeholder="请选择类型"
+                class="w-full"
+              >
+                <el-option label="硬件故障" value="硬件故障" />
+                <el-option label="软件问题" value="软件问题" />
+                <el-option label="网络异常" value="网络异常" />
+                <el-option label="其他" value="其他" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :xs="24">
+            <el-form-item label="接单人员" prop="receiverName">
+              <el-input
+                v-model="form.receiverName"
+                placeholder="多人请用逗号分隔"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-        <el-form-item label="问题描述" prop="problemDescription" required>
+        <el-form-item label="问题描述" prop="problemDescription">
           <el-input
             v-model="form.problemDescription"
             type="textarea"
             :rows="3"
             maxlength="200"
             show-word-limit
-            placeholder="简要描述问题"
+            placeholder="简要描述用户遇到的问题..."
+            resize="none"
           />
         </el-form-item>
 
-        <el-form-item label="修机总结" prop="repairSummary" required>
+        <el-form-item label="维修方案与总结" prop="repairSummary">
           <el-input
             v-model="form.repairSummary"
             type="textarea"
-            :rows="4"
+            :rows="5"
             maxlength="500"
             show-word-limit
-            placeholder="维修过程、解决方案"
+            placeholder="详细记录排查过程和最终解决方案..."
+            resize="none"
           />
         </el-form-item>
 
-        <el-form-item label="接单人员" prop="receiverName" required>
-          <el-input
-            v-model="form.receiverName"
-            placeholder="请输入姓名,人名之间用 , 隔开"
-          />
-        </el-form-item>
-
-        <el-form-item>
+        <el-form-item class="form-footer">
           <el-button
             type="primary"
+            class="submit-btn"
             @click="handleSubmitSummary"
             :loading="loading"
-            >提交</el-button
           >
-          <el-button @click="onBack">返回</el-button>
+            提交总结
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -72,10 +87,12 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { ArrowLeft } from '@element-plus/icons-vue'; // 引入图标
 import type { FormInstance } from 'element-plus';
 import { summaryModelRules, type SummaryItemModel } from '@/types/summary';
 import { CreateSummary } from '@/api/summary';
 
+/* ---------- 逻辑部分完全保持 ---------- */
 const route = useRoute();
 const router = useRouter();
 const orderID = String(route.query.orderID);
@@ -133,25 +150,92 @@ function onBack() {
 </script>
 
 <style scoped>
-.detail-page {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 24px 16px;
-  box-sizing: border-box;
+.page-container {
+  min-height: 100vh;
+  background: #f5f7fa;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
-.detail-card {
-  background: #ffffff;
-  border: 1px solid #ebeef5;
-  border-radius: 4px;
-}
-.card-title {
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #303133;
-  border-bottom: 1px solid #ebeef5;
-}
-.w-full {
+
+.form-card {
   width: 100%;
+  max-width: 700px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+  padding: 32px;
+}
+
+.header-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f2f5;
+}
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
+}
+.back-btn {
+  background: #f4f4f5;
+  border: none;
+  color: #606266;
+}
+
+.order-tag {
+  background: #ecf5ff;
+  border: 1px solid #d9ecff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+.order-tag .label { color: #909399; margin-right: 4px; }
+.order-tag .value { color: #409eff; font-weight: 500; font-family: monospace; }
+
+/* 深度定制表单控件 */
+:deep(.el-input__wrapper), :deep(.el-textarea__inner) {
+  box-shadow: none !important;
+  background-color: #f8f9fb;
+  border: 1px solid #e4e7ed;
+  border-radius: 12px;
+  transition: all 0.3s;
+  padding: 10px 15px;
+}
+:deep(.el-textarea__inner) { padding: 12px; }
+
+:deep(.el-input__wrapper:hover), :deep(.el-textarea__inner:hover) {
+  background-color: #fff;
+  border-color: #c0c4cc;
+}
+
+:deep(.el-input__wrapper.is-focus), :deep(.el-textarea__inner:focus) {
+  background-color: #fff;
+  border-color: var(--el-color-primary);
+  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1) !important;
+}
+
+:deep(.el-form-item__label) {
+  font-weight: 500;
+  color: #606266;
+  margin-bottom: 6px;
+}
+
+.w-full { width: 100%; }
+
+.submit-btn {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+  border-radius: 12px;
+  margin-top: 10px;
+  box-shadow: 0 8px 20px rgba(64, 158, 255, 0.2);
 }
 </style>

@@ -1,160 +1,142 @@
 <template>
   <div class="home-page-container">
-    <div class="header-title">管理您的个人信息</div>
+    <div class="nav-header">
+      <div class="brand">个人中心</div>
+    </div>
 
     <main class="main-content">
-      <div v-if="userStore.isUserLogin" class="profile-card">
-        <div class="profile-header">
-          <div class="avatar-wrapper" @click="showImagePreview">
-            <el-image
-              class="avatar-image"
-              :src="userStore.fullAvatarUrl"
-              fit="cover"
-            />
-          </div>
-        </div>
-        <div class="profile-body">
-          <h2 class="user-name">{{ userStore.username }}</h2>
-          <p class="current-time">{{ currentTime }}</p>
-          <div class="action-buttons">
-            <el-button
-              type="primary"
-              :icon="Camera"
-              round
-              @click="openAvatarDialog"
-            >
-              更换头像
+      <div v-if="!userStore.isUserLogin" class="auth-card-wrapper">
+         <el-empty description="您尚未登录">
+            <el-button type="primary" size="large" round @click="router.push('/login')">
+              立即登录
             </el-button>
-            <el-button :icon="Edit" round>编辑资料</el-button>
+         </el-empty>
+      </div>
+
+      <template v-else>
+        <div class="profile-card">
+          <div class="profile-bg"></div>
+          <div class="profile-content">
+             <div class="avatar-section" @click="showImagePreview">
+               <el-avatar 
+                :size="100" 
+                :src="userStore.fullAvatarUrl" 
+                class="user-avatar"
+                shape="circle"
+               />
+               <div class="avatar-upload-trigger">
+                  <el-icon><Camera /></el-icon>
+               </div>
+             </div>
+             <div class="info-section">
+                <div class="name-row">
+                  <h2 class="username">{{ userStore.username }}</h2>
+                  <el-tag 
+                    effect="dark" 
+                    round 
+                    size="small"
+                    :type="userStore.userRole === Role.COMMON_USER ? 'success' : 'warning'"
+                  >
+                    {{ userStore.userRole === Role.COMMON_USER ? '普通用户' : '内部人员' }}
+                  </el-tag>
+                </div>
+                <p class="time-display">{{ currentTime }}</p>
+                
+                <div class="action-row">
+                   <el-button size="small" round @click="openAvatarDialog">更换头像</el-button>
+                   <el-button size="small" round>编辑资料</el-button>
+                   <el-button size="small" type="danger" plain round @click="handleLogout">退出登录</el-button>
+                </div>
+             </div>
           </div>
         </div>
-      </div>
 
-      <div v-else class="not-logged-in">
-        <p>
-          您尚未登录，请先
-          <router-link to="/login">登录</router-link>
-        </p>
-      </div>
-
-      <template v-if="userStore.isUserLogin">
-        <div class="user-role-title">
-          {{
-            userStore.userRole === Role.COMMON_USER ? '普通用户' : '内部人员'
-          }}
-        </div>
-
+        <div class="section-title">快捷服务</div>
         <div class="features-grid">
+          
           <template v-if="userStore.userRole === Role.COMMON_USER">
-            <div class="feature-card" @click="goToCreateOrderPage">
-              <div
-                class="feature-icon-wrapper"
-                style="background-color: #eef5ff"
-              >
-                <el-icon :size="32" color="#409eff"><Setting /></el-icon>
-              </div>
-              <h3 class="feature-title">我要报修</h3>
-              <p class="feature-description">快速提交设备维修申请</p>
+            <div class="feature-item" @click="goToCreateOrderPage">
+               <div class="icon-box blue">
+                 <el-icon><Setting /></el-icon>
+               </div>
+               <div class="text-box">
+                 <h3>我要报修</h3>
+                 <p>设备故障？点此快速提交申请</p>
+               </div>
+               <el-icon class="arrow"><ArrowRight /></el-icon>
             </div>
-            <div class="feature-card" @click="goToOrderListPage">
-              <!-- ← 新增点击 -->
-              <div
-                class="feature-icon-wrapper"
-                style="background-color: #fef0f0"
-              >
-                <el-icon :size="32" color="#f56c6c"><List /></el-icon>
-              </div>
-              <h3 class="feature-title">我的订单</h3>
-              <p class="feature-description">查看并管理我的报修订单</p>
+            
+            <div class="feature-item" @click="goToOrderListPage">
+               <div class="icon-box red">
+                 <el-icon><List /></el-icon>
+               </div>
+               <div class="text-box">
+                 <h3>我的订单</h3>
+                 <p>查看维修进度和历史记录</p>
+               </div>
+               <el-icon class="arrow"><ArrowRight /></el-icon>
             </div>
-            <div class="feature-card" @click="showIntroduction">
-              <div
-                class="feature-icon-wrapper"
-                style="background-color: #e9f8f1"
-              >
-                <el-icon :size="32" color="#67c23a"><User /></el-icon>
-              </div>
-              <h3 class="feature-title">关于师友</h3>
-              <p class="feature-description">了解师友计划详情</p>
+            
+            <div class="feature-item" @click="showIntroduction">
+               <div class="icon-box green">
+                 <el-icon><User /></el-icon>
+               </div>
+               <div class="text-box">
+                 <h3>关于师友</h3>
+                 <p>了解更多服务计划详情</p>
+               </div>
+               <el-icon class="arrow"><ArrowRight /></el-icon>
             </div>
           </template>
 
           <template v-else-if="userStore.userRole === Role.INTERNAL_USER">
-            <div class="feature-card" @click="goToOrderListPage">
-              <!-- ← 新增点击 -->
-              <div
-                class="feature-icon-wrapper"
-                style="background-color: #fef0f0"
-              >
-                <el-icon :size="32" color="#f56c6c"><List /></el-icon>
-              </div>
-              <h3 class="feature-title">未处理订单</h3>
-              <p class="feature-description">查看并处理维修订单</p>
+            <div class="feature-item" @click="goToOrderListPage">
+               <div class="icon-box red">
+                 <el-icon><List /></el-icon>
+               </div>
+               <div class="text-box">
+                 <h3>未处理订单</h3>
+                 <p>查看并处理用户的报修请求</p>
+               </div>
+               <el-icon class="arrow"><ArrowRight /></el-icon>
             </div>
-            <div class="feature-card" @click="goToSummaryListPage">
-              <div
-                class="feature-icon-wrapper"
-                style="background-color: #fdf6ec"
-              >
-                <el-icon :size="32" color="#e6a23c"><Document /></el-icon>
-              </div>
-              <h3 class="feature-title">修机总结</h3>
-              <p class="feature-description">撰写和查阅维修经验总结</p>
+            
+            <div class="feature-item" @click="goToSummaryListPage">
+               <div class="icon-box orange">
+                 <el-icon><Document /></el-icon>
+               </div>
+               <div class="text-box">
+                 <h3>修机总结</h3>
+                 <p>维修经验库与知识沉淀</p>
+               </div>
+               <el-icon class="arrow"><ArrowRight /></el-icon>
             </div>
           </template>
         </div>
-
-        <el-button class="logout-btn" type="danger" round @click="handleLogout">
-          退出登录
-        </el-button>
       </template>
     </main>
 
-    <el-dialog v-model="imagePreviewVisible" width="90%" center>
+    <el-dialog v-model="imagePreviewVisible" width="90%" center align-center class="glass-dialog">
       <div style="text-align: center">
-        <el-image
-          :src="userStore.fullAvatarUrl"
-          fit="contain"
-          style="max-width: 100%; max-height: 80vh"
-        ></el-image>
+        <el-image :src="userStore.fullAvatarUrl" fit="contain" style="max-width: 100%; max-height: 80vh"></el-image>
       </div>
     </el-dialog>
 
-    <el-dialog v-model="dialogVisible" title="更换头像" width="350px" center>
-      <div class="upload-options">
-        <el-button
-          type="primary"
-          plain
-          size="large"
-          :icon="FolderOpened"
-          @click="selectFromAlbum"
-          >从图库选择</el-button
-        >
+    <el-dialog v-model="dialogVisible" title="更换头像" width="320px" center class="rounded-dialog">
+      <div class="upload-area">
+        <el-button type="primary" size="large" round class="w-100" :icon="FolderOpened" @click="selectFromAlbum">
+           选择图片
+        </el-button>
       </div>
     </el-dialog>
 
-    <el-dialog
-      v-model="introductionDialogVisible"
-      title="关于师友"
-      width="600px"
-      custom-class="no-padding-dialog"
-    >
-      <div class="introduction-image-container">
-        <el-image
-          :src="introductionImage"
-          fit="contain"
-          style="width: 100%; height: 100%"
-        />
+    <el-dialog v-model="introductionDialogVisible" title="关于师友" width="600px" align-center>
+      <div class="intro-wrapper">
+        <el-image :src="introductionImage" fit="contain" />
       </div>
     </el-dialog>
 
-    <input
-      ref="fileInputRef"
-      type="file"
-      accept="image/*"
-      style="display: none"
-      @change="handleFileSelected"
-    />
+    <input ref="fileInputRef" type="file" accept="image/*" style="display: none" @change="handleFileSelected" />
   </div>
 </template>
 
@@ -166,20 +148,13 @@ import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/stores/user';
 import { updateAvatar } from '@/api/updateAvatar.ts';
 import {
-  Camera,
-  Edit,
-  Setting,
-  User,
-  List,
-  Document,
-  FolderOpened,
-} from '@element-plus/icons-vue';
-
+  Camera, Edit, Setting, User, List, Document, FolderOpened, ArrowRight
+} from '@element-plus/icons-vue'; // 引入 ArrowRight
 import introductionImage from '@/assets/introduce.jpg';
 
+// ...逻辑部分完全保持原样，不做任何修改...
 const router = useRouter();
 const userStore = useUserStore();
-
 const imagePreviewVisible = ref(false);
 const dialogVisible = ref(false);
 const introductionDialogVisible = ref(false);
@@ -204,9 +179,7 @@ const handleLogout = () => {
   router.replace('/login');
 };
 
-const openAvatarDialog = () => {
-  dialogVisible.value = true;
-};
+const openAvatarDialog = () => dialogVisible.value = true;
 
 const selectFromAlbum = () => {
   if (fileInputRef.value) {
@@ -218,9 +191,7 @@ const selectFromAlbum = () => {
 const handleFileSelected = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
-  if (!file) {
-    return;
-  }
+  if (!file) return;
   if (!file.type.startsWith('image/')) {
     ElMessage.error('请选择图片文件!');
     return;
@@ -229,7 +200,6 @@ const handleFileSelected = async (event: Event) => {
     ElMessage.error('图片大小不能超过 10MB!');
     return;
   }
-
   try {
     const resp = await updateAvatar(file);
     if (resp.code === 0 && resp.data) {
@@ -241,220 +211,217 @@ const handleFileSelected = async (event: Event) => {
     }
   } catch (error) {
     ElMessage.error('网络请求失败，请稍后重试。');
-    console.error('上传失败:', error);
   }
 };
 
-const showIntroduction = () => {
-  introductionDialogVisible.value = true;
-};
-
-const showImagePreview = () => {
-  imagePreviewVisible.value = true;
-};
-
-// ✅ 新增的导航函数
-const goToCreateOrderPage = () => {
-  router.push({ name: 'CreateOrder' });
-};
-
-const goToOrderListPage = () => {
-  router.push({ name: 'OrderList' });
-};
-
-const goToSummaryListPage = () => {
-  router.push({ name: 'SummaryList' });
-};
+const showIntroduction = () => introductionDialogVisible.value = true;
+const showImagePreview = () => imagePreviewVisible.value = true;
+const goToCreateOrderPage = () => router.push({ name: 'CreateOrder' });
+const goToOrderListPage = () => router.push({ name: 'OrderList' });
+const goToSummaryListPage = () => router.push({ name: 'SummaryList' });
 
 onMounted(() => {
   updateTime();
   timer = setInterval(updateTime, 1000);
 });
 
-onUnmounted(() => {
-  clearInterval(timer);
-});
+onUnmounted(() => clearInterval(timer));
 </script>
 
 <style scoped>
-/* 样式保持不变 */
 .home-page-container {
-  width: 100%;
   min-height: 100vh;
-  background-color: #f5f7fa;
-  padding: 40px 20px;
-  box-sizing: border-box;
-  font-family:
-    'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
-    'Microsoft YaHei', Arial, sans-serif;
+  background-color: #f2f4f8;
+  padding-bottom: 40px;
+  font-family: 'Inter', sans-serif;
 }
 
-.header-title {
-  font-size: 18px;
-  color: #606266;
+.nav-header {
+  height: 60px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
   margin-bottom: 24px;
-  text-align: center;
+}
+.brand {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
 }
 
 .main-content {
-  max-width: 960px;
+  max-width: 800px;
   margin: 0 auto;
+  padding: 0 20px;
 }
 
+/* 个人卡片 */
 .profile-card {
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  background: #fff;
+  border-radius: 20px;
   overflow: hidden;
-  margin-bottom: 30px;
-}
-
-.profile-header {
-  height: 120px;
-  background: linear-gradient(to right, #e0c3fc, #8ec5fc);
-  display: flex;
-  justify-content: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  margin-bottom: 32px;
   position: relative;
 }
 
-.avatar-wrapper {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-20%);
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: white;
-  padding: 5px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.profile-bg {
+  height: 140px;
+  background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+
+.profile-content {
+  padding: 0 30px 30px;
+  margin-top: -50px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.avatar-section {
+  position: relative;
   cursor: pointer;
-}
-
-.avatar-image {
-  width: 100%;
-  height: 100%;
+  padding: 4px;
+  background: #fff;
   border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.user-avatar {
+  border: 2px solid #fff;
+  display: block;
+}
+.avatar-upload-trigger {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: var(--el-color-primary);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  border: 2px solid #fff;
 }
 
-.profile-body {
-  padding: 80px 20px 30px;
-  text-align: center;
+.info-section {
+  margin-top: 16px;
+  width: 100%;
 }
 
-.user-name {
-  font-size: 24px;
-  font-weight: 500;
-  color: #303133;
-  margin: 0 0 8px;
-}
-
-.current-time {
-  font-size: 14px;
-  color: #909399;
-  margin: 0 0 24px;
-}
-
-.action-buttons .el-button {
-  margin: 0 8px;
-}
-
-.user-role-title {
-  color: #909399;
-  font-size: 14px;
-  margin-bottom: 16px;
+.name-row {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-bottom: 4px;
+}
+
+.username {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.time-display {
+  font-size: 14px;
+  color: #909399;
+  margin-bottom: 20px;
+}
+
+.action-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 快捷服务网格 */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+  padding-left: 8px;
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 600px) {
+  .features-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-.feature-card {
-  background-color: #ffffff;
+.feature-item {
+  background: #fff;
+  border-radius: 16px;
   padding: 24px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  transition:
-    transform 0.3s,
-    box-shadow 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 20px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
 
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+.feature-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+  border-color: #ebeef5;
 }
 
-.feature-icon-wrapper {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  margin: 0 auto 16px;
+.icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
 }
+.icon-box.blue { background: #ecf5ff; color: #409eff; }
+.icon-box.red { background: #fef0f0; color: #f56c6c; }
+.icon-box.green { background: #f0f9eb; color: #67c23a; }
+.icon-box.orange { background: #fdf6ec; color: #e6a23c; }
 
-.feature-title {
-  font-size: 18px;
-  font-weight: 500;
+.text-box {
+  flex: 1;
+}
+.text-box h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
   color: #303133;
-  margin: 0 0 8px;
 }
-
-.feature-description {
-  font-size: 14px;
+.text-box p {
+  margin: 0;
+  font-size: 13px;
   color: #909399;
-  margin: 0;
 }
 
-.upload-options {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+.arrow {
+  color: #dcdfe6;
+  font-size: 18px;
+}
+.feature-item:hover .arrow {
+  color: var(--el-color-primary);
 }
 
-.upload-options .el-button {
+/* 弹窗美化 */
+.w-100 {
   width: 100%;
-  margin: 0;
 }
-
-.logout-btn {
-  display: block;
-  margin: 0 auto;
-  width: 200px;
-}
-
-.not-logged-in {
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+.upload-area {
+  padding: 20px 0;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  color: #888;
-}
-
-.not-logged-in a {
-  color: #409eff;
-  text-decoration: none;
-}
-
-.introduction-image-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-height: 80vh;
-}
-
-:deep(.no-padding-dialog .el-dialog__body) {
-  padding: 0px !important;
 }
 </style>

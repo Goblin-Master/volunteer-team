@@ -1,22 +1,20 @@
 <template>
   <div class="login-container">
+    <div class="bg-circle circle-1"></div>
+    <div class="bg-circle circle-2"></div>
+
     <main class="main-content">
       <div class="login-box" :class="{ 'shake-animation': isShaking }">
         <div class="logo-section">
           <img src="@/assets/logo.png" alt="Logo" />
           <h3>欢迎回来</h3>
-          <p class="subtitle">请登录您的账户</p>
+          <p class="subtitle">登录您的账户以继续</p>
         </div>
 
-        <el-tabs v-model="activeTab" class="login-tabs" stretch>
+        <el-tabs v-model="activeTab" class="custom-tabs" stretch>
           <el-tab-pane name="account">
             <template #label>
-              <span class="tab-label">
-                <el-icon>
-                  <User />
-                </el-icon>
-                <span>账号登录</span>
-              </span>
+              <span class="tab-inner">账号登录</span>
             </template>
             <el-form
               ref="accountFormRef"
@@ -26,26 +24,23 @@
               @keyup.enter="handleLogin(accountFormRef)"
             >
               <el-form-item prop="account">
-                <el-input v-model="accountForm.account" placeholder="账号">
-                  <template #prefix>
-                    <el-icon>
-                      <User />
-                    </el-icon>
-                  </template>
+                <el-input 
+                  v-model="accountForm.account" 
+                  placeholder="请输入账号"
+                  class="custom-input"
+                >
+                  <template #prefix><el-icon><User /></el-icon></template>
                 </el-input>
               </el-form-item>
               <el-form-item prop="password">
                 <el-input
                   v-model="accountForm.password"
                   type="password"
-                  placeholder="密码"
+                  placeholder="请输入密码"
                   show-password
+                  class="custom-input"
                 >
-                  <template #prefix>
-                    <el-icon>
-                      <Lock />
-                    </el-icon>
-                  </template>
+                  <template #prefix><el-icon><Lock /></el-icon></template>
                 </el-input>
               </el-form-item>
             </el-form>
@@ -53,12 +48,7 @@
 
           <el-tab-pane name="email">
             <template #label>
-              <span class="tab-label">
-                <el-icon>
-                  <Message />
-                </el-icon>
-                <span>邮箱登录</span>
-              </span>
+              <span class="tab-inner">邮箱登录</span>
             </template>
             <el-form
               ref="emailFormRef"
@@ -68,27 +58,28 @@
               @keyup.enter="handleLogin(emailFormRef)"
             >
               <el-form-item prop="email">
-                <el-input v-model="emailForm.email" placeholder="邮箱">
-                  <template #prefix>
-                    <el-icon>
-                      <Message />
-                    </el-icon>
-                  </template>
+                <el-input 
+                  v-model="emailForm.email" 
+                  placeholder="请输入邮箱"
+                  class="custom-input"
+                >
+                  <template #prefix><el-icon><Message /></el-icon></template>
                 </el-input>
               </el-form-item>
               <el-form-item prop="code">
-                <div class="verification-code-wrapper">
-                  <el-input v-model="emailForm.code" placeholder="验证码">
-                    <template #prefix>
-                      <el-icon>
-                        <Message />
-                      </el-icon>
-                    </template>
+                <div class="code-flex">
+                  <el-input 
+                    v-model="emailForm.code" 
+                    placeholder="验证码" 
+                    class="custom-input code-input"
+                  >
+                    <template #prefix><el-icon><Key /></el-icon></template>
                   </el-input>
                   <el-button
-                    class="send-code-btn"
+                    class="code-btn"
                     :disabled="isSendingCode || !isEmailValid"
                     @click="sendVerificationCode"
+                    plain
                   >
                     {{ codeButtonText }}
                   </el-button>
@@ -98,39 +89,31 @@
           </el-tab-pane>
         </el-tabs>
 
-        <div class="additional-links">
-          <el-link type="primary" :underline="false" @click="goToRegister"
-            >快速注册</el-link
-          >
-          <el-link
-            type="primary"
-            :underline="false"
-            @click="handleResetPassword"
-            >忘记密码?</el-link
-          >
-        </div>
-
         <el-button
           type="primary"
           size="large"
           class="login-btn"
           :loading="isLoading"
-          @click="
-            handleLogin(activeTab === 'account' ? accountFormRef : emailFormRef)
-          "
+          @click="handleLogin(activeTab === 'account' ? accountFormRef : emailFormRef)"
         >
-          登 录
+          立即登录
         </el-button>
+
+        <div class="footer-links">
+          <span class="text-gray">没有账号?</span>
+          <el-link type="primary" :underline="false" @click="goToRegister">注册账号</el-link>
+          <div class="divider"></div>
+          <el-link type="info" :underline="false" @click="handleResetPassword">忘记密码</el-link>
+        </div>
       </div>
     </main>
-
-    <footer class="login-footer">...</footer>
   </div>
 </template>
 
 <script setup lang="ts" name="Login">
+/* 逻辑保持完全不变，仅为了兼容 icon 引入需确认 */
 import { ref, reactive, computed } from 'vue';
-import { User, Lock, Message } from '@element-plus/icons-vue'; // [修改点 2] 移除 Iphone
+import { User, Lock, Message, Key } from '@element-plus/icons-vue'; // 增加 Key icon
 import { ElMessage } from 'element-plus';
 import { Login, GetLoginCode } from '@/api/login.ts';
 import type { LoginModel } from '@/types/login.ts';
@@ -157,7 +140,7 @@ const accountRules = reactive({
   password: [{ required: true, message: '请输入您的密码', trigger: 'blur' }],
 });
 
-// [修改点 3] Mobile Form -> Email Form
+// Email Form
 const emailFormRef = ref<FormInstance>();
 const emailForm = reactive({
   email: '',
@@ -175,30 +158,30 @@ const emailRules = reactive({
   code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
 });
 
-// [修改点 4] 添加发送验证码逻辑
 const isSendingCode = ref(false);
 const countdown = ref(60);
 const codeButtonText = computed(() => {
-  return isSendingCode.value ? `${countdown.value}秒后重试` : '发送验证码';
+  return isSendingCode.value ? `${countdown.value}s` : '获取验证码';
 });
 const isEmailValid = computed(() =>
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailForm.email),
 );
+
 const sendVerificationCode = async () => {
   if (!isEmailValid.value) {
     ElMessage.error('请输入有效的邮箱地址！');
     return;
   }
-  isSendingCode.value = true; // 1. 开始加载
+  isSendingCode.value = true;
 
   try {
     const res = await GetLoginCode(emailForm.email);
     if (res.code === 0) {
       ElMessage.success('验证码已发送至您的邮箱!');
-      startCountdown(); // 2. 成功才倒计时
+      startCountdown();
     } else {
       ElMessage.error(res.message || '获取验证码失败!');
-      isSendingCode.value = false; // 3. 失败立即恢复按钮
+      isSendingCode.value = false;
     }
   } catch (error) {
     console.error('GetCode request failed:', error);
@@ -218,7 +201,6 @@ const startCountdown = () => {
   }, 1000);
 };
 
-// [修改点 5] 更新登录处理器
 const handleLogin = (formEl?: FormInstance) => {
   if (!formEl || isLoading.value) return;
 
@@ -234,7 +216,6 @@ const handleLogin = (formEl?: FormInstance) => {
             loginType: 'account',
           };
         } else {
-          // activeTab.value === 'email'
           data = {
             email: emailForm.email,
             code: emailForm.code,
@@ -247,10 +228,7 @@ const handleLogin = (formEl?: FormInstance) => {
         if (res.code === 0) {
           ElMessage.success('登录成功!');
           useUserStore().setUserInfo(res.data);
-          // 检查是否有重定向参数
           const redirectPath = (route.query.redirect as string) || '/';
-
-          // 登录成功后跳转到重定向路径，或默认跳转到主页
           router.replace(redirectPath);
         } else {
           ElMessage.error(res.message || '登录失败');
@@ -262,7 +240,6 @@ const handleLogin = (formEl?: FormInstance) => {
         isLoading.value = false;
       }
     } else {
-      console.log('error submit!');
       isShaking.value = true;
       setTimeout(() => {
         isShaking.value = false;
@@ -271,22 +248,41 @@ const handleLogin = (formEl?: FormInstance) => {
   });
 };
 
-const goToRegister = () => {
-  router.push('/register');
-};
-const handleResetPassword = () => {
-  router.push('/resetPassword');
-};
+const goToRegister = () => router.push('/register');
+const handleResetPassword = () => router.push('/resetPassword');
 </script>
 
 <style scoped>
-/* --- 整体布局 --- */
 .login-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f0f2f5;
-  /* 使用柔和的浅灰色背景 */
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  overflow: hidden;
+}
+
+/* 背景装饰圆 */
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 0;
+  opacity: 0.6;
+}
+.circle-1 {
+  width: 300px;
+  height: 300px;
+  background: #a0cfff;
+  top: -50px;
+  left: -50px;
+}
+.circle-2 {
+  width: 400px;
+  height: 400px;
+  background: #d9ecff;
+  bottom: -100px;
+  right: -100px;
 }
 
 .main-content {
@@ -295,193 +291,158 @@ const handleResetPassword = () => {
   justify-content: center;
   align-items: center;
   padding: 20px;
+  z-index: 1;
 }
 
-/* --- 登录卡片 --- */
 .login-box {
   width: 100%;
-  max-width: 380px;
-  padding: 40px;
-  background: #ffffff;
-  border-radius: 16px;
-  /* 更大的圆角 */
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  padding: 48px 40px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s;
 }
 
-/* --- 头部 Logo --- */
 .logo-section {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
-
 .logo-section img {
-  width: 60px;
+  width: 64px;
+  margin-bottom: 16px;
 }
-
 .logo-section h3 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #303133;
-  margin: 16px 0 8px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
 }
-
 .logo-section .subtitle {
   font-size: 14px;
   color: #909399;
-  margin: 0;
 }
 
-/* --- Tabs 导航 --- */
-.login-tabs {
-  margin-bottom: 20px;
-}
-
-.tab-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  font-weight: 500;
-}
-
-:deep(.el-tabs__header) {
-  margin-bottom: 25px;
-  /* 拉开和表单的距离 */
-}
-
+/* Tabs 优化 */
 :deep(.el-tabs__nav-wrap::after) {
-  height: 1px;
-  /* 底部分割线变细 */
+  height: 2px;
+  background-color: #f0f2f5;
 }
-
 :deep(.el-tabs__active-bar) {
   height: 3px;
-  /* 激活指示器加粗 */
-  border-radius: 2px;
+  border-radius: 3px;
+  background-color: var(--el-color-primary);
+}
+:deep(.el-tabs__item) {
+  font-size: 16px;
+  color: #606266;
+  padding-bottom: 12px;
+}
+:deep(.el-tabs__item.is-active) {
+  font-weight: 600;
+  color: var(--el-color-primary);
 }
 
-/* --- 表单与输入框核心对齐样式 --- */
+/* 输入框深度定制 */
 .el-form-item {
-  margin-bottom: 22px;
-  /* 统一表单项间距 */
+  margin-bottom: 24px;
 }
 
-/* 使用 :deep() 穿透组件，修改内部样式 */
 :deep(.el-input__wrapper) {
-  height: 48px;
-  /* 统一高度 */
-  padding: 0 15px;
-  border-radius: 8px;
-  border: 1px solid #dcdfe6;
+  background-color: #f5f7fa; /* 灰色背景 */
   box-shadow: none !important;
-  /* 移除默认的 focus shadow */
-  transition: border-color 0.2s;
+  border: 1px solid transparent;
+  padding: 8px 15px;
+  transition: all 0.3s ease;
 }
 
 :deep(.el-input__wrapper:hover) {
-  border-color: #c0c4cc;
+  background-color: #eef1f6;
 }
 
 :deep(.el-input__wrapper.is-focus) {
+  background-color: #fff;
   border-color: var(--el-color-primary);
-}
-
-/* [核心] 图标对齐样式 */
-:deep(.el-input__prefix) {
-  margin-right: 10px;
-  color: #909399;
-}
-
-:deep(.el-input__prefix .el-icon) {
-  font-size: 18px;
+  box-shadow: 0 0 0 4px rgba(64, 158, 255, 0.1) !important;
 }
 
 :deep(.el-input__inner) {
-  font-size: 14px;
-}
-
-/* --- 验证码输入框与按钮对齐 --- */
-.verification-code-wrapper {
-  display: flex;
-  align-items: center;
-  /* 垂直居中对齐 */
-  gap: 10px;
-  width: 100%;
-  /* <-- 就是这一行! */
-}
-
-.verification-code-wrapper .el-input {
-  flex-grow: 1;
-}
-
-.send-code-btn {
-  flex-shrink: 0;
-  /* 防止按钮被压缩 */
-  height: 48px;
-  /* 与输入框高度一致 */
-  border-radius: 8px;
-  background-color: #e8f3ff;
-  /* 图片中的浅蓝色 */
-  color: var(--el-color-primary);
-  border: none;
+  height: 32px;
   font-weight: 500;
 }
 
-.send-code-btn:hover {
-  background-color: #d9e9ff;
-}
-
-/* --- 底部链接与主按钮 --- */
-.additional-links {
+/* 验证码区域 */
+.code-flex {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-  font-size: 14px;
+  gap: 12px;
+}
+.code-btn {
+  height: auto;
+  padding: 0 20px;
+  border-radius: 12px;
+  background: #ecf5ff;
+  border-color: #d9ecff;
+  color: var(--el-color-primary);
+  font-weight: 600;
+}
+.code-btn:hover {
+  background: var(--el-color-primary);
+  color: #fff;
 }
 
+/* 登录按钮 */
 .login-btn {
   width: 100%;
-  height: 48px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: none;
-  background: var(--el-color-primary);
-  /* 使用 Element Plus 的主题色 */
+  height: 52px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-top: 10px;
+  box-shadow: 0 10px 20px rgba(64, 158, 255, 0.3);
+  transition: all 0.3s;
+}
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px rgba(64, 158, 255, 0.4);
 }
 
-/* --- 响应式 --- */
+/* 底部链接 */
+.footer-links {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  gap: 8px;
+}
+.text-gray {
+  color: #909399;
+}
+.divider {
+  width: 1px;
+  height: 12px;
+  background: #dcdfe6;
+  margin: 0 8px;
+}
+
+/* 动画 */
+.shake-animation {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* 响应式 */
 @media (max-width: 480px) {
   .login-box {
-    padding: 24px;
-  }
-}
-
-/* --- Animations --- */
-.shake-animation {
-  animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-
-@keyframes shake {
-  10%,
-  90% {
-    transform: translate3d(-1px, 0, 0);
-  }
-
-  20%,
-  80% {
-    transform: translate3d(2px, 0, 0);
-  }
-
-  30%,
-  50%,
-  70% {
-    transform: translate3d(-4px, 0, 0);
-  }
-
-  40%,
-  60% {
-    transform: translate3d(4px, 0, 0);
+    padding: 32px 24px;
   }
 }
 </style>

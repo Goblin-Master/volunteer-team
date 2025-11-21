@@ -1,23 +1,29 @@
 <template>
-  <div class="detail-page">
-    <div class="detail-card">
-      <div class="card-title">更新修机总结</div>
+  <div class="page-container">
+    <div class="form-card">
+      <div class="header-bar">
+        <el-button icon="ArrowLeft" circle class="back-btn" @click="onBack" />
+        <span class="title">更新修机总结</span>
+      </div>
 
       <el-form
         ref="formRef"
         :model="form"
         :rules="rules"
-        label-width="90px"
-        size="default"
+        label-position="top"
+        size="large"
+        class="modern-form"
       >
-        <el-form-item label="订单号">{{ form.orderID }}</el-form-item>
+        <div class="order-tag">
+          <span class="label">关联订单：</span>
+          <span class="value">{{ form.orderID }}</span>
+        </div>
 
-        <!-- 问题类型 -->
         <el-form-item label="问题类型" prop="problemType" required>
           <el-select
             v-model="form.problemType"
             placeholder="请选择"
-            class="w_full"
+            class="w-full"
             :class="{ old: isCache }"
             @change="onceChange"
           >
@@ -28,7 +34,6 @@
           </el-select>
         </el-form-item>
 
-        <!-- 问题描述 -->
         <el-form-item label="问题描述" prop="problemDescription" required>
           <el-input
             v-model="form.problemDescription"
@@ -38,25 +43,25 @@
             show-word-limit
             placeholder="简要描述问题"
             :class="{ old: isCache }"
+            resize="none"
             @input="onceChange"
           />
         </el-form-item>
 
-        <!-- 修机总结 -->
         <el-form-item label="修机总结" prop="repairSummary" required>
           <el-input
             v-model="form.repairSummary"
             type="textarea"
-            :rows="4"
+            :rows="5"
             maxlength="500"
             show-word-limit
             placeholder="维修过程、解决方案"
             :class="{ old: isCache }"
+            resize="none"
             @input="onceChange"
           />
         </el-form-item>
 
-        <!-- 接单人员 -->
         <el-form-item label="接单人员" prop="receiverName" required>
           <el-input
             v-model="form.receiverName"
@@ -66,16 +71,15 @@
           />
         </el-form-item>
 
-        <!-- 按钮 -->
-        <el-form-item>
+        <el-form-item class="form-footer">
           <el-button
             type="primary"
+            class="submit-btn"
             @click="handleSubmitSummary"
             :loading="loading"
           >
-            提交
+            保存更改
           </el-button>
-          <el-button @click="onBack">返回</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -86,18 +90,18 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { ArrowLeft } from '@element-plus/icons-vue';
 import type { FormInstance } from 'element-plus';
 import { summaryModelRules, type SummaryItemModel, type UpdateSummaryModel } from '@/types/summary';
 import { GetSummaryDetail, UpdateSummary } from '@/api/summary';
 
-/* ---------------- 基础准备 ---------------- */
+/* ---------- 逻辑保持原样 ---------- */
 const route = useRoute();
 const router = useRouter();
 const summaryID = String(route.query.summaryID);
 const formRef = ref<FormInstance>();
 const loading = ref(false);
 
-/* 表单 */
 const form = reactive<SummaryItemModel>({
   summaryID: '',
   orderID: '',
@@ -109,11 +113,9 @@ const form = reactive<SummaryItemModel>({
 });
 const rules = summaryModelRules;
 
-/* 旧数据标记 */
 const isCache = ref(true);
 const onceChange = () => (isCache.value = false);
 
-/* ---------------- 生命周期 ---------------- */
 onMounted(async () => {
   if (!summaryID) {
     ElMessage.error('缺少总结参数');
@@ -125,16 +127,15 @@ onMounted(async () => {
     try {
       const data = JSON.parse(cache) as SummaryItemModel;
       Object.assign(form, data);
-      isCache.value = true; // 保持灰
+      isCache.value = true;
       return;
     } catch {}
   }
 
   await loadOldSummary();
-  isCache.value = false; // 接口完成 → 正常颜色
+  isCache.value = false;
 });
 
-/* ---------------- 方法 ---------------- */
 async function loadOldSummary() {
   try {
     const res = await GetSummaryDetail(summaryID);
@@ -184,37 +185,92 @@ function onBack() {
 </script>
 
 <style scoped>
-/* -------------- 布局 -------------- */
-.detail-page {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 24px 16px;
-  box-sizing: border-box;
-}
-.detail-card {
-  background: #ffffff;
-  border: 1px solid #ebeef5;
-  border-radius: 4px;
-}
-.card-title {
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #303133;
-  border-bottom: 1px solid #ebeef5;
-}
-.w_full {
-  width: 100%;
+.page-container {
+  min-height: 100vh;
+  background: #f5f7fa;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
-/* -------------- 旧数据统一淡灰色 -------------- */
-/* 统一覆盖 Element 内部所有文本节点 */
-.old *,
-.old .el-input__inner,
-.old .el-textarea__inner,
-.old .el-select__placeholder,
-.old .el-select__selected-item {
-  color: #c0c4cc !important; /* 与你截图完全一致 */
-  transition: color 0.2s;
+.form-card {
+  width: 100%;
+  max-width: 700px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+  padding: 32px;
+}
+
+.header-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f2f5;
+}
+.title { font-size: 18px; font-weight: 600; color: #303133; }
+.back-btn { background: #f4f4f5; border: none; color: #606266; }
+
+.order-tag {
+  background: #ecf5ff;
+  border: 1px solid #d9ecff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+.order-tag .label { color: #909399; margin-right: 4px; }
+.order-tag .value { color: #409eff; font-weight: 500; font-family: monospace; }
+
+.w-full { width: 100%; }
+
+/* 核心：现代输入框样式 */
+:deep(.el-input__wrapper), :deep(.el-textarea__inner) {
+  box-shadow: none !important;
+  background-color: #f8f9fb;
+  border: 1px solid #e4e7ed;
+  border-radius: 12px;
+  transition: all 0.3s;
+  padding: 10px 15px;
+  color: #303133; /* 默认黑色 */
+}
+:deep(.el-textarea__inner) { padding: 12px; }
+
+:deep(.el-input__wrapper:hover), :deep(.el-textarea__inner:hover) {
+  background-color: #fff;
+  border-color: #c0c4cc;
+}
+:deep(.el-input__wrapper.is-focus), :deep(.el-textarea__inner:focus) {
+  background-color: #fff;
+  border-color: var(--el-color-primary);
+  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1) !important;
+}
+
+:deep(.el-form-item__label) {
+  font-weight: 500;
+  color: #606266;
+  margin-bottom: 6px;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+  border-radius: 12px;
+  margin-top: 10px;
+  box-shadow: 0 8px 20px rgba(64, 158, 255, 0.2);
+}
+
+/* -------------- 旧数据置灰逻辑优化 -------------- */
+/* 使用 :deep 穿透到 Element 组件内部的 input */
+:deep(.old .el-input__inner),
+:deep(.old .el-textarea__inner),
+:deep(.old .el-select__selected-item) {
+  color: #909399 !important; /* 浅灰色 */
 }
 </style>
