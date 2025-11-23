@@ -1,107 +1,103 @@
+<!-- ResetPassword.vue -->
 <template>
   <div class="reset-container">
-    <div class="bg-circle circle-1"></div>
-    <div class="bg-circle circle-2"></div>
-
-    <main class="main-content">
-      <div class="glass-box">
-        <div class="header-section">
-          <h2>重置密码</h2>
-          <p>设置一个新的安全密码以保护您的账户</p>
-        </div>
-
-        <el-form
-          ref="formRef"
-          :model="formData"
-          :rules="formRules"
-          size="large"
-          class="modern-form"
-          @keyup.enter="handleResetPassword(formRef)"
-        >
-          <el-form-item prop="email">
-            <el-input
-              v-model="formData.email"
-              placeholder="注册邮箱"
-              class="custom-input"
-            >
-              <template #prefix><el-icon><Message /></el-icon></template>
-            </el-input>
-          </el-form-item>
-
-          <el-form-item prop="code">
-            <div class="code-flex">
-              <el-input
-                v-model="formData.code"
-                placeholder="验证码"
-                class="custom-input code-input"
-                :maxlength="6"
-              >
-                <template #prefix><el-icon><Key /></el-icon></template>
-              </el-input>
-              <el-button
-                class="send-code-btn"
-                plain
-                :disabled="isSendingCode || !isEmailValid"
-                @click="sendVerificationCode"
-              >
-                {{ codeButtonText }}
-              </el-button>
-            </div>
-          </el-form-item>
-
-          <el-form-item prop="newPassword">
-            <el-input
-              v-model="formData.newPassword"
-              type="password"
-              placeholder="新密码 (至少6位)"
-              show-password
-              class="custom-input"
-            >
-              <template #prefix><el-icon><Lock /></el-icon></template>
-            </el-input>
-          </el-form-item>
-
-          <el-form-item prop="confirmNewPassword">
-            <el-input
-              v-model="formData.confirmNewPassword"
-              type="password"
-              placeholder="确认新密码"
-              show-password
-              class="custom-input"
-            >
-              <template #prefix><el-icon><Lock /></el-icon></template>
-            </el-input>
-          </el-form-item>
-
-          <el-button
-            type="primary"
-            class="submit-btn"
-            :loading="isLoading"
-            @click="handleResetPassword(formRef)"
-          >
-            确认重置
-          </el-button>
-        </el-form>
-
-        <div class="footer-link">
-          <el-link type="info" :underline="false" @click="goToLogin" class="back-link">
-            <el-icon class="icon-arrow"><ArrowLeft /></el-icon> 返回登录
-          </el-link>
-        </div>
+    <BaseCard class="reset-box" shadow="always">
+      <div class="header-section">
+        <img src="@/assets/logo.png" alt="Logo" />
+        <h2>重置密码</h2>
+        <p class="subtitle">设置一个新的安全密码以保护您的账户</p>
       </div>
-    </main>
+
+      <el-form
+        ref="formRef"
+        :model="formData"
+        :rules="formRules"
+        size="large"
+        @keyup.enter="handleResetPassword(formRef)"
+      >
+        <el-form-item prop="email">
+          <el-input
+            v-model="formData.email"
+            placeholder="注册邮箱"
+            class="custom-input"
+          >
+            <template #prefix><el-icon><Message /></el-icon></template>
+          </el-input>
+        </el-form-item>
+
+        <el-form-item prop="code">
+          <div class="code-flex">
+            <el-input
+              v-model="formData.code"
+              placeholder="验证码"
+              maxlength="6"
+              class="custom-input code-input"
+            >
+              <template #prefix><el-icon><Key /></el-icon></template>
+            </el-input>
+            <el-button
+              class="code-btn"
+              plain
+              :disabled="isSendingCode || !isEmailValid"
+              @click="sendVerificationCode"
+            >
+              {{ codeButtonText }}
+            </el-button>
+          </div>
+        </el-form-item>
+
+        <el-form-item prop="newPassword">
+          <el-input
+            v-model="formData.newPassword"
+            type="password"
+            placeholder="新密码 (≥6位)"
+            show-password
+            class="custom-input"
+          >
+            <template #prefix><el-icon><Lock /></el-icon></template>
+          </el-input>
+        </el-form-item>
+
+        <el-form-item prop="confirmNewPassword">
+          <el-input
+            v-model="formData.confirmNewPassword"
+            type="password"
+            placeholder="确认新密码"
+            show-password
+            class="custom-input"
+          >
+            <template #prefix><el-icon><Lock /></el-icon></template>
+          </el-input>
+        </el-form-item>
+
+        <el-button
+          type="primary"
+          class="reset-btn"
+          :loading="isLoading"
+          @click="handleResetPassword(formRef)"
+        >
+          确认重置
+        </el-button>
+      </el-form>
+
+      <div class="footer-links">
+        <el-link type="info" :underline="false" @click="goToLogin">
+          返回登录
+        </el-link>
+      </div>
+    </BaseCard>
   </div>
 </template>
 
 <script setup lang="ts" name="ResetPassword">
 import { ref, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { Message, Lock, Key, ArrowLeft } from '@element-plus/icons-vue'; // 新增 Key, ArrowLeft
+import { Message, Lock, Key } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
-import { GetResetPasswordCode, ResetPassword } from '@/api/resetPassword.ts';
+import { GetResetPasswordCode, ResetPassword } from '@/api/resetPassword';
 
-/* ------------------ 逻辑保持原样 ------------------ */
+/* ------------------ 响应数据 ------------------ */
 const router = useRouter();
 const formRef = ref<FormInstance>();
 const isLoading = ref(false);
@@ -113,27 +109,19 @@ const formData = reactive({
   confirmNewPassword: '',
 });
 
+/* ------------------ 校验规则 ------------------ */
 const validatePass = (rule: any, value: string, callback: any) => {
-  if (!value) {
-    callback(new Error('请输入新密码'));
-  } else if (value.length < 6) {
-    callback(new Error('密码长度不能少于6位'));
-  } else {
-    if (formData.confirmNewPassword) {
-      formRef.value?.validateField('confirmNewPassword');
-    }
+  if (!value) callback(new Error('请输入新密码'));
+  else if (value.length < 6) callback(new Error('密码长度不能少于6位'));
+  else {
+    if (formData.confirmNewPassword) formRef.value?.validateField('confirmNewPassword');
     callback();
   }
 };
-
 const validateConfirmPass = (rule: any, value: string, callback: any) => {
-  if (!value) {
-    callback(new Error('请再次输入密码'));
-  } else if (value !== formData.newPassword) {
-    callback(new Error('两次输入的密码不一致！'));
-  } else {
-    callback();
-  }
+  if (!value) callback(new Error('请再次输入密码'));
+  else if (value !== formData.newPassword) callback(new Error('两次输入的密码不一致！'));
+  else callback();
 };
 
 const formRules = reactive<FormRules>({
@@ -149,12 +137,12 @@ const formRules = reactive<FormRules>({
   confirmNewPassword: [{ required: true, validator: validateConfirmPass, trigger: 'blur' }],
 });
 
+/* ------------------ 验证码倒计时 ------------------ */
 const isSendingCode = ref(false);
 const countdownTime = ref(60);
 const codeButtonText = computed(() =>
   isSendingCode.value ? `${countdownTime.value}s` : '获取验证码',
 );
-
 const isEmailValid = computed(() =>
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email),
 );
@@ -192,6 +180,7 @@ const startCountdown = () => {
   }, 1000);
 };
 
+/* ------------------ 提交重置 ------------------ */
 const handleResetPassword = (formEl?: FormInstance) => {
   if (!formEl || isLoading.value) return;
   formEl.validate(async (valid: boolean) => {
@@ -221,122 +210,143 @@ const handleResetPassword = (formEl?: FormInstance) => {
   });
 };
 
-const goToLogin = () => {
-  router.push('/login');
-};
+const goToLogin = () => router.push('/login');
 </script>
 
 <style scoped>
-.reset-container {
+/* ---------- 容器 ---------- */
+.reset-container{
   position: relative;
-  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
   overflow: hidden;
-  padding: 20px;
+  background-attachment: fixed;
+  background:
+    radial-gradient(2200px circle at -15% 40%, rgba(64,158,255,.18) 0%, rgba(64,158,255,0) 65%),
+    radial-gradient(2200px circle at 115% 60%, rgba(72,217,151,.16) 0%, rgba(72,217,151,0) 65%),
+    linear-gradient(135deg, #eef3fb 0%, #f2f6ff 50%, #eef2f9 100%);
+}
+.reset-container::before{
+  content:"";
+  position:absolute;
+  inset:-12% -12% -12% -12%;
+  background: radial-gradient(1200px circle at 50% -10%, rgba(255,214,102,.12) 0%, rgba(255,214,102,0) 70%);
+  filter: blur(18px);
+  pointer-events:none;
+}
+.reset-container::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: radial-gradient(80% 120% at 50% 50%, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 60%);
+  pointer-events:none;
 }
 
-/* 背景装饰 */
-.bg-circle {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  z-index: 0;
-  opacity: 0.5;
-}
-.circle-1 { width: 300px; height: 300px; background: #a0cfff; top: -50px; left: -50px; }
-.circle-2 { width: 400px; height: 400px; background: #d9ecff; bottom: -100px; right: -100px; }
-
-.main-content {
+/* ---------- 卡片 ---------- */
+.reset-box{
   width: 100%;
-  max-width: 440px;
-  z-index: 1;
+  max-width: 420px;
+  padding: 40px 36px;
+  border-radius: 12px;
 }
 
-.glass-box {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-}
-
-.header-section {
+/* ---------- 头部 ---------- */
+.header-section{
   text-align: center;
   margin-bottom: 32px;
 }
-.header-section h2 {
-  margin: 0 0 8px;
-  font-size: 24px;
-  color: #303133;
+.header-section img{
+  width: 64px;
+  margin-bottom: 12px;
 }
-.header-section p {
-  margin: 0;
+.header-section h2{
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 6px;
+  letter-spacing: -0.5px;
+}
+.subtitle{
   font-size: 14px;
   color: #909399;
 }
 
-.el-form-item { margin-bottom: 24px; }
+/* ---------- 表单 ---------- */
+.el-form-item{
+  margin-bottom: 24px;
+}
 
-/* 输入框样式统一 */
-:deep(.el-input__wrapper) {
+/* 输入框深度样式 – 直接复用 Login.vue */
+:deep(.el-input__wrapper){
   background-color: #f5f7fa;
   box-shadow: none !important;
-  border: 1px solid transparent;
-  padding: 0 15px;
-  height: 48px;
-  border-radius: 12px;
-  transition: all 0.3s;
+  border: 1px solid #e4e7ed;
+  padding: 8px 15px;
+  transition: all .2s ease;
 }
-:deep(.el-input__wrapper:hover) { background-color: #eef1f6; }
-:deep(.el-input__wrapper.is-focus) {
+:deep(.el-input__wrapper:hover){
+  background-color: #eef1f6;
+}
+:deep(.el-input__wrapper.is-focus){
   background-color: #fff;
-  border-color: var(--el-color-primary);
-  box-shadow: 0 0 0 4px rgba(64, 158, 255, 0.1) !important;
+  border-color: #c0c4cc;
+  box-shadow: 0 0 0 3px rgba(0,0,0,.06) !important;
+}
+:deep(.el-input__inner){
+  height: 32px;
+  font-weight: 500;
 }
 
-.code-flex { display: flex; gap: 12px; }
-.send-code-btn {
-  height: 48px;
+/* ---------- 验证码 ---------- */
+.code-flex{
+  display: flex;
+  gap: 12px;
+}
+.code-btn{
+  height: auto;
+  padding: 0 20px;
   border-radius: 12px;
-  background: #ecf5ff;
-  border: none;
+  background: linear-gradient(180deg,#ecf5ff 0%,#e7f0ff 100%);
+  border: 1px solid #d9ecff;
   color: var(--el-color-primary);
   font-weight: 600;
-  padding: 0 20px;
+  box-shadow: 0 2px 6px rgba(64,158,255,.12);
+}
+.code-btn:hover{
+  background: var(--el-color-primary);
+  color: #fff;
 }
 
-.submit-btn {
+/* ---------- 按钮 ---------- */
+.reset-btn{
   width: 100%;
-  height: 48px;
-  font-size: 16px;
+  height: 52px;
+  font-size: 18px;
   font-weight: 600;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(64, 158, 255, 0.25);
+  letter-spacing: 1px;
   margin-top: 10px;
-  transition: all 0.3s;
+  box-shadow: 0 10px 20px rgba(64,158,255,.3);
+  transition: all .3s;
 }
-.submit-btn:hover {
+.reset-btn:hover{
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(64, 158, 255, 0.35);
+  box-shadow: 0 15px 25px rgba(64,158,255,.4);
 }
 
-.footer-link {
+/* ---------- 底部 ---------- */
+.footer-links{
   margin-top: 24px;
   text-align: center;
-}
-.back-link {
   font-size: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
 }
-.icon-arrow { font-size: 14px; margin-right: 2px; }
 
-@media(max-width: 480px) {
-  .glass-box { padding: 30px 20px; }
+/* ---------- 响应 ---------- */
+@media (max-width: 480px){
+  .reset-box{
+    padding: 32px 24px;
+  }
 }
 </style>

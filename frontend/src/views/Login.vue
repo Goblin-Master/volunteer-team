@@ -1,10 +1,6 @@
 <template>
   <div class="login-container">
-    <div class="bg-circle circle-1"></div>
-    <div class="bg-circle circle-2"></div>
-
-    <main class="main-content">
-      <div class="login-box" :class="{ 'shake-animation': isShaking }">
+      <BaseCard class="login-box" shadow="always" :class="{ 'shake-animation': isShaking }">
         <div class="logo-section">
           <img src="@/assets/logo.png" alt="Logo" />
           <h3>欢迎回来</h3>
@@ -105,14 +101,14 @@
           <div class="divider"></div>
           <el-link type="info" :underline="false" @click="handleResetPassword">忘记密码</el-link>
         </div>
-      </div>
-    </main>
+      </BaseCard>
   </div>
 </template>
 
 <script setup lang="ts" name="Login">
 /* 逻辑保持完全不变，仅为了兼容 icon 引入需确认 */
 import { ref, reactive, computed } from 'vue';
+import BaseCard from '@/components/common/BaseCard.vue';
 import { User, Lock, Message, Key } from '@element-plus/icons-vue'; // 增加 Key icon
 import { ElMessage } from 'element-plus';
 import { Login, GetLoginCode } from '@/api/login.ts';
@@ -256,54 +252,37 @@ const handleResetPassword = () => router.push('/resetPassword');
 .login-container {
   position: relative;
   display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
-  overflow: hidden;
-}
-
-/* 背景装饰圆 */
-.bg-circle {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  z-index: 0;
-  opacity: 0.6;
-}
-.circle-1 {
-  width: 300px;
-  height: 300px;
-  background: #a0cfff;
-  top: -50px;
-  left: -50px;
-}
-.circle-2 {
-  width: 400px;
-  height: 400px;
-  background: #d9ecff;
-  bottom: -100px;
-  right: -100px;
-}
-
-.main-content {
-  flex: 1;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 20px;
-  z-index: 1;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  overflow: hidden;
+  background-attachment: fixed;
+  background:
+    radial-gradient(2200px circle at -15% 40%, rgba(64,158,255,.18) 0%, rgba(64,158,255,0) 65%),
+    radial-gradient(2200px circle at 115% 60%, rgba(72,217,151,.16) 0%, rgba(72,217,151,0) 65%),
+    linear-gradient(135deg, #eef3fb 0%, #f2f6ff 50%, #eef2f9 100%);
+}
+.login-container::before{
+  content:"";
+  position:absolute;
+  inset:-12% -12% -12% -12%;
+  background: radial-gradient(1200px circle at 50% -10%, rgba(255,214,102,.12) 0%, rgba(255,214,102,0) 70%);
+  filter: blur(18px);
+  pointer-events:none;
+}
+.login-container::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: radial-gradient(80% 120% at 50% 50%, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 60%);
+  pointer-events:none;
 }
 
 .login-box {
   width: 100%;
   max-width: 420px;
-  padding: 48px 40px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s;
+  padding: 40px 36px;
 }
 
 .logo-section {
@@ -352,11 +331,11 @@ const handleResetPassword = () => router.push('/resetPassword');
 }
 
 :deep(.el-input__wrapper) {
-  background-color: #f5f7fa; /* 灰色背景 */
+  background-color: #f5f7fa;
   box-shadow: none !important;
-  border: 1px solid transparent;
+  border: 1px solid #e4e7ed;
   padding: 8px 15px;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 :deep(.el-input__wrapper:hover) {
@@ -365,8 +344,8 @@ const handleResetPassword = () => router.push('/resetPassword');
 
 :deep(.el-input__wrapper.is-focus) {
   background-color: #fff;
-  border-color: var(--el-color-primary);
-  box-shadow: 0 0 0 4px rgba(64, 158, 255, 0.1) !important;
+  border-color: #c0c4cc;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06) !important;
 }
 
 :deep(.el-input__inner) {
@@ -383,15 +362,13 @@ const handleResetPassword = () => router.push('/resetPassword');
   height: auto;
   padding: 0 20px;
   border-radius: 12px;
-  background: #ecf5ff;
-  border-color: #d9ecff;
+  background: linear-gradient(180deg, #ecf5ff 0%, #e7f0ff 100%);
+  border: 1px solid #d9ecff;
   color: var(--el-color-primary);
   font-weight: 600;
+  box-shadow: 0 2px 6px rgba(64,158,255,0.12);
 }
-.code-btn:hover {
-  background: var(--el-color-primary);
-  color: #fff;
-}
+.code-btn:hover { background: var(--el-color-primary); color: #fff; }
 
 /* 登录按钮 */
 .login-btn {

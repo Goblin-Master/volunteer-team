@@ -1,0 +1,50 @@
+:root {
+  --color-primary: #409eff;
+  --color-success: #67c23a;
+  --color-warning: #e6a23c;
+  --color-danger: #f56c6c;
+  --color-text: #303133;
+  --color-muted: #909399;
+
+  --font-family-base: 'Inter', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-size-s: 12px;
+  --font-size-m: 14px;
+  --font-size-l: 16px;
+  --line-height-base: 1.6;
+  --letter-spacing: 0.2px;
+
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 16px;
+
+  --shadow-s: 0 6px 12px rgba(0, 0, 0, 0.06);
+  --shadow-m: 0 12px 24px rgba(0, 0, 0, 0.08);
+  --shadow-l: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+:root {
+  --el-color-primary: var(--color-primary);
+  --el-color-success: var(--color-success);
+  --el-color-warning: var(--color-warning);
+  --el-color-error: var(--color-danger);
+  --el-font-size-base: var(--font-size-m);
+  --el-text-color-primary: var(--color-text);
+  --el-text-color-secondary: var(--color-muted);
+  --el-border-radius-base: var(--radius-m);
+}
+
+html.dark {
+  --color-primary: #66b1ff;
+  --color-text: #e5eaf3;
+  --color-muted: #b3b8c0;
+  --shadow-s: 0 6px 12px rgba(0, 0, 0, 0.4);
+  --shadow-m: 0 12px 24px rgba(0, 0, 0, 0.45);
+  --shadow-l: 0 20px 40px rgba(0, 0, 0, 0.5);
+}

@@ -1,10 +1,6 @@
 <template>
-  <div class="home-page-container">
-    <div class="nav-header">
-      <div class="brand">个人中心</div>
-    </div>
-
-    <main class="main-content">
+  <PageContainer>
+    <SectionTitle>个人中心</SectionTitle>
       <div v-if="!userStore.isUserLogin" class="auth-card-wrapper">
          <el-empty description="您尚未登录">
             <el-button type="primary" size="large" round @click="router.push('/login')">
@@ -14,7 +10,7 @@
       </div>
 
       <template v-else>
-        <div class="profile-card">
+        <BaseCard class="profile-card">
           <div class="profile-bg"></div>
           <div class="profile-content">
              <div class="avatar-section" @click="showImagePreview">
@@ -49,9 +45,11 @@
                 </div>
              </div>
           </div>
-        </div>
+        </BaseCard>
 
-        <div class="section-title">快捷服务</div>
+        
+
+        <SectionTitle>快捷服务</SectionTitle>
         <div class="features-grid">
           
           <template v-if="userStore.userRole === Role.COMMON_USER">
@@ -90,7 +88,18 @@
           </template>
 
           <template v-else-if="userStore.userRole === Role.INTERNAL_USER">
-            <div class="feature-item" @click="goToOrderListPage">
+            <div class="feature-item" @click="goToCreateOrderPage">
+               <div class="icon-box blue">
+                 <el-icon><Setting /></el-icon>
+               </div>
+               <div class="text-box">
+                 <h3>我要报修</h3>
+                 <p>设备故障？点此快速提交申请</p>
+               </div>
+               <el-icon class="arrow"><ArrowRight /></el-icon>
+            </div>
+
+            <div class="feature-item" @click="router.push({ name: 'OrderList', query: { view: 'pending' } })">
                <div class="icon-box red">
                  <el-icon><List /></el-icon>
                </div>
@@ -100,7 +109,18 @@
                </div>
                <el-icon class="arrow"><ArrowRight /></el-icon>
             </div>
-            
+
+            <div class="feature-item" @click="router.push({ name: 'OrderList', query: { view: 'mine' } })">
+               <div class="icon-box red">
+                 <el-icon><List /></el-icon>
+               </div>
+               <div class="text-box">
+                 <h3>我的订单</h3>
+                 <p>查看维修进度和历史记录</p>
+               </div>
+               <el-icon class="arrow"><ArrowRight /></el-icon>
+            </div>
+
             <div class="feature-item" @click="goToSummaryListPage">
                <div class="icon-box orange">
                  <el-icon><Document /></el-icon>
@@ -111,10 +131,22 @@
                </div>
                <el-icon class="arrow"><ArrowRight /></el-icon>
             </div>
+
+            <div class="feature-item" @click="showIntroduction">
+               <div class="icon-box green">
+                 <el-icon><User /></el-icon>
+               </div>
+               <div class="text-box">
+                 <h3>关于师友</h3>
+                 <p>了解更多服务计划详情</p>
+               </div>
+               <el-icon class="arrow"><ArrowRight /></el-icon>
+            </div>
           </template>
         </div>
+        
       </template>
-    </main>
+  </PageContainer>
 
     <el-dialog v-model="imagePreviewVisible" width="90%" center align-center class="glass-dialog">
       <div style="text-align: center">
@@ -137,7 +169,6 @@
     </el-dialog>
 
     <input ref="fileInputRef" type="file" accept="image/*" style="display: none" @change="handleFileSelected" />
-  </div>
 </template>
 
 <script setup lang="ts" name="Home">
@@ -151,6 +182,9 @@ import {
   Camera, Edit, Setting, User, List, Document, FolderOpened, ArrowRight
 } from '@element-plus/icons-vue'; // 引入 ArrowRight
 import introductionImage from '@/assets/introduce.jpg';
+import PageContainer from '@/components/common/PageContainer.vue';
+import SectionTitle from '@/components/common/SectionTitle.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
 
 // ...逻辑部分完全保持原样，不做任何修改...
 const router = useRouter();
@@ -161,6 +195,8 @@ const introductionDialogVisible = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const currentTime = ref('');
 let timer: number | undefined;
+
+//
 
 const updateTime = () => {
   const now = new Date();
@@ -226,50 +262,21 @@ onMounted(() => {
 });
 
 onUnmounted(() => clearInterval(timer));
+
+//
 </script>
 
 <style scoped>
-.home-page-container {
-  min-height: 100vh;
-  background-color: #f2f4f8;
-  padding-bottom: 40px;
-  font-family: 'Inter', sans-serif;
-}
-
-.nav-header {
-  height: 60px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-  margin-bottom: 24px;
-}
-.brand {
-  font-size: 18px;
-  font-weight: 600;
-  color: #303133;
-}
-
-.main-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
 
 /* 个人卡片 */
-.profile-card {
-  background: #fff;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  margin-bottom: 32px;
-  position: relative;
-}
+.profile-card { overflow: hidden; margin-bottom: 24px; position: relative; }
 
 .profile-bg {
   height: 140px;
-  background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--el-color-primary), #ffffff 92%) 0%, #f6f8fb 55%, #eef1f6 100%),
+    radial-gradient(600px 380px at 85% 10%, color-mix(in srgb, var(--el-color-primary), #ffffff 95%) 0%, transparent 70%);
+  background-blend-mode: soft-light;
 }
 
 .profile-content {
@@ -323,7 +330,8 @@ onUnmounted(() => clearInterval(timer));
 .username {
   font-size: 24px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text);
+  letter-spacing: -0.2px;
   margin: 0;
 }
 

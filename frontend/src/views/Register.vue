@@ -1,10 +1,6 @@
 <template>
   <div class="register-container">
-    <div class="bg-circle circle-1"></div>
-    <div class="bg-circle circle-2"></div>
-
-    <main class="main-content">
-      <div class="register-box">
+      <BaseCard class="register-box" shadow="always">
         <div class="header-section">
           <h2>创建账户</h2>
           <p>加入我们，开始您的体验</p>
@@ -126,14 +122,14 @@
           <span>已有账号？</span>
           <el-link type="primary" :underline="false" @click="goToLogin" class="link-text">直接登录</el-link>
         </div>
-      </div>
-    </main>
+      </BaseCard>
   </div>
 </template>
 
 <script setup lang="ts">
 /* 逻辑保持完全一致，仅补充图标引入 */
 import { ref, reactive, computed } from 'vue';
+import BaseCard from '@/components/common/BaseCard.vue';
 import { useRouter } from 'vue-router';
 import type { FormInstance } from 'element-plus';
 import { ElMessage } from 'element-plus';
@@ -284,40 +280,34 @@ const goToLogin = () => router.push('/login');
 <style scoped>
 .register-container {
   position: relative;
-  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
   overflow: hidden;
-  padding: 20px;
+  background-attachment: fixed;
+  background:
+    radial-gradient(2200px circle at -15% 40%, rgba(64,158,255,.18) 0%, rgba(64,158,255,0) 65%),
+    radial-gradient(2200px circle at 115% 60%, rgba(72,217,151,.16) 0%, rgba(72,217,151,0) 65%),
+    linear-gradient(135deg, #eef3fb 0%, #f2f6ff 50%, #eef2f9 100%);
 }
-
-/* 背景装饰 */
-.bg-circle {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  z-index: 0;
-  opacity: 0.5;
+.register-container::before{
+  content:"";
+  position:absolute;
+  inset:-12% -12% -12% -12%;
+  background: radial-gradient(1200px circle at 50% -10%, rgba(255,214,102,.12) 0%, rgba(255,214,102,0) 70%);
+  filter: blur(18px);
+  pointer-events:none;
 }
-.circle-1 { width: 300px; height: 300px; background: #a0cfff; top: -50px; left: -50px; }
-.circle-2 { width: 400px; height: 400px; background: #d9ecff; bottom: -100px; right: -100px; }
-
-.main-content {
-  width: 100%;
-  max-width: 460px;
-  z-index: 1;
+.register-container::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: radial-gradient(80% 120% at 50% 50%, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 60%);
+  pointer-events:none;
 }
-
-.register-box {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-}
+.register-box { width: 100%; max-width: 460px; padding: 36px 32px; }
 
 .header-section {
   text-align: center;
@@ -340,17 +330,17 @@ const goToLogin = () => router.push('/login');
 :deep(.el-input__wrapper) {
   background-color: #f5f7fa;
   box-shadow: none !important;
-  border: 1px solid transparent;
+  border: 1px solid #e4e7ed;
   padding: 0 15px;
   height: 44px;
   border-radius: 12px;
-  transition: all 0.3s;
+  transition: all 0.2s ease;
 }
 :deep(.el-input__wrapper:hover) { background-color: #eef1f6; }
 :deep(.el-input__wrapper.is-focus) {
   background-color: #fff;
-  border-color: var(--el-color-primary);
-  box-shadow: 0 0 0 4px rgba(64, 158, 255, 0.1) !important;
+  border-color: #c0c4cc;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06) !important;
 }
 
 /* 验证码行 */
@@ -358,12 +348,14 @@ const goToLogin = () => router.push('/login');
 .send-code-btn {
   height: 44px;
   border-radius: 12px;
-  background: #ecf5ff;
-  border: none;
+  background: linear-gradient(180deg, #ecf5ff 0%, #e7f0ff 100%);
+  border: 1px solid #d9ecff;
   color: var(--el-color-primary);
   font-weight: 600;
   padding: 0 20px;
+  box-shadow: 0 2px 6px rgba(64,158,255,0.12);
 }
+.send-code-btn:hover { background: var(--el-color-primary); color: #fff; }
 
 /* 内部人员开关 */
 .switch-row {

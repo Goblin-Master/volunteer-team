@@ -17,16 +17,19 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: Login,
+      meta: { layout: 'auth' },
     },
     {
       path: '/register',
       name: 'Register',
       component: Register,
+      meta: { layout: 'auth' },
     },
     {
       path: '/resetPassword',
       name: 'ResetPassword',
       component: ResetPassword,
+      meta: { layout: 'auth' },
     },
     {
       path: '/home',

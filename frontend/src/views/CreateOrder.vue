@@ -1,12 +1,9 @@
 <template>
-  <div class="create-order-page">
-    <div class="page-header">
-      <el-button icon="ArrowLeft" circle @click="router.back()" class="back-btn"/>
-      <h1>提交报修</h1>
-    </div>
-
-    <main class="main-content">
-      <div class="form-card">
+  <PageContainer>
+    <BaseCard class="form-card">
+      <div class="page-header">
+        <SectionTitle>提交报修</SectionTitle>
+      </div>
         <el-form
           ref="orderFormRef"
           :model="orderForm"
@@ -105,9 +102,8 @@
              </el-button>
           </div>
         </el-form>
-      </div>
-    </main>
-  </div>
+    </BaseCard>
+  </PageContainer>
 </template>
 
 <script setup lang="ts" name="CreateOrder">
@@ -117,7 +113,9 @@ import { ElMessage, ElNotification } from 'element-plus';
 import type { FormInstance } from 'element-plus';
 import { type CreateOrderItem, orderModelRules } from '@/types/order.ts';
 import { CreateOrder } from '@/api/order.ts';
-import { ArrowLeft } from '@element-plus/icons-vue'; // 需要引入图标
+import PageContainer from '@/components/common/PageContainer.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
+import SectionTitle from '@/components/common/SectionTitle.vue';
 
 const router = useRouter();
 const orderFormRef = ref<FormInstance | null>(null);
@@ -168,47 +166,13 @@ const submitForm = async () => {
 </script>
 
 <style scoped>
-.create-order-page {
-  min-height: 100vh;
-  background: #f5f7fa;
-  padding-bottom: 40px;
-}
-
 .page-header {
-  background: #fff;
-  padding: 16px 20px;
+  padding: 0 0 16px 0;
   display: flex;
   align-items: center;
   gap: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  position: sticky;
-  top: 0;
-  z-index: 10;
 }
-.page-header h1 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #303133;
-}
-.back-btn {
-  border: none;
-  background: #f0f2f5;
-  color: #606266;
-}
-
-.main-content {
-  max-width: 800px;
-  margin: 24px auto;
-  padding: 0 16px;
-}
-
-.form-card {
-  background: #fff;
-  border-radius: 20px;
-  padding: 32px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.04);
-}
+.form-card { padding: 24px; }
 
 .section-header {
   font-size: 16px;
@@ -216,7 +180,7 @@ const submitForm = async () => {
   color: #303133;
   margin: 0 0 20px 0;
   padding-left: 10px;
-  border-left: 4px solid var(--el-color-primary);
+  border-left: 4px solid #e4e7ed;
 }
 
 .form-section {
@@ -231,10 +195,10 @@ const submitForm = async () => {
 /* 定制 Input */
 :deep(.el-input__wrapper), :deep(.el-textarea__inner) {
   box-shadow: none !important;
-  background-color: #f9faFC;
+  background-color: #f5f7fa;
   border: 1px solid #e4e7ed;
   border-radius: 8px;
-  transition: all 0.3s;
+  transition: all 0.2s ease;
 }
 :deep(.el-input__wrapper:hover), :deep(.el-textarea__inner:hover) {
   background-color: #fff;
@@ -242,8 +206,8 @@ const submitForm = async () => {
 }
 :deep(.el-input__wrapper.is-focus), :deep(.el-textarea__inner:focus) {
   background-color: #fff;
-  border-color: var(--el-color-primary);
-  box-shadow: 0 0 0 3px rgba(64,158,255,0.1) !important;
+  border-color: #c0c4cc;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06) !important;
 }
 
 :deep(.el-form-item__label) {
@@ -259,7 +223,7 @@ const submitForm = async () => {
   border-radius: 12px;
   margin-top: 10px;
   height: 48px;
-  box-shadow: 0 8px 16px rgba(64,158,255,0.2);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.08);
 }
 
 @media (max-width: 600px) {

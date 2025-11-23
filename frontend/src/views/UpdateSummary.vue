@@ -1,9 +1,8 @@
 <template>
-  <div class="page-container">
-    <div class="form-card">
+  <PageContainer>
+    <BaseCard class="form-card">
       <div class="header-bar">
-        <el-button icon="ArrowLeft" circle class="back-btn" @click="onBack" />
-        <span class="title">更新修机总结</span>
+        <SectionTitle>更新修机总结</SectionTitle>
       </div>
 
       <el-form
@@ -63,11 +62,10 @@
         </el-form-item>
 
         <el-form-item label="接单人员" prop="receiverName" required>
-          <el-input
+          <ReceiversInput
             v-model="form.receiverName"
-            placeholder="请输入姓名,人名之间用 , 隔开"
             :class="{ old: isCache }"
-            @input="onceChange"
+            placeholder="输入姓名，回车添加"
           />
         </el-form-item>
 
@@ -82,18 +80,21 @@
           </el-button>
         </el-form-item>
       </el-form>
-    </div>
-  </div>
+    </BaseCard>
+  </PageContainer>
 </template>
 
 <script setup lang="ts" name="UpdateSummary">
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { ArrowLeft } from '@element-plus/icons-vue';
 import type { FormInstance } from 'element-plus';
 import { summaryModelRules, type SummaryItemModel, type UpdateSummaryModel } from '@/types/summary';
 import { GetSummaryDetail, UpdateSummary } from '@/api/summary';
+import ReceiversInput from '@/components/common/ReceiversInput.vue';
+import PageContainer from '@/components/common/PageContainer.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
+import SectionTitle from '@/components/common/SectionTitle.vue';
 
 /* ---------- 逻辑保持原样 ---------- */
 const route = useRoute();
@@ -179,29 +180,10 @@ async function handleSubmitSummary() {
   }
 }
 
-function onBack() {
-  router.back();
-}
 </script>
 
 <style scoped>
-.page-container {
-  min-height: 100vh;
-  background: #f5f7fa;
-  padding: 40px 20px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.form-card {
-  width: 100%;
-  max-width: 700px;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-  padding: 32px;
-}
+.form-card { padding: 24px; }
 
 .header-bar {
   display: flex;
@@ -211,12 +193,11 @@ function onBack() {
   padding-bottom: 16px;
   border-bottom: 1px solid #f0f2f5;
 }
-.title { font-size: 18px; font-weight: 600; color: #303133; }
 .back-btn { background: #f4f4f5; border: none; color: #606266; }
 
 .order-tag {
-  background: #ecf5ff;
-  border: 1px solid #d9ecff;
+  background: #f6f7fb;
+  border: 1px solid #eff2f6;
   padding: 8px 16px;
   border-radius: 8px;
   display: inline-flex;
@@ -225,19 +206,19 @@ function onBack() {
   font-size: 14px;
 }
 .order-tag .label { color: #909399; margin-right: 4px; }
-.order-tag .value { color: #409eff; font-weight: 500; font-family: monospace; }
+.order-tag .value { color: #303133; font-weight: 500; font-family: monospace; }
 
 .w-full { width: 100%; }
 
 /* 核心：现代输入框样式 */
 :deep(.el-input__wrapper), :deep(.el-textarea__inner) {
   box-shadow: none !important;
-  background-color: #f8f9fb;
+  background-color: #f5f7fa;
   border: 1px solid #e4e7ed;
   border-radius: 12px;
-  transition: all 0.3s;
+  transition: all 0.2s ease;
   padding: 10px 15px;
-  color: #303133; /* 默认黑色 */
+  color: #303133;
 }
 :deep(.el-textarea__inner) { padding: 12px; }
 
@@ -247,8 +228,8 @@ function onBack() {
 }
 :deep(.el-input__wrapper.is-focus), :deep(.el-textarea__inner:focus) {
   background-color: #fff;
-  border-color: var(--el-color-primary);
-  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1) !important;
+  border-color: #c0c4cc;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06) !important;
 }
 
 :deep(.el-form-item__label) {

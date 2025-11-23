@@ -1,9 +1,8 @@
 <template>
-  <div class="page-container">
-    <div class="form-card">
+  <PageContainer>
+    <BaseCard class="form-card">
       <div class="header-bar">
-        <el-button icon="ArrowLeft" circle class="back-btn" @click="onBack" />
-        <span class="title">撰写修机总结</span>
+        <SectionTitle>撰写修机总结</SectionTitle>
       </div>
 
       <el-form
@@ -36,10 +35,7 @@
           </el-col>
           <el-col :span="12" :xs="24">
             <el-form-item label="接单人员" prop="receiverName">
-              <el-input
-                v-model="form.receiverName"
-                placeholder="多人请用逗号分隔"
-              />
+              <ReceiversInput v-model="form.receiverName" placeholder="输入姓名，回车添加" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -79,18 +75,21 @@
           </el-button>
         </el-form-item>
       </el-form>
-    </div>
-  </div>
+    </BaseCard>
+  </PageContainer>
 </template>
 
 <script setup lang="ts" name="CreateSummary">
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { ArrowLeft } from '@element-plus/icons-vue'; // 引入图标
 import type { FormInstance } from 'element-plus';
 import { summaryModelRules, type SummaryItemModel } from '@/types/summary';
 import { CreateSummary } from '@/api/summary';
+import ReceiversInput from '@/components/common/ReceiversInput.vue';
+import PageContainer from '@/components/common/PageContainer.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
+import SectionTitle from '@/components/common/SectionTitle.vue';
 
 /* ---------- 逻辑部分完全保持 ---------- */
 const route = useRoute();
@@ -144,29 +143,10 @@ const handleSubmitSummary = async () => {
   }
 };
 
-function onBack() {
-  router.back();
-}
 </script>
 
 <style scoped>
-.page-container {
-  min-height: 100vh;
-  background: #f5f7fa;
-  padding: 40px 20px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.form-card {
-  width: 100%;
-  max-width: 700px;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-  padding: 32px;
-}
+.form-card { padding: 24px; }
 
 .header-bar {
   display: flex;
@@ -176,11 +156,6 @@ function onBack() {
   padding-bottom: 16px;
   border-bottom: 1px solid #f0f2f5;
 }
-.title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #303133;
-}
 .back-btn {
   background: #f4f4f5;
   border: none;
@@ -188,8 +163,8 @@ function onBack() {
 }
 
 .order-tag {
-  background: #ecf5ff;
-  border: 1px solid #d9ecff;
+  background: #f6f7fb;
+  border: 1px solid #eff2f6;
   padding: 8px 16px;
   border-radius: 8px;
   display: inline-flex;
@@ -198,15 +173,15 @@ function onBack() {
   font-size: 14px;
 }
 .order-tag .label { color: #909399; margin-right: 4px; }
-.order-tag .value { color: #409eff; font-weight: 500; font-family: monospace; }
+.order-tag .value { color: #303133; font-weight: 500; font-family: monospace; }
 
 /* 深度定制表单控件 */
 :deep(.el-input__wrapper), :deep(.el-textarea__inner) {
   box-shadow: none !important;
-  background-color: #f8f9fb;
+  background-color: #f5f7fa;
   border: 1px solid #e4e7ed;
   border-radius: 12px;
-  transition: all 0.3s;
+  transition: all 0.2s ease;
   padding: 10px 15px;
 }
 :deep(.el-textarea__inner) { padding: 12px; }
@@ -218,8 +193,8 @@ function onBack() {
 
 :deep(.el-input__wrapper.is-focus), :deep(.el-textarea__inner:focus) {
   background-color: #fff;
-  border-color: var(--el-color-primary);
-  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1) !important;
+  border-color: #c0c4cc;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06) !important;
 }
 
 :deep(.el-form-item__label) {

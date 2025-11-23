@@ -1,9 +1,8 @@
 <template>
-  <div class="detail-page">
-    <div class="glass-card">
+  <PageContainer>
+    <BaseCard>
       <div class="header-row">
-        <el-button icon="ArrowLeft" circle class="back-btn" @click="goBack" />
-        <h1>报修详情单</h1>
+        <SectionTitle>报修详情单</SectionTitle>
       </div>
 
       <div class="content-body" v-loading="loading">
@@ -51,17 +50,19 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </BaseCard>
+  </PageContainer>
 </template>
 
 <script setup lang="ts" name="OrderDetail">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { ArrowLeft } from '@element-plus/icons-vue';
 import { GetOrderDetail } from '@/api/order.ts';
 import type { OrderDetailModel } from '@/types/order';
+import PageContainer from '@/components/common/PageContainer.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
+import SectionTitle from '@/components/common/SectionTitle.vue';
 
 /* (逻辑保持不变) */
 const route = useRoute();
@@ -94,27 +95,10 @@ function formatTime(ms: number) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
 
-function goBack() { router.back(); }
 </script>
 
 <style scoped>
-.detail-page {
-  min-height: 100vh;
-  background: #f5f7fa;
-  padding: 30px 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.glass-card {
-  width: 100%;
-  max-width: 700px;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  padding: 30px;
-  height: fit-content;
-}
+.glass-card { padding: 0; }
 
 .header-row {
   display: flex;
@@ -123,11 +107,6 @@ function goBack() { router.back(); }
   margin-bottom: 30px;
   padding-bottom: 20px;
   border-bottom: 1px solid #f0f2f5;
-}
-.header-row h1 {
-  margin: 0;
-  font-size: 20px;
-  color: #303133;
 }
 .back-btn {
   background: #f4f4f5;
@@ -168,10 +147,9 @@ function goBack() { router.back(); }
 }
 
 .value.highlight {
-  background: #ecf5ff;
-  color: #409eff;
-  border-color: #d9ecff;
-  line-height: 1.6;
+  background: transparent;
+  color: var(--color-text);
+  border-color: #eff2f6;
 }
 
 .text-gray { color: #606266; }

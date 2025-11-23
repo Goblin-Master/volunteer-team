@@ -8,11 +8,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ActivityList: typeof import('./src/components/common/ActivityList.vue')['default']
+    BaseButton: typeof import('./src/components/common/BaseButton.vue')['default']
+    BaseCard: typeof import('./src/components/common/BaseCard.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElCol: typeof import('element-plus/es')['ElCol']
+    ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
     ElDescriptions: typeof import('element-plus/es')['ElDescriptions']
     ElDescriptionsItem: typeof import('element-plus/es')['ElDescriptionsItem']
     ElDialog: typeof import('element-plus/es')['ElDialog']
@@ -31,11 +35,18 @@ declare module 'vue' {
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
+    GlobalBack: typeof import('./src/components/common/GlobalBack.vue')['default']
+    GlobalLogout: typeof import('./src/components/common/GlobalLogout.vue')['default']
+    ItemCard: typeof import('./src/components/common/ItemCard.vue')['default']
     Login: typeof import('./src/components/Login.vue')['default']
     NoticeCircle: typeof import('./src/components/NoticeCircle.vue')['default']
+    PageContainer: typeof import('./src/components/common/PageContainer.vue')['default']
+    ReceiversInput: typeof import('./src/components/common/ReceiversInput.vue')['default']
     Rew: typeof import('./src/components/rew.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SectionTitle: typeof import('./src/components/common/SectionTitle.vue')['default']
+    StatCard: typeof import('./src/components/common/StatCard.vue')['default']
   }
   export interface GlobalDirectives {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
