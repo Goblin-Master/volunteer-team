@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { useUserStore } from '@/stores/user';
+import { API_BASE_URL, REQUEST_TIMEOUT } from '@/config/env';
 // 1. 创建 Axios 实例
 const service = axios.create({
-  baseURL: 'http://127.0.0.1:9000', // .env 文件中定义的基础URL
-  timeout: 10000, // 请求超时时间
+  baseURL: API_BASE_URL,
+  timeout: REQUEST_TIMEOUT,
 });
 
 // 2. 添加请求拦截器 (Request Interceptor)

@@ -12,7 +12,7 @@
 <script setup>
 import { RouterView, useRoute } from 'vue-router';
 import { computed } from 'vue';
-import NoticeCircle from '@/components/NoticeCircle.vue';
+import NoticeCircle from '@/components/common/NoticeCircle.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import GlobalLogout from '@/components/common/GlobalLogout.vue';
 import GlobalBack from '@/components/common/GlobalBack.vue';

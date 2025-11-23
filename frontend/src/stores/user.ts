@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { LoginModel } from '@/types/login.ts';
-const base_url: string = 'http://127.0.0.1:9000/uploads/';
+import { UPLOAD_BASE_URL } from '@/config/env';
 
 // 这是一个简化的 token 解析函数，实际应用中建议使用 jwt-decode 等库
 const parseToken = (token: string) => {
@@ -40,7 +40,7 @@ export const useUserStore = defineStore('user', () => {
   // 获取完整的头像 URL
   const fullAvatarUrl = computed(() => {
     if (avatar.value) {
-      return `${base_url}${avatar.value}`;
+      return `${UPLOAD_BASE_URL}${avatar.value}`;
     }
     // 提供一个默认头像
     return 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg';

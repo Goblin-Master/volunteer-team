@@ -65,21 +65,17 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { BellFilled, Close } from '@element-plus/icons-vue'; // 引入图标
+import { BellFilled, Close } from '@element-plus/icons-vue';
 
-// State
 const isModalOpen = ref(false);
 
-// Router
 const route = useRoute();
 const loginPaths = ['/login', '/register', '/resetPassword'];
 
-// Computed
 const shouldShow = computed(() => {
   return !loginPaths.includes(route.path);
 });
 
-// Methods
 const toggleModal = () => {
   isModalOpen.value = !isModalOpen.value;
 };
@@ -93,7 +89,6 @@ const toggleModal = () => {
   z-index: 2000;
 }
 
-/* 悬浮球优化 */
 .notice-circle {
   width: 56px;
   height: 56px;
@@ -115,7 +110,6 @@ const toggleModal = () => {
   font-size: 24px;
 }
 
-/* 遮罩与卡片 */
 .notice-overlay {
   position: fixed;
   top: 0;
@@ -178,7 +172,6 @@ const toggleModal = () => {
   color: #606266;
 }
 
-/* 内容样式优化 */
 .notice-section { margin-bottom: 24px; }
 .notice-section h4 {
   margin: 0 0 12px;
@@ -228,12 +221,10 @@ li:last-child { margin-bottom: 0; }
 .notice-section.warning h4 { color: #e6a23c; }
 .notice-section.warning li::marker { color: #e6a23c; }
 
-/* 滚动条美化 */
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #dcdfe6; border-radius: 3px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 
-/* 动画 */
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 
