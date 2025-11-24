@@ -47,11 +47,11 @@ func (sr *SummaryRepo) GetSummaryList(ctx context.Context) ([]model.Summary, err
 func (sr *SummaryRepo) GetSummaryDetail(ctx context.Context, summaryID int64) (model.Summary, error) {
 	summary, err := sr.summaryDto.GetSummaryDetailByID(ctx, summaryID)
 	if err != nil {
-		if errors.Is(err, dto.SUMMARY_NOT_EXIST) {
-			return summary, SUMMARY_NOT_EXIST
+		if errors.Is(err, dto.ErrSummaryNotExist) {
+			return summary, ErrSummaryNotExist
 		}
 		global.Log.Error(err)
-		return summary, DEFAULT_ERROR
+		return summary, ErrDefault
 	}
 	return summary, nil
 }
@@ -65,11 +65,11 @@ func (sr *SummaryRepo) UpdateSummary(ctx context.Context, summaryID int64, req t
 	}
 	err := sr.summaryDto.UpdateSummaryByID(ctx, summaryID, summary)
 	if err != nil {
-		if errors.Is(err, dto.SUMMARY_NOT_EXIST) {
-			return SUMMARY_NOT_EXIST
+		if errors.Is(err, dto.ErrSummaryNotExist) {
+			return ErrSummaryNotExist
 		}
 		global.Log.Error(err)
-		return DEFAULT_ERROR
+		return ErrDefault
 	}
 	return nil
 }

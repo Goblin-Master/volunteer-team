@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	FILE_NAME_ERROR = errors.New("文件名错误")
-	FILE_TYPE_ERROR = errors.New("文件格式错误")
+	ErrFileNameError = errors.New("文件名错误")
+	ErrFileTypeError = errors.New("文件格式错误")
 )
 var whiteList = []string{"jpg", "png", "jpeg", "gif", "webp"}
 
@@ -18,7 +18,7 @@ func FileSuffixJudge(fileName string) (string, error) {
 	list := strings.Split(fileName, ".")
 	length := len(list)
 	if length == 1 {
-		return "", FILE_NAME_ERROR
+		return "", ErrFileNameError
 	}
 	suffix := list[length-1]
 	for i := range whiteList {
@@ -26,7 +26,7 @@ func FileSuffixJudge(fileName string) (string, error) {
 			return suffix, nil
 		}
 	}
-	return "", FILE_TYPE_ERROR
+	return "", ErrFileTypeError
 }
 
 func Md5(data []byte) string {

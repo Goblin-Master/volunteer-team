@@ -34,7 +34,7 @@ func (ol *OrderLogic) CreateOrder(ctx context.Context, userID int64, req types.C
 	err := ol.orderRepo.CreateOrder(ctx, userID, snowflake.GetIntID(global.Node), req)
 	if err != nil {
 		global.Log.Error(err)
-		return "", DEFAULT_ERROR
+		return "", ErrDefault
 	}
 	return "创建订单成功", nil
 }
@@ -48,7 +48,7 @@ func (ol *OrderLogic) GetOrderList(ctx context.Context, userID int64, role jwtx.
 		data, err := ol.orderRepo.GetOrderListByCommon(ctx, userID)
 		if err != nil {
 			global.Log.Error(err)
-			return resp, DEFAULT_ERROR
+			return resp, ErrDefault
 		}
 		list = data
 	case jwtx.INTERNAL_USER, jwtx.ADMIN:
@@ -56,11 +56,11 @@ func (ol *OrderLogic) GetOrderList(ctx context.Context, userID int64, role jwtx.
 		data, err := ol.orderRepo.GetOrderListByInternal(ctx)
 		if err != nil {
 			global.Log.Error(err)
-			return resp, DEFAULT_ERROR
+			return resp, ErrDefault
 		}
 		list = data
 	default:
-		return resp, DEFAULT_ERROR
+		return resp, ErrDefault
 	}
 	var orders []types.OrderItem
 	for _, v := range list {
@@ -79,19 +79,19 @@ func (ol *OrderLogic) GetOrderDetail(ctx context.Context, userID int64, role jwt
 	var resp types.OrderDetailResp
 	orderID, err := strconv.ParseInt(req.OrderID, 10, 64)
 	if err != nil {
-		return resp, PARAMS_TYPE_ERROR
+		return resp, ErrParamsType
 	}
 	data, err := ol.orderRepo.GetOrderDetail(ctx, orderID)
 	if err != nil {
-		if errors.Is(err, repo.ORDER_NOT_EXIST) {
-			return resp, ORDER_NOT_EXIST
+		if errors.Is(err, repo.ErrOrderNotExist) {
+			return resp, ErrOrderNotExist
 		}
 		global.Log.Error(err)
-		return resp, DEFAULT_ERROR
+		return resp, ErrDefault
 	}
 	//防止非内部人员查看到别人的订单
 	if role != jwtx.INTERNAL_USER && data.UserID != userID {
-		return resp, ORDER_IS_FORBIDDEN
+		return resp, ErrOrderIsForbidden
 	}
 	//组装数据
 	resp.Notes = data.Notes
@@ -112,15 +112,15 @@ func (ol *OrderLogic) GetOrderDetail(ctx context.Context, userID int64, role jwt
 func (ol *OrderLogic) FinishOrder(ctx context.Context, req types.FinishOrderReq) (string, error) {
 	orderID, err := strconv.ParseInt(req.OrderID, 10, 64)
 	if err != nil {
-		return "", PARAMS_TYPE_ERROR
+		return "", ErrParamsType
 	}
 	err = ol.orderRepo.UpdateOrderState(ctx, orderID)
 	if err != nil {
-		if errors.Is(err, repo.ORDER_NOT_EXIST) {
-			return "", ORDER_NOT_EXIST
+		if errors.Is(err, repo.ErrOrderNotExist) {
+			return "", ErrOrderNotExist
 		}
 		global.Log.Error(err)
-		return "", DEFAULT_ERROR
+		return "", ErrDefault
 	}
 	return "订单已完成", nil
 }

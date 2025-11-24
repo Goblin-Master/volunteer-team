@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	SEND_OVER_TIME = errors.New("发送超时")
+	ErrSendOverTime = errors.New("发送超时")
 )
 
 type EmailX struct {
@@ -93,7 +93,7 @@ func (ex *EmailX) sendEmail(ctx context.Context, to, subject, text string) error
 	case res := <-done:
 		return res.err
 	case <-time.After(timeout):
-		return SEND_OVER_TIME
+		return ErrSendOverTime
 	case <-ctx.Done():
 		return ctx.Err()
 	}

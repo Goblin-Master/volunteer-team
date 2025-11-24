@@ -47,12 +47,12 @@ func (ur *UserRepo) Register(ctx context.Context, userID int64, username, email,
 	err := ur.userDto.AddUser(ctx, user)
 	if err != nil {
 		if strings.Contains(err.Error(), "for key 'user.uni_user_account'") {
-			return ACCOUNT_IS_USED
+			return ErrAccountIsUsed
 		} else if strings.Contains(err.Error(), "for key 'user.uni_user_email'") {
-			return EMAIL_IS_USED
+			return ErrEmailIsUsed
 		} else {
 			global.Log.Error(err)
-			return err
+			return ErrDefault
 		}
 	}
 	return nil
@@ -60,11 +60,11 @@ func (ur *UserRepo) Register(ctx context.Context, userID int64, username, email,
 func (ur *UserRepo) ResetPassword(ctx context.Context, email, newPassword string) error {
 	err := ur.userDto.UpdatePasswordByEmail(ctx, email, newPassword)
 	if err != nil {
-		if errors.Is(err, dto.USER_NOT_EXIST) {
-			return USER_NOT_EXIST
+		if errors.Is(err, dto.ErrUserNotExist) {
+			return ErrUserNotExist
 		}
 		global.Log.Error(err)
-		return DEFAULT_ERROR
+		return ErrDefault
 	}
 	return nil
 }
@@ -72,11 +72,11 @@ func (ur *UserRepo) ResetPassword(ctx context.Context, email, newPassword string
 func (ur *UserRepo) UpdateAvatarByID(ctx context.Context, userID int64, url string) error {
 	err := ur.userDto.UpdateAvatarByID(ctx, userID, url)
 	if err != nil {
-		if errors.Is(err, dto.USER_NOT_EXIST) {
-			return USER_NOT_EXIST
+		if errors.Is(err, dto.ErrUserNotExist) {
+			return ErrUserNotExist
 		}
 		global.Log.Error(err)
-		return DEFAULT_ERROR
+		return ErrDefault
 	}
 	return nil
 }

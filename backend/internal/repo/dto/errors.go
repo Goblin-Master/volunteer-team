@@ -3,17 +3,17 @@ package dto
 import "errors"
 
 var (
-	DEFAULT_ERROR = errors.New("默认错误")
+	ErrDefault = errors.New("默认错误")
 )
 
 var (
-	USER_NOT_EXIST = errors.New("用户不存在")
+	ErrUserNotExist = errors.New("用户不存在")
 )
 
 var (
-	ORDER_NOT_EXIST = errors.New("订单不存在")
+	ErrOrderNotExist = errors.New("订单不存在")
 )
 
 var (
-	SUMMARY_NOT_EXIST = errors.New("总结不存在")
+	ErrSummaryNotExist = errors.New("修机总结不存在")
 )

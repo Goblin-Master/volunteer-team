@@ -27,7 +27,7 @@ func (sd *SummaryDto) GetSummaryList(ctx context.Context) ([]model.Summary, erro
 	err := global.DB.WithContext(ctx).Find(&summary).Order("utime DESC").Error
 	if err != nil {
 		global.Log.Error(err)
-		return summary, DEFAULT_ERROR
+		return summary, ErrDefault
 	}
 	return summary, nil
 }
@@ -37,10 +37,10 @@ func (sd *SummaryDto) GetSummaryDetailByID(ctx context.Context, summaryID int64)
 	err := global.DB.WithContext(ctx).Model(&model.Summary{}).Where("summary_id = ?", summaryID).Take(&summary).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return summary, SUMMARY_NOT_EXIST
+			return summary, ErrSummaryNotExist
 		}
 		global.Log.Error(err)
-		return summary, DEFAULT_ERROR
+		return summary, ErrDefault
 	}
 	return summary, nil
 }
@@ -50,10 +50,10 @@ func (sd *SummaryDto) UpdateSummaryByID(ctx context.Context, summaryID int64, da
 	result := global.DB.WithContext(ctx).Model(&model.Summary{}).Where("summary_id = ?", summaryID).Updates(data)
 	if result.Error != nil {
 		global.Log.Error(result.Error)
-		return DEFAULT_ERROR
+		return ErrDefault
 	}
 	if result.RowsAffected == 0 {
-		return SUMMARY_NOT_EXIST // 没有匹配行
+		return ErrSummaryNotExist // 没有匹配行
 	}
 	return nil
 }

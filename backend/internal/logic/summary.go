@@ -35,13 +35,13 @@ func (sl *SummaryLogic) CreateSummary(ctx context.Context, userID int64, req typ
 	//先校验id的合法性，避免浪费时间查询
 	orderID, err := strconv.ParseInt(req.OrderID, 10, 64)
 	if err != nil {
-		return "", PARAMS_TYPE_ERROR
+		return "", ErrParamsType
 	}
 
 	err = sl.summaryRepo.CreateSummary(ctx, userID, orderID, snowflake.GetIntID(global.Node), req)
 	if err != nil {
 		global.Log.Error(err)
-		return "", DEFAULT_ERROR
+		return "", ErrDefault
 	}
 	//异步更新订单状态（独立 ctx，防止父 ctx 被取消）
 	//这里是为了实现写了修机总结就表示这一单完成了
@@ -69,7 +69,7 @@ func (sl *SummaryLogic) GetSummaryList(ctx context.Context) (types.SummaryListRe
 	// 内部人员：查全部修机总结
 	list, err := sl.summaryRepo.GetSummaryList(ctx)
 	if err != nil {
-		return resp, DEFAULT_ERROR
+		return resp, ErrDefault
 	}
 	var summaries []types.SummaryItem
 	for _, v := range list {
@@ -92,15 +92,15 @@ func (sl *SummaryLogic) GetSummaryDetail(ctx context.Context, req types.SummaryD
 	var resp types.SummaryDetailResp
 	summaryID, err := strconv.ParseInt(req.SummaryID, 10, 64)
 	if err != nil {
-		return resp, PARAMS_TYPE_ERROR
+		return resp, ErrParamsType
 	}
 	data, err := sl.summaryRepo.GetSummaryDetail(ctx, summaryID)
 	if err != nil {
-		if errors.Is(err, repo.SUMMARY_NOT_EXIST) {
-			return resp, SUMMARY_NOT_EXIST
+		if errors.Is(err, repo.ErrSummaryNotExist) {
+			return resp, ErrSummaryNotExist
 		}
 		global.Log.Error(err)
-		return resp, DEFAULT_ERROR
+		return resp, ErrDefault
 	}
 	//组装数据
 	resp.RepairSummary = data.RepairSummary
@@ -116,15 +116,15 @@ func (sl *SummaryLogic) GetSummaryDetail(ctx context.Context, req types.SummaryD
 func (sl *SummaryLogic) UpdateSummary(ctx context.Context, req types.UpdateSummaryReq) (string, error) {
 	summaryID, err := strconv.ParseInt(req.SummaryID, 10, 64)
 	if err != nil {
-		return "", PARAMS_TYPE_ERROR
+		return "", ErrParamsType
 	}
 	err = sl.summaryRepo.UpdateSummary(ctx, summaryID, req)
 	if err != nil {
-		if errors.Is(err, repo.SUMMARY_NOT_EXIST) {
-			return "", SUMMARY_NOT_EXIST
+		if errors.Is(err, repo.ErrSummaryNotExist) {
+			return "", ErrSummaryNotExist
 		}
 		global.Log.Error(err)
-		return "", DEFAULT_ERROR
+		return "", ErrDefault
 	}
 	return "更新修机总结成功", nil
 }

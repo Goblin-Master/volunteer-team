@@ -45,7 +45,7 @@ func (ul *UserLogic) Login(ctx context.Context, req types.LoginReq) (types.Login
 	case global.LOGIN_WITH_ACCOUNT:
 		data, err := ul.userRepo.LoginWithAccount(ctx, req.Account, req.Password)
 		if err != nil {
-			return resp, ACCOUNT_OR_PASSWORD_ERROR
+			return resp, ErrAccountOrPassword
 		}
 		token, err := jwtx.GenToken(jwtx.Claims{
 			UserID: data.UserID,
@@ -53,7 +53,7 @@ func (ul *UserLogic) Login(ctx context.Context, req types.LoginReq) (types.Login
 		})
 		if err != nil {
 			global.Log.Error(err)
-			return resp, DEFAULT_ERROR
+			return resp, ErrDefault
 		}
 		resp.Username = data.Username
 		resp.Avatar = data.Avatar
@@ -61,11 +61,11 @@ func (ul *UserLogic) Login(ctx context.Context, req types.LoginReq) (types.Login
 		return resp, nil
 	case global.LOGIN_WITH_EMAIL:
 		if ok := ul.email.VerifyCode(req.Email, req.Code); !ok {
-			return resp, CODE_VERIFY_ERROR
+			return resp, ErrCodeVerify
 		}
 		data, err := ul.userRepo.LoginWithEmail(ctx, req.Email)
 		if err != nil {
-			return resp, EMAIL_ERROR
+			return resp, ErrEmail
 		}
 		token, err := jwtx.GenToken(jwtx.Claims{
 			UserID: data.UserID,
@@ -73,7 +73,7 @@ func (ul *UserLogic) Login(ctx context.Context, req types.LoginReq) (types.Login
 		})
 		if err != nil {
 			global.Log.Error(err)
-			return resp, DEFAULT_ERROR
+			return resp, ErrDefault
 		}
 		resp.Username = data.Username
 		resp.Avatar = data.Avatar
@@ -81,24 +81,24 @@ func (ul *UserLogic) Login(ctx context.Context, req types.LoginReq) (types.Login
 		return resp, nil
 	default:
 		global.Log.Warnf("错误的登录方式:%s", req.LoginType)
-		return resp, LOGIN_WITH_FAILED_WAY
+		return resp, ErrLoginWithFailedWay
 	}
 }
 
 func (ul *UserLogic) Register(ctx context.Context, req types.RegisterReq) (types.RegisterResp, error) {
 	var resp types.RegisterResp
 	if ok := ul.email.VerifyCode(req.Email, req.Code); !ok {
-		return resp, CODE_VERIFY_ERROR
+		return resp, ErrCodeVerify
 	}
 	err := ul.userRepo.Register(ctx, snowflake.GetIntID(global.Node), req.Username, req.Email, req.Account, req.Password)
 	if err != nil {
-		if errors.Is(err, repo.EMAIL_IS_USED) {
-			return resp, EMAIL_IS_USED
-		} else if errors.Is(err, repo.ACCOUNT_IS_USED) {
-			return resp, ACCOUNT_IS_USED
+		if errors.Is(err, repo.ErrEmailIsUsed) {
+			return resp, ErrEmailIsUsed
+		} else if errors.Is(err, repo.ErrAccountIsUsed) {
+			return resp, ErrAccountIsUsed
 		} else {
 			global.Log.Error(err)
-			return resp, DEFAULT_ERROR
+			return resp, ErrDefault
 		}
 	}
 	resp.Message = "用户注册成功！"
@@ -108,15 +108,15 @@ func (ul *UserLogic) Register(ctx context.Context, req types.RegisterReq) (types
 func (ul *UserLogic) ResetPassword(ctx context.Context, req types.ResetPasswordReq) (types.ResetPasswordResp, error) {
 	var resp types.ResetPasswordResp
 	if ok := ul.email.VerifyCode(req.Email, req.Code); !ok {
-		return resp, CODE_VERIFY_ERROR
+		return resp, ErrCodeVerify
 	}
 	err := ul.userRepo.ResetPassword(ctx, req.Email, req.NewPassword)
 	if err != nil {
-		if errors.Is(err, repo.USER_NOT_EXIST) {
-			return resp, USER_NOT_EXIST
+		if errors.Is(err, repo.ErrUserNotExist) {
+			return resp, ErrUserNotExist
 		}
 		global.Log.Error(err)
-		return resp, DEFAULT_ERROR
+		return resp, ErrDefault
 	}
 	resp.Message = "重置密码成功！"
 	return resp, nil
@@ -128,7 +128,7 @@ func (ul *UserLogic) GetLoginCode(ctx context.Context, req types.GetCodeReq) (ty
 	err := ul.email.SendLoginCode(ctx, req.Email, c)
 	if err != nil {
 		global.Log.Error(err)
-		return resp, CODE_GET_ERROR
+		return resp, ErrCodeGet
 	}
 	resp.Code = c
 	return resp, nil
@@ -140,7 +140,7 @@ func (ul *UserLogic) GetRegisterCode(ctx context.Context, req types.GetCodeReq) 
 	err := ul.email.SendBindEmail(ctx, req.Email, c)
 	if err != nil {
 		global.Log.Error(err)
-		return resp, CODE_GET_ERROR
+		return resp, ErrCodeGet
 	}
 	resp.Code = c
 	return resp, nil
@@ -152,7 +152,7 @@ func (ul *UserLogic) GetResetCode(ctx context.Context, req types.GetCodeReq) (ty
 	err := ul.email.SendResetPwdCode(ctx, req.Email, c)
 	if err != nil {
 		global.Log.Error(err)
-		return resp, CODE_GET_ERROR
+		return resp, ErrCodeGet
 	}
 	resp.Code = c
 	return resp, nil
@@ -161,7 +161,7 @@ func (ul *UserLogic) GetResetCode(ctx context.Context, req types.GetCodeReq) (ty
 func (ul *UserLogic) UpdateAvatar(ctx context.Context, userID int64, file *multipart.FileHeader) (string, error) {
 	//图片大小限制
 	if file.Size > global.FILE_MAX_SIZE {
-		return "", FILE_OVER_SIZE
+		return "", ErrFileOverSize
 	}
 	//图片格式限制
 	filename := file.Filename
@@ -180,7 +180,7 @@ func (ul *UserLogic) UpdateAvatar(ctx context.Context, userID int64, file *multi
 	}()
 	if err != nil {
 		global.Log.Error(err)
-		return "", FILE_READ_ERROR
+		return "", ErrFileRead
 	}
 	byteData, _ := io.ReadAll(data)
 	hash := fileUtils.Md5(byteData)
@@ -188,11 +188,11 @@ func (ul *UserLogic) UpdateAvatar(ctx context.Context, userID int64, file *multi
 	filePath := fmt.Sprintf("%s.%s", hash, suffix)
 	err = ul.userRepo.UpdateAvatarByID(ctx, userID, filePath)
 	if err != nil {
-		if errors.Is(err, repo.USER_NOT_EXIST) {
-			return "", USER_NOT_EXIST
+		if errors.Is(err, repo.ErrUserNotExist) {
+			return "", ErrUserNotExist
 		}
 		global.Log.Error(err)
-		return "", DEFAULT_ERROR
+		return "", ErrDefault
 	}
 	return filePath, nil
 }

@@ -7,27 +7,27 @@ import (
 )
 
 var (
-	PARAMS_TYPE_ERROR = errors.New("参数格式错误")
-	DEFAULT_ERROR     = errors.New("默认错误")
-	FILE_OVER_SIZE    = errors.New(fmt.Sprintf("文件大小不能超过%dMB", global.FILE_MAX_SIZE/1024/1024))
-	FILE_READ_ERROR   = errors.New("文件读取失败")
+	ErrParamsType   = errors.New("参数格式错误")
+	ErrDefault      = errors.New("默认错误")
+	ErrFileOverSize = fmt.Errorf("文件大小不能超过%dMB", global.FILE_MAX_SIZE/1024/1024)
+	ErrFileRead     = errors.New("文件读取失败")
 )
 var (
-	LOGIN_WITH_FAILED_WAY     = errors.New("暂不支持这种登录方式")
-	ACCOUNT_OR_PASSWORD_ERROR = errors.New("账号或密码错误")
-	EMAIL_ERROR               = errors.New("邮箱错误")
-	CODE_GET_ERROR            = errors.New("code获取失败")
-	CODE_VERIFY_ERROR         = errors.New("验证码错误")
-	EMAIL_IS_USED             = errors.New("邮箱已经被使用")
-	ACCOUNT_IS_USED           = errors.New("账号已经被使用")
-	USER_NOT_EXIST            = errors.New("用户不存在")
-)
-
-var (
-	ORDER_IS_FORBIDDEN = errors.New("禁止操作别人的订单")
-	ORDER_NOT_EXIST    = errors.New("订单不存在")
+	ErrLoginWithFailedWay = errors.New("暂不支持这种登录方式")
+	ErrAccountOrPassword  = errors.New("账号或密码错误")
+	ErrEmail              = errors.New("邮箱错误")
+	ErrCodeGet            = errors.New("code获取失败")
+	ErrCodeVerify         = errors.New("验证码错误")
+	ErrEmailIsUsed        = errors.New("邮箱已经被使用")
+	ErrAccountIsUsed      = errors.New("账号已经被使用")
+	ErrUserNotExist       = errors.New("用户不存在")
 )
 
 var (
-	SUMMARY_NOT_EXIST = errors.New("修机总结不存在")
+	ErrOrderIsForbidden = errors.New("禁止操作别人的订单")
+	ErrOrderNotExist    = errors.New("订单不存在")
+)
+
+var (
+	ErrSummaryNotExist = errors.New("修机总结不存在")
 )

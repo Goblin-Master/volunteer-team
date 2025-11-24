@@ -28,7 +28,7 @@ func (od *OrderDto) GetOrderListByCommon(ctx context.Context, userID int64) ([]m
 		Order("ctime DESC").
 		Find(&list).Error
 	if err != nil {
-		return nil, DEFAULT_ERROR
+		return nil, ErrDefault
 	}
 	return list, nil
 }
@@ -39,7 +39,7 @@ func (od *OrderDto) GetOrderListByInternal(ctx context.Context) ([]model.Order, 
 		Order("ctime ASC"). // 先报先处理
 		Find(&list).Error
 	if err != nil {
-		return nil, DEFAULT_ERROR
+		return nil, ErrDefault
 	}
 	return list, nil
 }
@@ -49,10 +49,10 @@ func (od *OrderDto) GetOrderDetailByID(ctx context.Context, orderID int64) (mode
 	err := global.DB.WithContext(ctx).Model(&model.Order{}).Where("order_id = ?", orderID).Take(&order).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return order, ORDER_NOT_EXIST
+			return order, ErrOrderNotExist
 		}
 		global.Log.Error(err)
-		return order, DEFAULT_ERROR
+		return order, ErrDefault
 	}
 	return order, nil
 }
@@ -66,10 +66,10 @@ func (od *OrderDto) UpdateOrderStateByID(ctx context.Context, orderID int64) err
 
 	if result.Error != nil {
 		global.Log.Error(result.Error)
-		return DEFAULT_ERROR
+		return ErrDefault
 	}
 	if result.RowsAffected == 0 {
-		return ORDER_NOT_EXIST // 没有匹配行
+		return ErrOrderNotExist // 没有匹配行
 	}
 	return nil
 }

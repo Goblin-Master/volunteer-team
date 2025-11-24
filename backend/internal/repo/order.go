@@ -58,11 +58,11 @@ func (or *OrderRepo) GetOrderListByInternal(ctx context.Context) ([]model.Order,
 func (or *OrderRepo) GetOrderDetail(ctx context.Context, orderID int64) (model.Order, error) {
 	data, err := or.orderDto.GetOrderDetailByID(ctx, orderID)
 	if err != nil {
-		if errors.Is(err, dto.ORDER_NOT_EXIST) {
-			return data, ORDER_NOT_EXIST
+		if errors.Is(err, dto.ErrOrderNotExist) {
+			return data, ErrOrderNotExist
 		}
 		global.Log.Info(err)
-		return data, DEFAULT_ERROR
+		return data, ErrDefault
 	}
 	return data, nil
 }
@@ -70,11 +70,11 @@ func (or *OrderRepo) GetOrderDetail(ctx context.Context, orderID int64) (model.O
 func (or *OrderRepo) UpdateOrderState(ctx context.Context, orderID int64) error {
 	err := or.orderDto.UpdateOrderStateByID(ctx, orderID)
 	if err != nil {
-		if errors.Is(err, dto.ORDER_NOT_EXIST) {
-			return ORDER_NOT_EXIST
+		if errors.Is(err, dto.ErrOrderNotExist) {
+			return ErrOrderNotExist
 		}
 		global.Log.Error(err)
-		return DEFAULT_ERROR
+		return ErrDefault
 	}
 	return nil
 }

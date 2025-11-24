@@ -29,8 +29,8 @@ func TestEmail(t *testing.T) {
 
 	t.Logf("SendLoginCode 耗时: %v, 返回错误: %v", elapsed, err)
 
-	// 2. 如果耗时≈10s且err==SEND_OVER_TIME，说明e.Send内部卡死
-	if errors.Is(err, emailx.SEND_OVER_TIME) {
+	// 2. 如果耗时≈10s且err==ErrSendOverTime，说明e.Send内部卡死
+	if errors.Is(err, emailx.ErrSendOverTime) {
 		t.Log("触发超时，但邮件可能已发出——去邮箱确认")
 	}
 

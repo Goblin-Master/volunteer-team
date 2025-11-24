@@ -21,10 +21,10 @@ func (ud *UserDto) VerifyUserByAccount(ctx context.Context, account, password st
 	err := global.DB.WithContext(ctx).Model(&model.User{}).Where("account = ? and password = ?", account, password).Take(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return user, USER_NOT_EXIST
+			return user, ErrUserNotExist
 		}
 		global.Log.Error(err)
-		return user, DEFAULT_ERROR
+		return user, ErrDefault
 	}
 	return user, nil
 }
@@ -33,10 +33,10 @@ func (ud *UserDto) VerifyUserByEmail(ctx context.Context, email string) (model.U
 	err := global.DB.WithContext(ctx).Model(&model.User{}).Where("email = ?", email).Take(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return user, USER_NOT_EXIST
+			return user, ErrUserNotExist
 		}
 		global.Log.Error(err)
-		return user, DEFAULT_ERROR
+		return user, ErrDefault
 	}
 	return user, nil
 }
@@ -55,10 +55,10 @@ func (ud *UserDto) UpdatePasswordByEmail(ctx context.Context, email, newPassword
 
 	if result.Error != nil {
 		global.Log.Error(result.Error)
-		return DEFAULT_ERROR
+		return ErrDefault
 	}
 	if result.RowsAffected == 0 {
-		return USER_NOT_EXIST // 没有匹配行
+		return ErrUserNotExist // 没有匹配行
 	}
 	return nil
 }
@@ -70,10 +70,10 @@ func (ud *UserDto) UpdateAvatarByID(ctx context.Context, userID int64, avatar st
 
 	if result.Error != nil {
 		global.Log.Error(result.Error)
-		return DEFAULT_ERROR
+		return ErrDefault
 	}
 	if result.RowsAffected == 0 {
-		return USER_NOT_EXIST // 没有匹配行
+		return ErrUserNotExist // 没有匹配行
 	}
 	return nil
 }
