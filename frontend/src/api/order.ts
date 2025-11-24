@@ -2,17 +2,16 @@ import req from './axios';
 import type BaseResp from '@/types/base';
 import type { OrderItem, OrderDetailResp, CreateOrderReq, OrderItemModel, OrderDetailModel, CreateOrderItem } from '@/types/order.ts';
 import { toOrderItemModel, toOrderDetailModel, toCreateOrderReq } from '@/types/order.ts';
+import { mapOk } from '@/api/helpers';
 
-export const GetOrderDetail = async (orderID: string): Promise<BaseResp<OrderDetailModel>> => {
-  const raw = (await req({ url: '/api/order/detail', method: 'get', params: { order_id: orderID } })) as unknown as BaseResp<OrderDetailResp>;
-  const dto = toOrderDetailModel(raw.data as OrderDetailResp);
-  return { code: raw.code, message: raw.message, data: dto } as BaseResp<OrderDetailModel>;
+export const GetOrderDetail = async (orderID: string): Promise<BaseResp<OrderDetailModel | null>> => {
+  const raw = (await req({ url: '/api/order/detail', method: 'get', params: { order_id: orderID } })) as unknown as BaseResp<OrderDetailResp | null>;
+  return mapOk(raw, (x) => toOrderDetailModel(x)) as BaseResp<OrderDetailModel | null>;
 };
 
-export const GetOrderList = async (): Promise<BaseResp<{ orders: OrderItemModel[] }>> => {
-  const raw = (await req({ url: '/api/order/list', method: 'get' })) as unknown as BaseResp<{ orders: OrderItem[] }>;
-  const dto = (raw.data?.orders ?? []).map((x: OrderItem) => toOrderItemModel(x));
-  return { code: raw.code, message: raw.message, data: { orders: dto } } as BaseResp<{ orders: OrderItemModel[] }>;
+export const GetOrderList = async (): Promise<BaseResp<{ orders: OrderItemModel[] } | null>> => {
+  const raw = (await req({ url: '/api/order/list', method: 'get' })) as unknown as BaseResp<{ orders: OrderItem[] } | null>;
+  return mapOk(raw, (d) => ({ orders: (d.orders ?? []).map((x: OrderItem) => toOrderItemModel(x)) })) as BaseResp<{ orders: OrderItemModel[] } | null>;
 };
 
 export const CreateOrder = (payload: CreateOrderItem): Promise<BaseResp<string>> => {

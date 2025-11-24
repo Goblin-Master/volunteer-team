@@ -219,9 +219,9 @@ const handleLogin = (formEl?: FormInstance) => {
           };
         }
 
-        const res: BaseResp<LoginModel> = await Login(data);
+        const res: BaseResp<LoginModel | null> = await Login(data);
 
-        if (res.code === 0) {
+        if (res.code === 0 && res.data) {
           ElMessage.success('登录成功!');
           useUserStore().setUserInfo(res.data);
           const redirectPath = (route.query.redirect as string) || '/';

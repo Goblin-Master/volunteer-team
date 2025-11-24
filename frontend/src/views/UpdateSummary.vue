@@ -140,7 +140,7 @@ onMounted(async () => {
 async function loadOldSummary() {
   try {
     const res = await GetSummaryDetail(summaryID);
-    if (res.code === 0) {
+    if (res.code === 0 && res.data) {
       Object.assign(form, res.data);
     } else {
       ElMessage.error(res.message || '获取详情失败');
