@@ -12,7 +12,7 @@
           :highlightIndex="0"
         >
           <BaseButton type="primary" size="small" plain @click="goOrderDetail(item.orderID)">查看详情</BaseButton>
-          <BaseButton v-if="userRole === Role.INTERNAL_USER" type="warning" size="small" plain @click="goWriteSummary(item.orderID)">写修机总结</BaseButton>
+          <BaseButton v-if="userRole === Role.INTERNAL_USER && view === 'pending'" type="warning" size="small" plain @click="goWriteSummary(item.orderID)">写修机总结</BaseButton>
         </ItemCard>
       </div>
       <el-empty v-else :description="view === 'pending' ? '暂无未处理订单' : '暂无我的订单'" />
@@ -22,10 +22,10 @@
 
 <script setup lang="ts" name="OrderList">
 import { Role } from '@/enums/role.ts';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/stores/user.ts';
-import { GetOrderList, GetOrderDetail } from '@/api/order.ts';
+import { GetOrderList } from '@/api/order.ts';
 import { useRouter, useRoute } from 'vue-router';
 import type { OrderItemModel } from '@/types/order.ts';
 import PageContainer from '@/components/common/PageContainer.vue';
@@ -42,30 +42,24 @@ const orderList = ref<OrderItemModel[]>([]);
 const userRole = userStore.userRole;
 const route = useRoute();
 const view = computed(() => (route.query.view === 'pending' ? 'pending' : 'mine'));
-const title = computed(() => (view.value === 'pending' ? '未处理订单' : '报修订单'));
+const title = computed(() => (view.value === 'pending' ? '未处理订单' : '我的订单'));
 
 /* ---------- 生命周期 ---------- */
 onMounted(() => {
   fetchOrderList();
 });
+watch([view, () => userStore.userRole], () => {
+  fetchOrderList();
+});
 
 /* ---------- 方法 ---------- */
+const isOwn = computed(() => (userRole === Role.INTERNAL_USER ? view.value !== 'pending' : true));
 const fetchOrderList = async () => {
   try {
-    const res = await GetOrderList();
+    const res = await GetOrderList(isOwn.value);
     if (res.code === 0) {
       const all = res.data?.orders ?? [];
-      if (view.value === 'mine' && userStore.username) {
-        const details = await Promise.allSettled(all.map((x) => GetOrderDetail(x.orderID)));
-        const mineIds = new Set(
-          details
-            .filter((d) => d.status === 'fulfilled' && d.value.code === 0 && d.value.data?.username === userStore.username)
-            .map((d: any) => d.value.data.orderID),
-        );
-        orderList.value = all.filter((x) => mineIds.has(x.orderID));
-      } else {
-        orderList.value = all;
-      }
+      orderList.value = all;
     } else {
       ElMessage.error(res.message || '获取订单失败');
     }

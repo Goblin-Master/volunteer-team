@@ -64,7 +64,7 @@
                <el-icon class="arrow"><ArrowRight /></el-icon>
             </div>
             
-            <div class="feature-item" @click="goToOrderListPage">
+            <div class="feature-item" @click="goToOrderListPage('mine')">
                <div class="icon-box red">
                  <el-icon><List /></el-icon>
                </div>
@@ -99,7 +99,7 @@
                <el-icon class="arrow"><ArrowRight /></el-icon>
             </div>
 
-            <div class="feature-item" @click="router.push({ name: 'OrderList', query: { view: 'pending' } })">
+            <div class="feature-item" @click="goToOrderListPage('pending')">
                <div class="icon-box red">
                  <el-icon><List /></el-icon>
                </div>
@@ -110,7 +110,7 @@
                <el-icon class="arrow"><ArrowRight /></el-icon>
             </div>
 
-            <div class="feature-item" @click="router.push({ name: 'OrderList', query: { view: 'mine' } })">
+            <div class="feature-item" @click="goToOrderListPage('mine')">
                <div class="icon-box red">
                  <el-icon><List /></el-icon>
                </div>
@@ -253,7 +253,7 @@ const handleFileSelected = async (event: Event) => {
 const showIntroduction = () => introductionDialogVisible.value = true;
 const showImagePreview = () => imagePreviewVisible.value = true;
 const goToCreateOrderPage = () => router.push({ name: 'CreateOrder' });
-const goToOrderListPage = () => router.push({ name: 'OrderList' });
+const goToOrderListPage = (view: 'mine' | 'pending' = 'mine') => router.push({ name: 'OrderList', query: { view } });
 const goToSummaryListPage = () => router.push({ name: 'SummaryList' });
 
 onMounted(() => {

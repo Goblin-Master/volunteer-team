@@ -9,8 +9,8 @@ export const GetOrderDetail = async (orderID: string): Promise<BaseResp<OrderDet
   return mapOk(raw, (x) => toOrderDetailModel(x)) as BaseResp<OrderDetailModel | null>;
 };
 
-export const GetOrderList = async (): Promise<BaseResp<{ orders: OrderItemModel[] } | null>> => {
-  const raw = (await req({ url: '/api/order/list', method: 'get' })) as unknown as BaseResp<{ orders: OrderItem[] } | null>;
+export const GetOrderList = async (isOwn:boolean): Promise<BaseResp<{ orders: OrderItemModel[] } | null>> => {
+  const raw = (await req({ url: '/api/order/list', method: 'get',params:{is_own:isOwn} })) as unknown as BaseResp<{ orders: OrderItem[] } | null>;
   return mapOk(raw, (d) => ({ orders: (d.orders ?? []).map((x: OrderItem) => toOrderItemModel(x)) })) as BaseResp<{ orders: OrderItemModel[] } | null>;
 };
 
