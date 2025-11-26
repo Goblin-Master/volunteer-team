@@ -62,7 +62,7 @@ func registerRoutes(routeManager *manager.RouteManager) {
 	routeManager.RegisterOrderRoutes(func(rg *gin.RouterGroup) {
 		orderHandler := handler.NewOrderHandler()
 		rg.POST("/create", middleware.Authentication(jwtx.COMMON_USER), middleware.BindJsonMiddleware[types.CreateOrderReq], orderHandler.CreateOrder)
-		rg.GET("/list", middleware.Authentication(jwtx.COMMON_USER), orderHandler.GetOrderList)
+		rg.GET("/list", middleware.Authentication(jwtx.COMMON_USER), middleware.BindQueryMiddleware[types.OrderListReq], orderHandler.GetOrderList)
 		rg.GET("/detail", middleware.Authentication(jwtx.COMMON_USER), middleware.BindQueryMiddleware[types.OrderDetailReq], orderHandler.GetOrderDetail)
 		rg.PUT("/finish", middleware.Authentication(jwtx.INTERNAL_USER), middleware.BindQueryMiddleware[types.FinishOrderReq], orderHandler.FinishOrder)
 	})

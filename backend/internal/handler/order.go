@@ -29,9 +29,10 @@ func (oh *OrderHandler) CreateOrder(c *gin.Context) {
 }
 
 func (oh *OrderHandler) GetOrderList(c *gin.Context) {
+	cr := middleware.GetBind[types.OrderListReq](c)
 	userID, role := jwtx.GetUserID(c), jwtx.GetRole(c)
-	global.Log.Info(userID, "  ", role)
-	resp, err := oh.orderLogic.GetOrderList(c.Request.Context(), userID, role)
+	global.Log.Info(userID, "  ", role, "  ", cr)
+	resp, err := oh.orderLogic.GetOrderList(c.Request.Context(), userID, role, cr)
 	response.Response(c, resp, err)
 }
 

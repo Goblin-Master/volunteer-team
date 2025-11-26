@@ -19,7 +19,9 @@ type OrderItem struct {
 	Ctime              int64  `json:"ctime"`
 	ProblemDescription string `json:"problem_description"`
 }
-
+type OrderListReq struct {
+	IsOwn bool `form:"is_own,default=true"` //为了兼容前端管理员也能查看自己报的订单
+}
 type OrderListResp struct {
 	Orders []OrderItem `json:"orders"`
 }

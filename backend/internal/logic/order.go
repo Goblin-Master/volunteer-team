@@ -14,7 +14,7 @@ import (
 
 type IOrderLogic interface {
 	CreateOrder(ctx context.Context, userID int64, req types.CreateOrderReq) (string, error)
-	GetOrderList(ctx context.Context, userID int64, role jwtx.Role) (types.OrderListResp, error)
+	GetOrderList(ctx context.Context, userID int64, role jwtx.Role, req types.OrderListReq) (types.OrderListResp, error)
 	GetOrderDetail(ctx context.Context, userID int64, role jwtx.Role, req types.OrderDetailReq) (types.OrderDetailResp, error)
 	FinishOrder(ctx context.Context, req types.FinishOrderReq) (string, error)
 }
@@ -39,7 +39,7 @@ func (ol *OrderLogic) CreateOrder(ctx context.Context, userID int64, req types.C
 	return "创建订单成功", nil
 }
 
-func (ol *OrderLogic) GetOrderList(ctx context.Context, userID int64, role jwtx.Role) (types.OrderListResp, error) {
+func (ol *OrderLogic) GetOrderList(ctx context.Context, userID int64, role jwtx.Role, req types.OrderListReq) (types.OrderListResp, error) {
 	var resp types.OrderListResp
 	var list []model.Order
 	switch role {
@@ -52,13 +52,24 @@ func (ol *OrderLogic) GetOrderList(ctx context.Context, userID int64, role jwtx.
 		}
 		list = data
 	case jwtx.INTERNAL_USER, jwtx.ADMIN:
-		// 内部人员：查全部“未处理”
-		data, err := ol.orderRepo.GetOrderListByInternal(ctx)
-		if err != nil {
-			global.Log.Error(err)
-			return resp, ErrDefault
+		// 内部人员：根据IsOwn看是查看自己的订单还是未解决的订单
+		if req.IsOwn {
+			// 查看自己的订单
+			data, err := ol.orderRepo.GetOrderListByCommon(ctx, userID)
+			if err != nil {
+				global.Log.Error(err)
+				return resp, ErrDefault
+			}
+			list = data
+		} else {
+			// 查看未解决的订单
+			data, err := ol.orderRepo.GetOrderListByInternal(ctx)
+			if err != nil {
+				global.Log.Error(err)
+				return resp, ErrDefault
+			}
+			list = data
 		}
-		list = data
 	default:
 		return resp, ErrDefault
 	}
